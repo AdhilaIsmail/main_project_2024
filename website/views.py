@@ -1637,19 +1637,34 @@ from django.core.mail import send_mail
 from datetime import datetime
 from .models import BloodRequest, BloodInventory, BloodType
 
+# def get_blood_quantity(request):
+#     blood_group = request.GET.get('blood_group', '')
+#     try:
+#         blood_type = BloodType.objects.get(blood_type=blood_group)
+#         blood_inventory = BloodInventory.objects.get(blood_type=blood_type)
+#         quantity_units = blood_inventory.quantity // 450  # Convert milliliters to units
+       
+#         return JsonResponse({'quantity': quantity_units})
+#     except BloodType.DoesNotExist:
+#         return JsonResponse({'error': 'Blood type not found'}, status=404)
+#     except BloodInventory.DoesNotExist:
+#         return JsonResponse({'error': 'Blood inventory not found'}, status=404)
+from django.http import JsonResponse
+from .models import BloodInventory, BloodType
+
 def get_blood_quantity(request):
     blood_group = request.GET.get('blood_group', '')
     try:
         blood_type = BloodType.objects.get(blood_type=blood_group)
         blood_inventory = BloodInventory.objects.get(blood_type=blood_type)
         quantity_units = blood_inventory.quantity // 450  # Convert milliliters to units
+        max_quantity = quantity_units  # Set the max_quantity to the available quantity
        
-        return JsonResponse({'quantity': quantity_units})
+        return JsonResponse({'quantity': quantity_units, 'max_quantity': max_quantity})
     except BloodType.DoesNotExist:
         return JsonResponse({'error': 'Blood type not found'}, status=404)
     except BloodInventory.DoesNotExist:
         return JsonResponse({'error': 'Blood inventory not found'}, status=404)
-
 
 
 
@@ -1712,9 +1727,6 @@ def bloodrequest(request, is_immediate):
         return redirect(url)
 
     return render(request, 'hospital/requestblood.html', {'is_immediate': is_immediate})
-
-
-
 
 
 #laboratory
@@ -1791,101 +1803,7 @@ def laboratory_test_package_registration(request):
 def special_package_registration(request):
     return render(request,'mainuser/labmainpage.html')
 
-# def add_test_details(request):
-#     return render(request,'mainuser/labmainpage.html')
 
-
-# Import necessary modules
-# from django.http import JsonResponse
-# from django.shortcuts import render
-# from django.views.decorators.csrf import csrf_exempt
-# import json
-# from .models import LaboratoryTest  # Import your LaboratoryTest model
-
-# @csrf_exempt
-# def save_laboratory_test(request):
-#     if request.method == 'POST':
-#         # Retrieve form data
-#         test_name = request.POST.get('labTestName')
-#         print(test_name)
-#         test_price = request.POST.get('labTestPrice')
-#         package_details_json = request.POST.get('packageDetails')
-
-#         # Parse JSON data
-#         try:
-#             package_details = json.loads(package_details_json)
-#         except json.JSONDecodeError as e:
-#             # Handle JSON decoding error
-#             return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'})
-
-#         # Create a LaboratoryTest object and save it to the database
-#         laboratory_test = LaboratoryTest(
-#             test_name=test_name,
-#             test_price=test_price,
-#             package_details=package_details
-#         )
-#         laboratory_test.save()
-
-#         # Return a JSON response indicating success
-#         return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
-
-#     elif request.method == 'GET':
-#         # Handle GET requests to display laboratory test data
-#         lab_tests = LaboratoryTest.objects.all()
-#         context = {'lab_tests': lab_tests}
-#         return render(request, 'labhome.html', context)
-
-#     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
-
-
-# from django.shortcuts import render
-# from django.http import JsonResponse
-# from django.views.decorators.csrf import csrf_exempt
-# from .models import LaboratoryTest
-# import json
-
-# @csrf_exempt
-# def save_laboratory_test(request):
-#     if request.method == 'POST':
-#         # Retrieve common form data
-#         test_name = request.POST.get('test_name')
-#         test_price = request.POST.get('test_price')
-#         test_type = request.POST.get('test_type')
-
-#         try:
-#             additional_fields = {}
-
-#             # Additional handling for individual test details
-#             if test_type == 'Individual':
-#                 test_details_json = request.POST.get('test_details')
-#                 test_details = json.loads(test_details_json)
-#                 additional_fields['test_details'] = test_details
-#             else:
-#                 # Handle package details if needed
-#                 package_details_json = request.POST.get('packageDetails')
-#                 package_details = json.loads(package_details_json)
-#                 additional_fields['package_details'] = package_details
-
-#             # Create a LaboratoryTest object and save it to the database
-#             laboratory_test = LaboratoryTest(
-#                 test_name=test_name,
-#                 test_price=test_price,
-#                 **additional_fields
-#             )
-#             laboratory_test.save()
-
-#             # Return a JSON response indicating success
-#             return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
-#         except json.JSONDecodeError as e:
-#             # Handle JSON decoding error
-#             return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'})
-#         except Exception as e:
-#             # Handle other exceptions
-#             return JsonResponse({'status': 'error', 'message': str(e)})
-#     else:
-#         # Handle other request methods if needed
-#         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -1929,52 +1847,6 @@ def save_laboratory_test(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-# from django.shortcuts import render
-# from .models import LaboratoryTest
-
-# def show_lab_tests(request):
-#     # Retrieve all LaboratoryTest objects from the database
-#     lab_tests = LaboratoryTest.objects.all()
-#     print("Number of records:", lab_tests.count())  # Add this line to print the count
-
-#     # Pass the lab_tests data to the template context
-#     context = {
-#         'lab_tests': lab_tests,
-#     }
-
-#     # Render the HTML template with the data
-#     return render(request, 'labhome.html', context)
-
-
-# from django.shortcuts import render, get_object_or_404
-# from .models import LaboratoryTest
-
-# def show_test_details(request, test_id):
-#     # Retrieve the specific LaboratoryTest object using the test_id
-#     lab_test = get_object_or_404(LaboratoryTest, pk=test_id)
-
-#     # Pass the lab_test data to the template context
-#     context = {
-#         'lab_test': lab_test,
-#     }
-
-#     # Render the HTML template with the data
-#     return render(request, 'test_details.html', context)
-    
-
-
 from django.shortcuts import render
 from .models import LaboratoryTest
 
@@ -2007,39 +1879,41 @@ def show_test_details(request, test_id):
     # Render the HTML template with the data
     return render(request, 'test_details.html', context)
 
-
-
 from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import Patient, Booking, LaboratoryTest
 
-def book_now(request, test_name, test_price):
+def book_now(request, test_id, test_name, test_price):
     # Add any logic for the "Book Now" view
 
     # Pass the test details to the template context
     context = {
+        'test_id': test_id,
         'test_name': test_name,
         'test_price': test_price,
     }
-
     # Render the book_now.html template with the test details
     return render(request, 'book_now.html', context)
-
 
 
 
 # views.py
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Patient, Booking
+from .models import Patient, Booking, LaboratoryTest
+
 
 def submit_booking(request):
     if request.method == 'POST':
+        user_id = request.user.id
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('date_of_birth')
-        selected_test_id = request.POST.get('selected_test')  # Assuming the field name is 'selected_test' in the form
+        selected_test_id = request.POST.get('selected_test') # Assuming the field name is 'selected_test' in the form
 
         # Save the patient details to the database
         patient = Patient.objects.create(
@@ -2049,7 +1923,7 @@ def submit_booking(request):
             address=address,
             gender=gender,
             date_of_birth=date_of_birth,
-            selected_test_id=selected_test_id
+            selected_test_id=selected_test_id,user_id=user_id
         )
 
         # Create a Booking object
@@ -2061,8 +1935,6 @@ def submit_booking(request):
     # If the request method is not POST, render the booking form
     lab_tests = LaboratoryTest.objects.all()
     return render(request, 'booking_form.html', {'success': False, 'lab_tests': lab_tests})
-
-
 
 from django.shortcuts import render
 from .models import Patient, Booking
@@ -2077,23 +1949,32 @@ def labtestbookings(request):
     # Render the template
     return render(request, 'labstaff/viewbookings.html', context)
     
-    
 def labstaffindex(request):
     return render(request,'labstaff/index.html')
 
 
+from django.shortcuts import render
+from .models import Booking, Patient
+from django.contrib.auth.decorators import login_required
 
+@login_required
+def viewtestbookings(request):
+    # Assuming the user and patient are related through a one-to-one relationship
+    # If such a relationship does not exist, modify the following line accordingly
+    try:
+        patient = request.user.patient
+    except Patient.DoesNotExist:
+        patient = None
 
-# from django.shortcuts import render
-# from .models import Patient, Booking
+    # Check if a patient is associated with the user
+    if patient:
+        # Retrieve bookings for the patient
+        bookings = Booking.objects.filter(patient=patient)
 
-# def appointment_list(request):
-#     # Retrieve data from models
-#     appointments = Booking.objects.select_related('patient__selected_test').all()
+        # Pass the bookings to the template context
+        context = {'bookings': bookings}
+    else:
+        # Handle the case where there is no patient associated with the user
+        context = {'bookings': None}
 
-#     # Pass data to the template
-#     context = {'appointments': appointments}
-    
-#     # Render the template
-#     return render(request, 'labstaff/viewbookings.html', context)
-
+    return render(request, 'viewtestbookings.html', context)

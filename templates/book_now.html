@@ -1,14 +1,5 @@
-<!-- book_now.html -->
-
 {% extends 'baselab.html' %}
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Form</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
 <style>
     .booking-details-box {
         margin-top: 30px;
@@ -51,14 +42,12 @@
 
     <div class="booking-details-box">
         <h3>Test Details</h3>
-        
+       
         <p>Test Name: {{ test_name }}</p>
         <p>Price: ${{ test_price }}</p>
-
     </div>
 
     <div class="booking-form">
-       
         <form id="bookingForm" method="post" action="{% url 'submit_booking' %}">
             {% csrf_token %}
             <div class="form-group">
@@ -67,36 +56,39 @@
             </div>
             
             <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
             </div>
 
             <div class="form-group">
-            <label for="phone">Phone Number:</label>
-            <input type="text" id="phone" name="phone" required>
+                <label for="phone">Phone Number:</label>
+                <input type="text" id="phone" name="phone" required>
             </div>
 
             <div class="form-group">
-            <label for="address">Address:</label>
-            <textarea id="address" name="address" required></textarea>
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" required></textarea>
             </div>
 
             <div class="form-group">
-            <label for="gender">Gender:</label>
-            <select id="gender" name="gender" required>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-                <option value="O">Other</option>
-            </select>
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
             </div>
 
             <div class="form-group">
-            <label for="date_of_birth">Date of Birth:</label>
-            <input type="date" id="date_of_birth" name="date_of_birth" required>
+                <label for="date_of_birth">Date of Birth:</label>
+                <input type="date" id="date_of_birth" name="date_of_birth" required>
             </div>
-            <button type="submit">Submit Booking</button>
+            <input type="hidden" name="selected_test" value="{{ test_id }}">
+            <button type="submit" id="submitBtn">Submit Booking</button>
+            <a href="{% url 'homelab' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
+
     <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -111,18 +103,22 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="closeModalBtn" data-dismiss="modal">Close</button>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    document.getElementById('bookingForm').addEventListener('submit', function (e) {
-        e.preventDefault();
+    document.getElementById('bookingForm').addEventListener('submit', function (event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Disable the submit button to prevent multiple submissions
+        document.getElementById('submitBtn').disabled = true;
 
         // Use Fetch API or other AJAX libraries to submit the form data
         fetch(this.action, {
@@ -134,28 +130,27 @@
             if (data.success) {
                 // Show success modal
                 $('#successModal').modal('show');
+                
+                // Close the modal and redirect after clicking "OK"
+                $('#successModal').on('hidden.bs.modal', function () {
+                    window.location.href = '/homelab';
+                });
             } else {
                 // Handle other scenarios if needed
+                // Enable the submit button in case of an error
+                document.getElementById('submitBtn').disabled = false;
             }
         })
         .catch(error => {
             console.error('Error:', error);
             // Handle errors if needed
+            // Enable the submit button in case of an error
+            document.getElementById('submitBtn').disabled = false;
         });
     });
 
-    // Close the modal and redirect when the "Close" button is clicked
-    $('#successModal').on('hidden.bs.modal', function () {
-        window.location.href = '/homelab';
-    });
-
-    // Close the modal when the "Close" button inside the modal is clicked
-    $('#closeModalBtn').click(function () {
-        $('#successModal').modal('hide');
-        window.location.href = '/homelab';
-    });
+    // No need to manually close the modal on "Close" button click,
+    // as Bootstrap's modal handles it by default
 </script>
-
-
 
 {% endblock %}

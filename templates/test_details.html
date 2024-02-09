@@ -93,7 +93,9 @@
         <!-- Add other details as needed -->
     </div>
     {% comment %} <a href="{% url 'book_now' lab_test.test_name lab_test.test_price %}" class="book-now-button">Book Now</a> {% endcomment %}
-    <a href="{% url 'book_now' test_name=lab_test.test_name test_price=lab_test.test_price %}" class="book-now-button">Book Now</a>
+    {% comment %} <a href="{% url 'book_now' test_name=lab_test.test_name test_price=lab_test.test_price %}" class="book-now-button">Book Now</a> {% endcomment %}
+    <a href="{% url 'book_now' test_id=lab_test.id test_name=lab_test.test_name test_price=lab_test.test_price %}" class="book-now-button">Book Now</a>
+    
 
 
 </div>

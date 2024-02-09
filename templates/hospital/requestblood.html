@@ -24,7 +24,6 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <script>
         $(document).ready(function () {
-            // Add a change event listener to the blood_group input
             $('#blood_group').on('input', function () {
                 var bloodGroupInput = $(this).val().toUpperCase();
                 if (bloodGroupInput) {
@@ -34,63 +33,47 @@
                         data: {'blood_group': bloodGroupInput},
                         dataType: 'json',
                         success: function (response) {
-                            $('#blood_quantity_message').text('Available quantity: ' + response.quantity + ' units');
-                            // After fetching blood quantity, also validate the entered quantity
-                            validateQuantity();
+                            // Check if the response contains a valid quantity
+                            if (response.quantity >= 0) {
+                                $('#blood_quantity_message').text('Available quantity: ' + response.quantity + ' units');
+                            } else {
+                                $('#blood_quantity_message').text('No units available');
+                            }
                         },
                         error: function () {
                             $('#blood_quantity_message').text('Error fetching quantity');
-                            // If there's an error fetching blood quantity, clear and validate the entered quantity
-                            validateQuantity();
                         }
                     });
                 } else {
-                    $('#blood_quantity_message').text('');  // Clear the message if blood group is empty
-                    // If blood group is empty, also validate the entered quantity
-                    validateQuantity();
+                    $('#blood_quantity_message').text('');
                 }
             });
-    
-            // Add a click event listener to the Immediate Request button
-            document.querySelector('.immediate-request-button').addEventListener('click', function () {
-                document.querySelector('input[name="is_immediate"]').value = "true";
-            });
-    
+        
             const quantityInput = document.getElementById("quantity");
-    
+        
             quantityInput.addEventListener("input", function () {
+                // Allow only numeric input
+                this.value = this.value.replace(/[^0-9]/g, '');
+        
                 // Validate the entered quantity
                 validateQuantity();
             });
-    
-            
         });
-    </script>
-    <script>
-        function checkQuantityAvailability() {
-            var bloodGroup = $('#blood_group').val();
-            var quantity = $('#quantity').val();
-    
-            if (bloodGroup && quantity) {
-                $.ajax({
-                    url: '/get_blood_quantity/',  // Replace with the correct URL
-                    data: { 'blood_group': bloodGroup },
-                    dataType: 'json',
-                    success: function (data) {
-                        var availableQuantity = data.quantity;
-                        if (quantity > availableQuantity) {
-                            $('#quantity_availability_message').text('Not available that much quantity');
-                            $('#submitButton').prop('disabled', true);  // Disable submit button
-                        } else {
-                            $('#quantity_availability_message').text('');
-                            $('#submitButton').prop('disabled', false);  // Enable submit button
-                        }
-                    },
-                    error: function () {
-                        $('#quantity_availability_message').text('Error checking quantity availability');
-                        $('#submitButton').prop('disabled', true);  // Disable submit button on error
-                    }
-                });
+        
+        function validateQuantity() {
+            var quantityInput = document.getElementById('quantity');
+            var errorDiv = document.querySelector(".error[data-error-for='quantity']");
+            var bloodQuantityMessage = document.getElementById("blood_quantity_message");
+        
+            var maxQuantity = parseInt(bloodQuantityMessage.textContent.split(":")[1]) || 0;
+            var requestedQuantity = parseInt(quantityInput.value, 10);
+        
+            if (isNaN(requestedQuantity) || requestedQuantity < 0 || requestedQuantity > maxQuantity) {
+                errorDiv.textContent = `Invalid quantity. Must be between 0 and ${maxQuantity} units.`;
+                quantityInput.setCustomValidity("Invalid");
+            } else {
+                errorDiv.textContent = "";
+                quantityInput.setCustomValidity("");
             }
         }
     </script>
@@ -166,14 +149,16 @@
                                     <input type="tel" class="form-control" name="phone" placeholder="Phone Number" value="{{ user.phone }}" readonly required>
                                     <div class="error" data-error-for="phone"></div>
                                 </div>
-                               
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" name="blood_group" id="blood_group" placeholder="Blood Group"  required>
+                                    <input type="text" class="form-control" name="blood_group" id="blood_group" placeholder="Blood Group" oninput="fetchBloodQuantity()" required>
                                     <div id="blood_quantity_message" class="text-muted"></div>
+                                    
                                 </div>
+                                
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" name="quantity" id="quantity" placeholder="Quantity (units)" required oninput="checkQuantityAvailability()">
+                                    <input type="text" class="form-control" name="quantity" id="quantity" placeholder="Quantity (units)" required>
                                     <div id="quantity_availability_message" class="text-muted"></div>
+                                    <div class="error" data-error-for="quantity"></div>
                                 </div>
                                 <div class="mb-3">
                                     <textarea class="form-control" name="purpose" id="purpose" placeholder="Purpose for Requesting Blood" rows="4" required></textarea>

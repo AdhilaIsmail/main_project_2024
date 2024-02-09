@@ -1,0 +1,75 @@
+
+
+{% extends 'baselab.html' %}
+{% block content %}
+
+<style>
+    .test-details-box ul {
+        list-style: none;
+        padding: 0;
+        color:black;
+        font-weight: bold;
+        
+    }
+    .container {
+        margin-bottom: 160px; /* Adjust the value as needed */
+    }
+    .test-details-box .column {
+        float: left;
+        width: 20%; /* Adjust the width as needed */
+        padding: 0 15px; /* Adjust the padding as needed */
+        margin-right: 30px;
+    }
+
+    .test-details-box li {
+        text-indent: -0.4em; /* Adjust the text indent as needed */
+        margin-bottom: 1.4em; /* Add margin-bottom for spacing between items */
+    }
+
+    /* Add style to create space at the bottom */
+    .test-details-box::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* Adjust margin-bottom based on your needs */
+    .test-details-box {
+        margin-bottom: 50px;
+    }
+    
+    /* Adjust margin-bottom based on your needs for the book-now-button */
+    .book-now-button {
+        margin-bottom: 85px;
+    }
+
+    .test-details-box i {
+        color: #00CED1; /* Turquoise Blue */
+    }
+    .booked-test-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container">
+    
+
+    <br><br><h2>Your Test Bookings</h2>
+
+    {% if bookings %}
+        <ul>
+        {% for booking in bookings %}
+            <li>{{ booking }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No bookings found.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
