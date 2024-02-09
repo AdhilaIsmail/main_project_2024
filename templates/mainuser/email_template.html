@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medlab Blood Bank - Blood Request Update</title>
+</head>
+
+<body>
+    <p>Greetings from Medlab Blood Bank</p><br>
+    
+    {% if status == 'Accepted' %}
+        <p>Your blood request has been accepted.</p>
+        <p>Your order will be delivered soon.</p>
+    {% else %}
+        <p>Unfortunately, your blood request has been rejected.</p>
+        <p>If you have any questions, please contact us.</p>
+    {% endif %}
+
+    <p>Thank you for using our service.</p>
+</body>
+
+</html>

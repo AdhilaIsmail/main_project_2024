@@ -1,0 +1,144 @@
+{% load static %}
+{% comment %} {% load crispy_forms_tags %}  {% endcomment %}
+{% load socialaccount %}
+{% block content %}
+<html>
+<head>
+  <title>Login Form with Google Sign-in and Forgot Password</title>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .image-container {
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  }
+  .image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+      <div class="col-md-6">
+        <div class="container form-container">
+          {% if error_message %}
+          <div class="d-flex justify-content-center">
+            <p class="text-danger mt-2 fs-4 fw-bold">{{error_message}}</p>
+          </div>
+          {% endif %} 
+          <h1 class="text-center">Login</h1>
+         
+
+             <!-- <h3 style="color: blue">messages </h3> -->
+         
+          <form  action="{% url 'loginn' %}" id="loginForm" method="POST">
+            {% csrf_token %}
+        
+            <div class="form-group">
+              <label for="username">Email:</label>
+              <input type="username" class="form-control" id="email" name="email" required>
+              <small id="emailError" class="form-text text-danger"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+              <small id="passwordError" class="form-text text-danger"></small>
+            </div>
+
+           
+            <button type="submit" class="btn btn-primary btn-block" name="loginbtn" id="loginbtn">Login</button>
+            {% comment %} <a href="{% provider_login_url 'google'%}?next=/">  {% endcomment %}
+            <a href="{% provider_login_url 'google'%}?next=/" class="btn btn-danger btn-block mt-3" onclick="signInWithGoogle()">
+              <span class="align-middle">
+                <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png?w=740&t=st=1691744655~exp=1691745255~hmac=05990f95cf17e4c6378ea22d0d190f708342a8954403cb069955a97e2c0fd10c" alt="Google Icon" width="24" height="24">
+              </span>
+              <span class="align-middle ml-2">Sign in with Google</span>
+            </a>
+            <div class="text-center mt-3">
+              Don't you have an account? <a href="{% url 'registration' %}">Sign up here</a>
+            </div>
+          </form>
+          {% comment %} <form>
+            <div class="form-group">
+                <a href="{% url 'password_reset' %}" class="forgot-password">Forgot Password?</a>
+             </div>
+          </form> {% endcomment %}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <img src="{% static 'img/6310507.jpg' %}" alt="Image" class="img-fluid">
+      </div>
+    </div>
+  </div>
+{% endblock %}
+  <!-- Add Bootstrap JS and jQuery scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+  <!--Working login validation  -->
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email'); 
+    const passwordInput = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+  
+    function validateEmail() {
+      const emailValue = emailInput.value;
+     // const emailError = document.getElementById('emailError');
+  
+      if (!/^\S+@\S+\.\S+$/.test(emailValue)) {
+        emailError.textContent = 'Enter a valid email address.';
+        return false;
+      } else {
+        emailError.textContent = '';
+        return true;
+      }
+    }
+  
+    {% comment %} function validatePassword() {
+      const passwordValue = passwordInput.value;
+      const passwordError = document.getElementById('passwordError');
+  
+      // Improved password validation regular expression
+      if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/.test(passwordValue)) {
+        passwordError.textContent = 'Password should contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.';
+        return false;
+      } else {
+        passwordError.textContent = '';
+        return true;
+      }
+    }  {% endcomment %}
+  
+    emailInput.addEventListener('keyup', validateEmail);
+
+  
+    loginForm.addEventListener('submit', function(event) {
+      const isEmailValid = validateEmail();
+     
+  
+      if (!isEmailValid ) {
+        event.preventDefault();
+      }
+    });
+
+  </script>
+  
+</body>
+</html>

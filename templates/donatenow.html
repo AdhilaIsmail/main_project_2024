@@ -1,0 +1,366 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Medlab Blood Bank</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'lib/twentytwenty/twentytwenty.css' %}" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    
+</head>
+
+<body>
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
+        <a href="index.html" class="navbar-brand p-0">
+            <h4 class="m-0 text-danger"><img height="40px" width="70px" src="{% static 'img/logo.png' %}">Medlab Blood Bank</h4>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="{% url 'homebloodbank' %}" class="nav-item nav-link ">Home</a>
+                {% if user.is_authenticated %}
+
+                    {% if user.role == user.REGISTEREDDONOR %}
+                        <a href="#" class="nav-item nav-link active">Donate Blood</a>
+                    {% else %}
+                        <a href="{% url 'registerasdonor' %}" class="nav-item nav-link active">Donate Blood</a>
+                    {% endif %}
+
+                {% comment %} <a href="{% url 'registerasdonor' %}" class="nav-item nav-link">Donate Blood</a> {% endcomment %}
+                <a href="{% url 'campschedulesfordonor' %}" class="nav-item nav-link">Appointment</a>
+                {% endif %}
+                <a href="{% url 'about' %}" class="nav-item nav-link">About Us</a>
+                <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                {% if user.is_authenticated %}
+                <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a>
+                <a href="#" class="nav-item nav-link">{{user.email}}</a>
+                {% endif %}
+                {% comment %} <a href="{% url 'donatenow' %}" class="nav-item nav-link active">Donate Blood</a>
+                <a href="{% url 'appointmentschedule' %}" class="nav-item nav-link">Appointment</a>
+                {% comment %} <a href="donordashboard.html" class="nav-item nav-link">Dashboard</a>  {% endcomment %}
+                {% comment %} <a href="{% url 'about' %}" class="nav-item nav-link">About Us</a>
+                <!-- <a href="testimonial.html" class="nav-item nav-link">Testimonial</a> -->
+                <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                <a href="{% url 'loginn' %}" class="nav-item nav-link">Login</a> {% endcomment %}
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Full Screen Search Start -->
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(192, 109, 109, 0.7);">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center">
+                    <div class="input-group" style="max-width: 600px;">
+                        <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
+                        <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Screen Search End -->
+
+   
+    <div class="container-fluid p-0">
+        {% comment %} <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active"> {% endcomment %}
+
+                    {% comment %} <img class="w-100" src="{% static 'img/bg22.jpg' %}" alt="Image"> {% endcomment %}
+                    {% comment %} <div class="carousel-caption d-flex flex-column align-items-center justify-content-center"> {% endcomment %}
+                        <div class="p-6" style="max-width: 100%; background-color:#c47a7a; color:black">
+                            {% comment %} <img class="w-100 h-25" src="{% static 'img/bg7.jpg' %}" alt="Image"> {% endcomment %}
+                            <div class="p-3" style="max-width: 70%; background-color:white; color:black; margin-left:180px;border-radius:0px 100px 0px 100px">
+                                <h5 id="h5donate" class="text-uppercase mb-3 animated slideInDown">Revolutionizing Healthcare</h5>  
+                                
+                                <div class="container py-10">
+                                    <img class="w-100 h-25" src="{% static 'img/bg7.jpg' %}" alt="Image">
+                                    <div class="row justify-content-center">
+                                        
+                                        <div class="col-md-8">
+                                            {% comment %} <div class="white-box p-4"> {% endcomment %}
+                                                
+                                                
+                                                <form action="{% url 'registereddonorresponse' %}" method="post" class="animated slideInUp" id="questionsForm">
+                                                    {% csrf_token %}
+                                                    <div class="mb-3">
+                                                        <input type="text" class="form-control"  name="name" placeholder="Full Name"  value={{ donor.full_name }} required readonly>
+                                                        
+                                                    </div>
+
+                                                    <div class="mb-3"> 
+                                                        <input type="text" id="age" name="age" class="form-control"  placeholder="Age" required>
+                                                        <div class="error"  style="color:red;font-size:12px" data-error-for="age"></div>
+                                                    </div>
+
+
+                                                    <div class="mb-3">
+                                                        <select id="bloodType" name="bloodType" class="form-control" required>
+                                                            <option value="">----</option>
+                                                            <option value="A+" {% if donor.blood_group == "A+" %}selected{% endif %}>A+</option>
+                                                            <option value="A-" {% if donor.blood_group == "A-" %}selected{% endif %}>A-</option>
+                                                            <option value="B+" {% if donor.blood_group == "B+" %}selected{% endif %}>B+</option>
+                                                            <option value="B-" {% if donor.blood_group == "B-" %}selected{% endif %}>B-</option>
+                                                            <option value="O+" {% if donor.blood_group == "O+" %}selected{% endif %}>O+</option>
+                                                            <option value="O-" {% if donor.blood_group == "O-" %}selected{% endif %}>O-</option>
+                                                            <option value="AB+" {% if donor.blood_group == "AB+" %}selected{% endif %}>AB+</option>
+                                                            <option value="AB-" {% if donor.blood_group == "AB-" %}selected{% endif %}>AB-</option>
+                                                        </select>
+                                                        <div class="error" data-error-for="bloodgroup"></div>
+                                                    </div>
+                                                    
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="isFirstTime">Is this your first time donating?</label>
+                                                        <select id="isFirstTime" name="isFirstTime" class="form-select" required>
+                                                            <option value="yes">Yes</option>
+                                                            <option value="no">No</option>
+                                                        </select>
+                                                        <div class="error" style="color: red; font-size: 12px;" data-error-for="isFirstTime"></div>
+                                                    </div>
+                                                    
+                                                    <div class="mb-3" id="lastDonationDateField" style="display: none;">
+                                                        <label for="lastDonationDate">Last Donation Date:</label>
+                                                        <input type="date" id="lastDonationDate" name="lastDonationDate" class="form-control">
+                                                        <div class="error" style="color: red; font-size: 12px;" data-error-for="lastDonationDate"></div>
+                                                        <div id="cannotDonateMessage" style="display: none; color: red; font-size: 12px;">You can't donate blood. Click to know more</div>
+                                                    </div>
+                                                    
+                                                    
+
+                                                    <div class="mb-3">
+                                                        <input type="number" id="weight" name="weight" class="form-control" placeholder="Weight(in kg)" required>
+                                                        <div class="error" style="color:red;font-size:12px" data-error-for="weight"></div>
+                                                    </div>
+                                                
+                                                    <div class="mb-3">
+                                                        <label for="donorHistory">1. Have you donated blood before?</label><br>
+                                                        <input type="radio" id="yesDonor" name="donorHistory" value="yes" required>
+                                                        <label for="yesDonor">Yes</label>
+                                                        <input type="radio" id="noDonor" name="donorHistory" value="no" required>
+                                                        <label for="noDonor">No</label><br>
+                                                        <div class="error" data-error-for="donorHistory"></div>
+                                                    </div>
+                                            
+                                                    <label for="difficulty">2. Did you experience any difficulty or discomfort during the previous donation?</label><br>
+                                                    <input type="radio" id="yesDifficulty" name="difficulty" value="yes" required>
+                                                    <label for="yesDifficulty">Yes</label>
+                                                    <input type="radio" id="noDifficulty" name="difficulty" value="no" required>
+                                                    <label for="noDifficulty">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+                                            
+                                                    <label for="donated">3. Have you ever been adviced not to donate blood?</label><br>
+                                                    <input type="radio" id="yesDonated" name="donated" value="yes" required>
+                                                    <label for="yesDonated">Yes</label>
+                                                    <input type="radio" id="noDonated" name="donated" value="no" required>
+                                                    <label for="noDonated">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+                                            
+                                                    <label for="allergies">4. Do you have any allergies?</label><br>
+                                                    <input type="radio" id="yesAllergies" name="allergies" value="yes" required>
+                                                    <label for="yesAllergies">Yes</label>
+                                                    <input type="radio" id="noAllergies" name="allergies" value="no" required>
+                                                    <label for="noAllergies">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <label for="alcohol">5. Do you use alcohol/drugs?</label><br>
+                                                    <input type="radio" id="yesAlcohol" name="alcohol" value="yes" required>
+                                                    <label for="yesAlcohol">Yes</label>
+                                                    <input type="radio" id="noAlcohol" name="alcohol" value="no" required> 
+                                                    <label for="noAlcohol">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <label for="jail">6. Have you been in jail?</label><br>
+                                                    <input type="radio" id="yesJail" name="jail" value="yes" required>
+                                                    <label for="yesJail">Yes</label>
+                                                    <input type="radio" id="noJail" name="jail" value="no" required>
+                                                    <label for="noJail">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <label for="surgery"7. >Any history of surgery or blood transfusion in the past 12 months?</label><br>
+                                                    <input type="radio" id="yesSurgery" name="surgery" value="yes" required>
+                                                    <label for="yesSurgery">Yes</label>
+                                                    <input type="radio" id="noSurgery" name="surgery" value="no" required>
+                                                    <label for="noSurgery">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <label for="diseased">8. In the last 6 months have you had any of the following?<br>
+                                                    Unexplained weight loss, swollen galnds, recurrent diarrhoea, continuous low grade fever
+                                                    </label><br>
+                                                    <input type="radio" id="yesDiseased" name="diseased" value="yes" required>
+                                                    <label for="yesDiseased">Yes</label>
+                                                    <input type="radio" id="noDiseased" name="diseased" value="no" required>
+                                                    <label for="noDiseased">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <label for="hivaids">9. Have you any reason to believe that you may be infected by HIV/AIDS?</label><br>
+                                                    <input type="radio" id="yesHivaids" name="hivaids" value="yes" required>
+                                                    <label for="yesHivaids">Yes</label>
+                                                    <input type="radio" id="noHivaids" name="hivaids" value="no" required>
+                                                    <label for="noHivaids">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <p><strong>For Women Only:</strong> Please answer the following questions.</p>
+
+                                                    <label for="pregnant">10. Are you pregnant? Have you had an abortion in the 12 months?</label><br>
+                                                    <input type="radio" id="yesPregnant" name="pregnant" value="yes">
+                                                    <label for="yesPregnant">Yes</label>
+                                                    <input type="radio" id="noPregnant" name="pregnant" value="no">
+                                                    <label for="noPregnant">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+                                            
+                                                    <label for="child">11. Do you have child less than one year of age?</label><br>
+                                                    <input type="radio" id="yesChild" name="child" value="yes">
+                                                    <label for="yesChild">Yes</label>
+                                                    <input type="radio" id="noChild" name="child" value="no">
+                                                    <label for="noChild">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+
+                                                    <label for="feelgood">12. Are you on your menstral cycle now?</label><br>
+                                                    <input type="radio" id="yesFeelgood" name="feelgood" value="yes">
+                                                    <label for="yesFeelgood">Yes</label>
+                                                    <input type="radio" id="noFeelgood" name="feelgood" value="no">
+                                                    <label for="noDonor">No</label><br><br>
+                                                    <div class="error" data-error-for="notenetered"></div>
+                                                    
+                                                    <input type="submit" value="Submit">
+                                                </form>
+                                            {% comment %} </div> {% endcomment %}
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    {% comment %} </div> {% endcomment %}
+                {% comment %} </div>
+                <!-- ... (other carousel items) ... -->
+            </div>
+            <!-- ... (carousel controls) ... -->
+        </div> {% endcomment %}
+    </div>
+    
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ageInput = document.getElementById('age');
+            var weightInput = document.getElementById('weight');
+    
+            ageInput.addEventListener('keyup', function () {
+                validateAge();
+            });
+    
+            weightInput.addEventListener('keyup', function () {
+                validateWeight();
+            });
+    
+            function validateAge() {
+                var ageValue = ageInput.value.trim();
+                var ageError = document.querySelector('[data-error-for="age"]');
+                
+                if (!/^\d+$/.test(ageValue) || isNaN(parseInt(ageValue)) || parseInt(ageValue) < 18 || parseInt(ageValue) > 65) {
+                    ageError.textContent = 'Age must be a whole number between 18 and 65';
+                } else {
+                    ageError.textContent = '';
+                }
+            }
+    
+            function validateWeight() {
+                var weightValue = parseInt(weightInput.value);
+                var weightError = document.querySelector('[data-error-for="weight"]');
+                
+                if (isNaN(weightValue) || weightValue <= 45) {
+                    weightError.textContent = 'Weight must be greater than 45 kg';
+                } else {
+                    weightError.textContent = '';
+                }
+            }
+        });
+    </script>
+    <script>
+        const isFirstTimeSelect = document.getElementById("isFirstTime");
+        const lastDonationDateField = document.getElementById("lastDonationDateField");
+        const lastDonationDateInput = document.getElementById("lastDonationDate");
+        const cannotDonateMessage = document.getElementById("cannotDonateMessage");
+    
+        isFirstTimeSelect.addEventListener("change", function () {
+            if (isFirstTimeSelect.value === "no") {
+                lastDonationDateField.style.display = "block";
+            } else {
+                lastDonationDateField.style.display = "none";
+            }
+        });
+    
+        lastDonationDateInput.addEventListener("change", function () {
+            const selectedDate = new Date(lastDonationDateInput.value);
+            const today = new Date();
+            const daysDifference = Math.ceil((today - selectedDate) / (1000 * 60 * 60 * 24));
+    
+            if (daysDifference < 57) {
+                cannotDonateMessage.style.display = "block";
+            } else {
+                cannotDonateMessage.style.display = "none";
+            }
+        });
+    </script>
+
+    
+    
+
+     <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="{% static 'lib/twentytwenty/jquery.event.move.js' %}"></script>
+    <script src="{% static 'lib/twentytwenty/jquery.twentytwenty.js' %}"></script>
+
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
+

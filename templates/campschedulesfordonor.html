@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!-- Add this modal HTML code within the <body> tag -->
+<!-- Add this to the head of your HTML file to include Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+<style>
+    /* Custom styles for table */
+    .custom-table {
+        font-size: 13px; /* Adjust the font size as needed */
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .new-responsive-div {
+        background-color: #f8f9fa; /* Set your desired background color */
+        padding: 30px; /* Adjust padding as needed */
+        margin-bottom: 60px; /* Adjust margin to create space for the footer */
+    }
+
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+
+    body {
+        margin-bottom: 60px; /* Adjust margin to create space for the footer */
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px; /* Set the height of your footer */
+        background-color: #f8f9fa; /* Set your desired background color */
+    }
+   
+</style>
+
+<!-- Full Screen Search Start -->
+<div class="modal fade" id="searchModal" tabindex="-1">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content" style="background: rgba(192, 109, 109, 0.7);">
+            <div class="modal-header border-0">
+                <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex align-items-center justify-content-center">
+                <div class="input-group" style="max-width: 600px;">
+                    <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
+                    <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Full Screen Search End -->
+
+<div class="container-fluid p-0">
+    <div class="new-responsive-div">
+        <!-- Content for the new responsive div goes here -->
+        <h6 id="h6head" class="display-1  mb-md-4 animated zoomIn" style="color:#a65656">Available Blood Bank Camps</h6>
+        {% if schedules %}
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-bordered  custom-table datatable mb-0">
+                    <thead style="background-color:#a65656;color:white">
+                        <tr>
+                            <th>Camp Date</th>
+                            <th>Camp Name</th>
+                            <th>Camp Address</th>
+                            <th>Camp District</th>
+                            <th>Conducted By</th>
+                            <th>Organized By</th>
+                            <th>Gram Panchayat</th>
+                            <th>Time Slots</th>
+                            <th>Register</th>
+                        </tr>
+                    </thead>
+                    <tbody style="background-color:white;color:black" >
+                        {% for camp in schedules %}
+                            <tr>
+                                <td>{{ camp.campDate }}</td>
+                                <td>{{ camp.campName }}</td>
+                                <td>{{ camp.campAddress }}</td>
+                                <td>{{ camp.campDistrict }}</td>
+                                <td>{{ camp.conductedBy }}</td>
+                                <td>{{ camp.organizedBy }}</td> <!-- Assuming organizedBy has a readable __str__ method -->
+                                <td>{{ camp.gramPanchayat }}</td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="timeSlot{{ camp.id }}" id="slot1{{ camp.id }}" value="{{ camp.startTime }} - {{ camp.endTime }}" checked>
+                                        <label class="form-check-label" for="slot1{{ camp.id }}">
+                                            {{ camp.startTime }} - {{ camp.endTime }}
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="timeSlot{{ camp.id }}" id="slot2{{ camp.id }}" value="slot2">
+                                        <label class="form-check-label" for="slot2{{ camp.id }}">
+                                            {{ camp.startTime2 }} - {{ camp.endTime2 }}
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button style="color: white; background-color: red; border-radius:5px; border: none;" onclick="registerFunction('{{ camp.id }}')" id="register">Register</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No camps are currently available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function registerFunction(campId) {
+        var modal = document.getElementById("confirmationModal");
+        modal.style.display = "block";
+
+        document.getElementById("cancelButton").onclick = function() {
+            modal.style.display = "none";
+            window.location.reload();
+        };
+
+        document.getElementById("okButton").onclick = function() {
+            modal.style.display = "none";
+
+            // Create a form element
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "{% url 'confirmpage' %}";  // Update this URL to your actual confirmation page URL
+
+            // Add CSRF token
+            var csrfToken = document.createElement("input");
+            csrfToken.type = "hidden";
+            csrfToken.name = "csrfmiddlewaretoken";
+            csrfToken.value = "{{ csrf_token }}";
+            form.appendChild(csrfToken);
+
+            // Add input fields for the parameters
+            var campIdInput = document.createElement("input");
+            campIdInput.type = "hidden";
+            campIdInput.name = "camp_id";
+            campIdInput.value = campId;
+            form.appendChild(campIdInput);
+
+            var selectedSlot;
+
+            // Loop through the radio buttons for the current camp
+            var radioButtons = document.getElementsByName("timeSlot" + campId);
+
+            for (var i = 0; i < radioButtons.length; i++) {
+                if (radioButtons[i].checked) {
+                    selectedSlot = radioButtons[i].value;
+                    break;
+                }
+            }
+
+            // Add the selected slot to the form
+            var timeSlotInput = document.createElement("input");
+            timeSlotInput.type = "hidden";
+            timeSlotInput.name = "time_slot";
+            timeSlotInput.value = selectedSlot;  // Use the dynamically determined selected slot value
+            form.appendChild(timeSlotInput);
+
+            // Append the form to the document body and submit it
+            document.body.appendChild(form);
+            form.submit();
+        };
+    }
+</script>
+
+
+
+<!-- Bootstrap Modal HTML -->
+<div id="confirmationModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p>Are you sure you want to register?</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" id="cancelButton" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this to the end of your HTML file to include Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+{% endblock %}

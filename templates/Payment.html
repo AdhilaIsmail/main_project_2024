@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-top: 200px;
+           
+        }
+        .payment-success {
+            color: #D81324 ;
+            font-size: 36px;
+            text-align: center;
+        }
+        .confirmation-details {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        /* Add Bootstrap classes for styling */
+        .btn-payment {
+            background-color: #D81324;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="payment-container">
+            <h1 class="payment-success">Payment Confirmation</h1>
+            <div class="confirmation-details">
+                <h3 style="color:black;">........................Your Booking...........................</h3><br><br>                                                      
+                <div class="row">
+                    <div class="col">
+                        <p><strong>Payment Amount:</strong> {{ booking.selected_subsubcategory.price }}</p>
+                    </div>
+                    <div class="col">
+                        <p><strong>Date:</strong> {{ booking.appointment_date }}</p>
+                    </div>
+                </div>
+                <button class="btn btn-payment" id="pay-btn">Book Appointment</button>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- Razorpay's Javascript code. -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    // Enter the Key ID generated from the Dashboard
+    key: "{{ razorpay_merchant_key }}",
+    // Amount is in currency subunits.
+    // Default currency is INR. Hence,
+    // 50000 refers to 50000 paise
+    amount: "{{ razorpay_amount }}",
+    currency: "{{ currency }}",
+    // Your/store name.
+    name: "Dj Razorpay",
+    // Pass the `id` obtained in the response of Step 1
+    order_id: "{{ razorpay_order_id }}",
+    callback_url: "{{ callback_url }}",
+  };
+
+  // initialise razorpay with the options.
+  var rzp1 = new Razorpay(options);
+
+  // add event listener to the payment button.
+  document.getElementById("pay-btn").onclick = function (e) {
+    rzp1.open();
+    e.preventDefault();
+  };
+</script>
+</html>

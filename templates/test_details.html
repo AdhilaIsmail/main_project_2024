@@ -1,0 +1,101 @@
+<!-- test_details.html -->
+
+{% extends 'baselab.html' %}
+{% block content %}
+
+<style>
+    .test-details-box ul {
+        list-style: none;
+        padding: 0;
+        color:black;
+        font-weight: bold;
+        
+    }
+
+    .test-details-box .column {
+        float: left;
+        width: 20%; /* Adjust the width as needed */
+        padding: 0 15px; /* Adjust the padding as needed */
+        margin-right: 30px;
+    }
+
+    .test-details-box li {
+        text-indent: -0.4em; /* Adjust the text indent as needed */
+        margin-bottom: 1.4em; /* Add margin-bottom for spacing between items */
+    }
+
+    /* Add style to create space at the bottom */
+    .test-details-box::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* Adjust margin-bottom based on your needs */
+    .test-details-box {
+        margin-bottom: 50px;
+    }
+    
+    /* Adjust margin-bottom based on your needs for the book-now-button */
+    .book-now-button {
+        margin-bottom: 85px;
+    }
+
+    .test-details-box i {
+        color: #00CED1; /* Turquoise Blue */
+    }
+    .book-now-button {
+        display: block;
+        margin-top: 20px; /* Adjust margin-top as needed */
+
+        padding: 10px 15px;
+        background-color: #00CED1; /* Turquoise Blue */
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+        width:200px;
+    }
+</style>
+
+<div class="container">
+    <h2 class="text-center mb-5">Test Details</h2>
+    <div class="test-details-box">
+        <h3>{{ lab_test.test_name }}</h3>
+        <p style="font-weight: bold;">Price: ${{ lab_test.test_price }}</p>
+        <p style="font-weight: bold;">Package Details:</p>
+        <div class="column">
+            <ul>
+                {% for item in lab_test.package_details|slice:":5" %}
+                    <li><i class="far fa-check-circle"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- Add other columns for additional groups of 5 items -->
+        <!-- Repeat the block below for each group -->
+        <div class="column">
+            <ul>
+                {% for item in lab_test.package_details|slice:"5:10" %}
+                    <li><i class="far fa-check-circle"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- Add one more column -->
+        <div class="column">
+            <ul>
+                {% for item in lab_test.package_details|slice:"10:15" %}
+                    <li><i class="far fa-check-circle"></i> {{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+       
+        <!-- Add as many columns as needed -->
+        <!-- Add other details as needed -->
+    </div>
+    {% comment %} <a href="{% url 'book_now' lab_test.test_name lab_test.test_price %}" class="book-now-button">Book Now</a> {% endcomment %}
+    <a href="{% url 'book_now' test_name=lab_test.test_name test_price=lab_test.test_price %}" class="book-now-button">Book Now</a>
+
+
+</div>
+
+{% endblock %}

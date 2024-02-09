@@ -1,0 +1,232 @@
+{% load static %}
+<html lang="en">
+
+
+<!-- appointments23:19-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'mainuser/img/favicon.ico' %}">
+    <title>Medlab Blood Bank-Bookings</title>
+   
+    
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/select2.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/style.css' %}">
+	<script src="https://kit.fontawesome.com/044329719f.js" crossorigin="anonymous"></script>
+    <style>
+		body {
+            background-image: url("{% static 'img/9.jpg' %}"); /* Replace 'background.jpg' with your image file name */
+            background-repeat: no-repeat;
+            background-size: cover; /* You can adjust this property to control how the image is displayed */
+        }  
+		.sidebar {
+			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+			top: 50px;
+			width: 230px;
+			z-index: 1039;
+			background-color:#d1bebc;
+			bottom: 0;
+			margin-top: 10px;
+			position: fixed;
+			left: 0;
+			transition: all 0.2s ease-in-out;
+		}
+		.sidebar.opened {
+			-webkit-transition: all 0.4s ease;
+			-moz-transition: all 0.4s ease;
+			transition: all 0.4s ease;
+		}
+		.sidebar-inner {
+			height: 100%;
+			transition: all 0.2s ease-in-out 0s;
+		}
+		.sidebar-menu ul {
+			font-size: 14px;
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		.sidebar-menu li a {
+			color: white;
+			display: block;
+			font-size: 13px;
+			height: auto;
+			padding: 0 20px;
+		}
+		.sidebar-menu li a:hover {
+			color: #802020;
+		}
+		.sidebar-menu li.active a {
+			color: #802020;
+			background-color: #f3f3f3;
+		}
+		.menu-title {
+			color: #333;
+			font-size: 15px;
+			font-weight: 500;
+			padding: 12px 20px;
+		}
+		.menu-title > i {
+			float: right;
+			line-height: 40px;
+		}
+		.sidebar-menu li.menu-title a {
+			color: #009efb;
+			display: inline-block;
+			float: right;
+			padding: 0;
+		}
+		.sidebar-menu li.menu-title a.btn {
+			color: #fff;
+			display: block;
+			float: none;
+			font-size: 15px;
+			line-height: inherit;
+			margin-bottom: 15px;
+		}
+		.sidebar-menu ul ul a.active {
+			color: #009efb;
+			text-decoration: underline;
+		}
+	</style>   
+
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="header" style="background-color:white;height:60px;"> 
+			<div class="header-left">
+				<a href="{% url 'adminindex' %}" class="logo" style="color: black;">
+					<img src="{% static 'mainuser/img/logocopy.png' %}" width="75" height="40" alt="" style="margin-left:15px"> <span style="color: maroon;font-size: 20px;margin-top:10px; margin-left:-10px;white-space: nowrap;">Medlab Blood Bank</span>
+				</a>
+			</div>
+			<a id="toggle_btn" href="javascript:void(0);" style="color:#d69c98;margin-top:20px;margin-left:10px;"><i class="fa fa-bars"></i></a>
+            <a id="mobile_btn" class="mobile_btn float-left" href="#sidebar"><i class="fa fa-bars"></i></a>
+            <ul class="nav user-menu float-right">
+                
+                <li class="nav-item dropdown has-arrow">
+                    <a href="#" class="dropdown-toggle nav-link user-link" data-toggle="dropdown"style="color:maroon">
+                        
+						<span style="color:maroon;">Staff</span>
+                    </a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="{% url 'profile1' %}" style="color:maroon;">My Profile</a>
+						<a class="dropdown-item" href="{% url 'editprofile' %}" style="color:maroon;">Edit Profile</a>
+						
+						<a class="dropdown-item" href="{% url 'loggout' %}" style="color:maroon;">Logout</a>
+					</div>
+                </li>
+                
+            </ul> 
+            <div class="dropdown mobile-user-menu float-right">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'profile1' %}" style="color:maroon;">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'editprofile' %}" style="color:maroon;">Edit Profile</a>
+                  
+                    <a class="dropdown-item" href="{% url 'loggout' %}" style="color:maroon;">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">Menu</li>
+                        <li>
+                            <a href="{% url 'labstaffindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        </li>
+						<li  class="active">
+                            <a href="{% url 'labtestbookings' %}"><i class="fa fa-address-book-o"></i> <span>Bookings</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped custom-table">
+                                <thead>
+                                    <tr>
+                                        {% comment %} <th>Booking ID</th> {% endcomment %}
+                                        <th>Patient Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Gender</th>
+                                        <th>Date of Birth</th>
+                                        <th>Test Name</th>
+                                        <th>Booked Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                        <tr>
+                                            {% comment %} <td>{{ appointment.id }}</td> {% endcomment %}
+                                            <td>{{ appointment.patient.full_name }}</td>
+                                            <td>{{ appointment.patient.email }}</td>
+                                            <td>{{ appointment.patient.phone }}</td>
+                                            <td>{{ appointment.patient.address }}</td>
+                                            <td>{{ appointment.patient.gender }}</td>
+                                            <td>{{ appointment.patient.date_of_birth }}</td>
+                                            <td>{{ appointment.patient.selected_test.test_name }}</td>
+                                            <td>{{ appointment.booked_date }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+			<div id="delete_appointment" class="modal fade delete-modal" role="dialog">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-body text-center">
+							<img src="{% static 'mainuser/img/user.jpg' %}" alt="" width="50" height="46">
+							<h3>Are you sure want to delete this Appointment?</h3>
+							<div class="m-t-20"> <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
+								<button type="submit" class="btn btn-danger">Delete</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+    <div class="sidebar-overlay" data-reff=""></div>
+    
+    
+    
+    
+
+    <script src="{% static 'mainuser/js/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'mainuser/js/popper.min.js' %}"></script>
+    <script src="{% static 'mainuser/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'mainuser/js/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'mainuser/js/select2.min.js' %}"></script>
+    <script src="{% static 'mainuser/js/app.js' %}"></script>
+
+	<script>
+            $(function () {
+                $('#datetimepicker3').datetimepicker({
+                    format: 'LT'
+                });
+				$('#datetimepicker4').datetimepicker({
+                    format: 'LT'
+                });
+            });
+     </script>
+</body>
+
+
+<!-- appointments23:20-->
+</html>

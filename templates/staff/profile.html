@@ -1,0 +1,253 @@
+{% load static %}
+<html lang="en">
+
+
+<!-- profile22:59-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'staff/img/favicon.ico' %}">
+    <title>Medlab Blood Bank</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/style.css' %}">
+    
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="header" style="background-color:white;height:60px;"> 
+			<div class="header-left">
+				<a href="{% url 'staffindex' %}" class="logo" style="color: black;">
+					<img src="{% static 'mainuser/img/logocopy.png' %}" width="75" height="40" alt="" style="margin-left:15px"> <span style="color: maroon;font-size: 20px;margin-top:10px; margin-left:-10px;white-space: nowrap;">Medlab Blood Bank</span>
+				</a>
+			</div>
+			<a id="toggle_btn" href="javascript:void(0);" style="color:#d69c98;margin-top:20px;margin-left:10px;"><i class="fa fa-bars"></i></a>
+            <a id="mobile_btn" class="mobile_btn float-left" href="#sidebar"><i class="fa fa-bars"></i></a>
+            <ul class="nav user-menu float-right">
+                
+                <li class="nav-item dropdown has-arrow">
+                    <a href="#" class="dropdown-toggle nav-link user-link" data-toggle="dropdown" style="color:maroon">
+                        
+                        <span style="color:maroon">Staff</span>
+                    </a>
+					<div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+                        <a class="dropdown-item" href="{% url 'editprofile' %}">Edit Profile</a>
+                       
+                        <a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
+					</div>
+                </li>
+            </ul>
+            <div class="dropdown mobile-user-menu float-right">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'editprofile' %}">Edit Profile</a>
+                   
+                    <a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">Menu</li>
+                        <li class="active">
+                            <a href="{% url 'staffindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        </li>
+						<li>
+                            <a href="{% url 'donorsstaff' %}"><i class="fa fa-users"></i> <span>Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'registereddonortablestaff' %}"><i class="fa fa-registered"></i> <span>Registered Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'bloodbankcamps' %}"><i class="fa fa-hospital-o"></i> <span>Schedule Camps</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'donorappointments' %}"><i class="fa fa-list-alt"></i> <span>View Appointements</span></a>
+                        </li>
+						
+						<li>
+                            <a href="{% url 'bloodinventorystaff' %}"><i class="fa fa-tint"></i> <span>Blood Inventory</span></a>
+                        </li>
+						<li class="submenu">
+							<a href="#"><i class="fa fa-user"></i> <span>Staffs </span> <span class="menu-arrow"></span></a>
+							<ul style="display: none;">
+								<li><a href="{% url 'stafflist' %}">Staffs List</a></li>
+							</ul>
+						</li> 
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <div class="content">
+                <div class="row">
+                    <div class="col-sm-7 col-6">
+                        <h4 class="page-title">My Profile</h4>
+                    </div>
+
+                    <div class="col-sm-5 col-6 text-right m-b-30">
+                        
+                    </div>
+                </div>
+                <div class="card-box profile-header">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="profile-view">
+                                <div class="profile-img-wrap">
+                                    <div class="profile-img">
+                                        <a href="#"><img class="avatar" src="{% static 'staff/img/doctor-03.jpg' %}" alt=""></a>
+                                    </div>
+                                </div>
+                                <div class="profile-basic">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="profile-info-left">
+                                                <h3 class="user-name m-t-0 mb-0">Cristina Groves</h3>
+                                                <small class="text-muted">Gynecologist</small>
+                                                <div class="staff-id">Employee ID : DR-0001</div>
+                                                <div class="staff-msg"><a href="chat.html" class="btn btn-primary">Send Message</a></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <ul class="personal-info">
+                                                <li>
+                                                    <span class="title">Phone:</span>
+                                                    <span class="text"><a href="#">770-889-6484</a></span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Email:</span>
+                                                    <span class="text"><a href="#">cristinagroves@example.com</a></span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Birthday:</span>
+                                                    <span class="text">3rd March</span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Address:</span>
+                                                    <span class="text">714 Burwell Heights Road, Bridge City, TX, 77611</span>
+                                                </li>
+                                                <li>
+                                                    <span class="title">Gender:</span>
+                                                    <span class="text">Female</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+                </div>
+				<div class="profile-tabs">
+					<ul class="nav nav-tabs nav-tabs-bottom">
+						<li class="nav-item"><a class="nav-link active" href="#about-cont" data-toggle="tab">About</a></li>
+						<li class="nav-item"><a class="nav-link" href="#bottom-tab2" data-toggle="tab">Profile</a></li>
+						<li class="nav-item"><a class="nav-link" href="#bottom-tab3" data-toggle="tab">Messages</a></li>
+					</ul>
+
+					<div class="tab-content">
+						<div class="tab-pane show active" id="about-cont">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card-box">
+                            <h3 class="card-title">Education Informations</h3>
+                            <div class="experience-box">
+                                <ul class="experience-list">
+                                    <li>
+                                        <div class="experience-user">
+                                            <div class="before-circle"></div>
+                                        </div>
+                                        <div class="experience-content">
+                                            <div class="timeline-content">
+                                                <a href="#/" class="name">International College of Medical Science (UG)</a>
+                                                <div>MBBS</div>
+                                                <span class="time">2001 - 2003</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="experience-user">
+                                            <div class="before-circle"></div>
+                                        </div>
+                                        <div class="experience-content">
+                                            <div class="timeline-content">
+                                                <a href="#/" class="name">International College of Medical Science (PG)</a>
+                                                <div>MD - Obstetrics & Gynaecology</div>
+                                                <span class="time">1997 - 2001</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-box mb-0">
+                            <h3 class="card-title">Experience</h3>
+                            <div class="experience-box">
+                                <ul class="experience-list">
+                                    <li>
+                                        <div class="experience-user">
+                                            <div class="before-circle"></div>
+                                        </div>
+                                        <div class="experience-content">
+                                            <div class="timeline-content">
+                                                <a href="#/" class="name">Consultant Gynecologist</a>
+                                                <span class="time">Jan 2014 - Present (4 years 8 months)</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="experience-user">
+                                            <div class="before-circle"></div>
+                                        </div>
+                                        <div class="experience-content">
+                                            <div class="timeline-content">
+                                                <a href="#/" class="name">Consultant Gynecologist</a>
+                                                <span class="time">Jan 2009 - Present (6 years 1 month)</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="experience-user">
+                                            <div class="before-circle"></div>
+                                        </div>
+                                        <div class="experience-content">
+                                            <div class="timeline-content">
+                                                <a href="#/" class="name">Consultant Gynecologist</a>
+                                                <span class="time">Jan 2004 - Present (5 years 2 months)</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+						</div>
+						<div class="tab-pane" id="bottom-tab2">
+							Tab content 2
+						</div>
+						<div class="tab-pane" id="bottom-tab3">
+							Tab content 3
+						</div>
+					</div>
+				</div> 
+            </div>
+            
+        </div>
+    </div>
+    <div class="sidebar-overlay" data-reff=""></div>
+    <script src="{% static 'staff/js/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'staff/js/popper.min.js' %}"></script>
+    <script src="{% static 'staff/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'staff/js/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'staff/js/app.js' %}"></script>
+</body>
+
+
+
+</html>

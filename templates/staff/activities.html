@@ -1,0 +1,136 @@
+{% load static %}
+<html lang="en">
+
+<!-- activities22:59-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'staff/img/favicon.ico' %}">
+    <title>Medlab Blood Bank</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/style.css' %}">
+   
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="header">
+			<div class="header-left">
+				<a href="{% url 'staffindex' %}" class="logo">
+					<img src="{% static 'staff/img/logocopy.png' %}" width="35" height="35" alt=""> <span>Medlab Blood Bank</span>
+				</a>
+			</div>
+			<a id="toggle_btn" href="javascript:void(0);"><i class="fa fa-bars"></i></a>
+            <a id="mobile_btn" class="mobile_btn float-left" href="#sidebar"><i class="fa fa-bars"></i></a>
+            <ul class="nav user-menu float-right">
+                
+                <li class="nav-item dropdown has-arrow">
+                    <a href="#" class="dropdown-toggle nav-link user-link" data-toggle="dropdown" style="color:maroon">
+                       
+                        <span style="color:maroon">Staff</span>
+                    </a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="{% url 'profile1' %}">My Profile</a>
+						<a class="dropdown-item" href="{% url 'editprofile' %}">Edit Profile</a>
+						
+						<a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
+					</div>
+                </li>
+            </ul>
+            <div class="dropdown mobile-user-menu float-right">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'profile1' %}">My Profile</a>
+					<a class="dropdown-item" href="{% url 'editprofile' %}">Edit Profile</a>
+					
+					<a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">Menu</li>
+                        <li class="active">
+                            <a href="{% url 'staffindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        </li>
+						<li>
+                            <a href="{% url 'donorsstaff' %}"><i class="fa fa-users"></i> <span>Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'registereddonortablestaff' %}"><i class="fa fa-registered"></i> <span>Registered Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'bloodbankcamps' %}"><i class="fa fa-hospital-o"></i> <span>Schedule Camps</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'donorappointments' %}"><i class="fa fa-list-alt"></i> <span>View Appointements</span></a>
+                        </li>
+						
+						<li>
+                            <a href="{% url 'bloodinventorystaff' %}"><i class="fa fa-tint"></i> <span>Blood Inventory</span></a>
+                        </li>
+						<li class="submenu">
+							<a href="#"><i class="fa fa-user"></i> <span>Staffs </span> <span class="menu-arrow"></span></a>
+							<ul style="display: none;">
+								<li><a href="{% url 'stafflist' %}">Staffs List</a></li>
+							</ul>
+						</li> 
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <div class="content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">Activities</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="activity">
+                            <div class="activity-box">
+                                <ul class="activity-list">
+                                    
+                                    <li>
+                                        <div class="activity-user">
+                                            <a href="{% url 'profile1' %}" class="avatar" title="Jeffery Lalor" data-toggle="tooltip">L</a>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="timeline-content">
+                                                <a href="{% url 'profile' %}" class="name">Jeffery Lalor</a> added <a href="{% url 'profile' %}" class="name">Loren Gatlin</a> and <a href="profile.html" class="name">Tarah Shropshire</a> to project <a href="#">Patient appointment booking</a>
+                                                <span class="time">6 mins ago</span>
+                                            </div>
+                                        </div>
+										<a class="activity-delete" href="#" title="Delete">&times;</a>
+                                    </li>
+                                    
+                                    
+                                    
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="sidebar-overlay" data-reff=""></div>
+    
+
+    <script src="{% static 'staff/js/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'staff/js/popper.min.js' %}"></script>
+    <script src="{% static 'staff/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'staff/js/jquery.slimscroll.js' %}"></script>
+    
+    <script src="{% static 'staff/js/app.js' %}"></script>
+</body>
+
+
+
+</html>

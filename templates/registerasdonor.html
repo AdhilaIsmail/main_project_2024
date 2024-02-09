@@ -1,0 +1,350 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Medlab Blood Bank</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'lib/twentytwenty/twentytwenty.css' %}" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    
+<style>
+    .autocomplete {
+        position: relative;
+      }
+      
+      #placeSelect {
+        position: absolute;
+        width: 100%;
+        z-index: 1;
+        display: none;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: white;
+      }
+      
+      #placeSelect option {
+        padding: 5px;
+        cursor: pointer;
+      }
+      
+      #placeSelect option:hover {
+        background-color: #f2f2f2;
+      }
+      
+</style>
+</head>
+
+<body>
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
+        <a href="index.html" class="navbar-brand p-0">
+            <h4 class="m-0 text-danger"><img height="40px" width="70px" src="{% static 'img/logo.png' %}">Medlab Blood Bank</h4>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="{% url 'homebloodbank' %}" class="nav-item nav-link ">Home</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'registerasdonor' %}" class="nav-item nav-link">Donate Blood</a>
+                <a href="{% url 'campschedulesfordonor' %}" class="nav-item nav-link">Appointment</a>
+                {% endif %}
+                <a href="{% url 'about' %}" class="nav-item nav-link">About Us</a>
+                <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                {% if user.is_authenticated %}
+                <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a>
+                <a href="#" class="nav-item nav-link">{{user.email}}</a>
+                {% endif %}
+                
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Full Screen Search Start -->
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(192, 109, 109, 0.7);">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center">
+                    <div class="input-group" style="max-width: 600px;">
+                        <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
+                        <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Screen Search End -->
+   
+    <div class="container-fluid p-0">
+        <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="w-100" src="{% static 'img/bg22.jpg' %}" alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 900px;">
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Revolutionizing Healthcare</h5>
+                            <!-- <h4 class="display-1 text-white mb-md-4 animated zoomIn">Unifying Blood Bank and Laboratory Services for Enhanced Patient Care</h4> -->
+                            <form  method="post"  action="{% url 'register_donor' %}"class="animated slideInUp" id="registrationForm" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" name="full_name" placeholder="Full Name" required>
+                                    <div class="error" data-error-for="full_name"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" name="email" placeholder="Email Address" value="{{ user.email }}" required readonly>
+                                    <div class="error" data-error-for="email"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="tel" class="form-control" name="phone" placeholder="Phone Number" value="{{ user.phone }}" required readonly>
+                                    <div class="error" data-error-for="phone"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" name="blood_group" placeholder="Blood Group" required>
+                                    <div class="error" data-error-for="blood_group"></div>
+                                </div>
+                                
+
+                                <div class="autocomplete">
+                                    <input type="text" class="form-control" name="place" id="placeInput" placeholder="Place" required>
+                                    <select class="form-control" name="place" id="placeSelect" style="display: none;" required>
+                                        <option value="" disabled selected>Select a Place</option>
+                                    </select>
+                                </div>
+                               
+                               
+                                
+                                <div class="mb-3">
+                                    <label for="idProof" class="form-label">ID Proof (Image Only)</label>
+                                    <input type="file" class="form-control" name="id_proof" id="idProof" accept="image/*">
+                                    <div class="error" data-error-for="id_proof"></div>
+                                </div>
+
+                                <div class="error" data-error-for="place"></div>
+                                    <input type="hidden" name="new_role" value="{{ user.REGISTERED_DONOR }}">
+                                    <button type="submit"  id="submitButton" class="btn btn-danger py-md-3 px-md-5 me-3">Register as Donor</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light py-5 wow fadeInUp" data-wow-delay="0.3s" style="margin-top: -75px;">
+        <div class="container pt-5">
+            <div class="row g-5 pt-4">
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="text-white mb-4">Quick Links</h3>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                        <!-- <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a> -->
+                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="text-white mb-4">Popular Links</h3>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                        {% comment %} <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a> {% endcomment %}
+                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="text-white mb-4">Get In Touch</h3>
+                    <p class="mb-2"><i class="bi bi-geo-alt text-primary me-2"></i>123 Street, New York, USA</p>
+                    <p class="mb-2"><i class="bi bi-envelope-open text-primary me-2"></i>info@example.com</p>
+                    <p class="mb-0"><i class="bi bi-telephone text-primary me-2"></i>+012 345 67890</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid text-light py-4" style="background: #051225;">
+        <div class="container">
+            <div class="row g-0">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-md-0">&copy; <a class="text-white border-bottom" href="#">Medlab Blood Bank</a>. All Rights Reserved.</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    <script>
+        const registrationForm = document.getElementById('registrationForm');
+    
+        registrationForm.addEventListener('keyup', function (event) {
+            if (event.target.tagName === 'INPUT') {
+                validateInput(event.target);
+            }
+        });
+    
+        function validateInput(input) {
+            const inputValue = input.value.trim();
+            const fieldName = input.getAttribute('name');
+            const errorElement = document.querySelector(`[data-error-for="${fieldName}"]`);
+    
+            if (inputValue === '') {
+                errorElement.textContent = 'This field is required.';
+            } else {
+                errorElement.textContent = '';
+            }
+    
+            // Add specific validation for each field
+            switch (fieldName) {
+                case 'full_name':
+                    // Check if full name contains only letters and spaces
+                    if (!/^[A-Za-z\s]+$/.test(inputValue)) {
+                        errorElement.textContent = 'Full Name must contain only letters and spaces.';
+                    }
+                    break;
+                case 'email':
+                    // Check if email format is valid
+                    if (!/\S+@\S+\.\S+/.test(inputValue)) {
+                        errorElement.textContent = 'Invalid Email Address.';
+                    }
+                    break;
+                case 'phone':
+                    // Check if phone number contains only digits
+                    if (!/^\d+$/.test(inputValue)) {
+                        errorElement.textContent = 'Phone Number must contain only digits.';
+                    }
+                    break;
+                case 'blood_group':
+                    // Check if blood group format is valid (e.g., A+, AB-, etc.)
+                    if (!/^(A|B|AB|O)[+-]$/.test(inputValue)) {
+                        errorElement.textContent = 'Invalid Blood Group format.';
+                    }
+                    break;
+                case 'Place':
+                    // Example: Check if place contains only letters and spaces
+                    if (!/^[A-Za-z\s]+$/.test(inputValue)) {
+                        errorElement.textContent = 'Place must contain only letters and spaces.';
+                    }
+                    break;
+                // Add validation for other fields similarly
+            }
+        }
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const placeInput = document.getElementById('placeInput');
+            const placeSelect = document.getElementById('placeSelect');
+            const submitButton = document.getElementById('submitButton');
+            const kottayamPlaces = ["Achickal","Akalakunnam","Amalagiri","Amayannoor","Amparanirappel","Anchery","Andoor","Anicad (Kottayam)","Anthinad","Anthiyalam","Areekara","Arpookara","Arpookara Panchayat","Arumanoor","Athirampuzha","Ayamkudy","Ayarkunnam","Aymanam","Bharananganam","Champakara","Changanassery(Kottayam)","Chanjody","Cheeranchira","Chemmalamattam","Chemmanathukara","Chempu","Chenappady","Chengalam","Chengalam East","Chengalam South","Chennadu","Cherpunkal","Cheruvally","Chethipuzha","Chingavanam","Chirakkadavu","Cholathadam","Choondacherry","Edakadathy","Edakkunnam","Edamattom","Edayirikapuzha","Elackad","Elamgulam","Elamkadu","Elappunkal","Elikkulam","Eravinalloor","Erumeli North","Erumeli South","Erumely","Ilaveezha Poonchira","Inchiyani","Kadanad","Kadaplamattom","Kadappoor","Kadayanickadu","Kaduthuruthy","Kaduthuruthy Mannar","Kaipuzha","Kalaketty","Kalathukadavu","Kalikave","Kallara","Kanakkary","Kanam (Kerala)","Kanamala","Kangazha","Kanjikkuzhi","Kanjirathanam","Kappumthala","Karimpany","Karukachal","Katappattor","Keezhoor","Kezhuvamkulam","Kidangoor","Kizhaparayar","Kochu Road","Kodungoor","Kollappally","Kondoor","Koodalloor","Koorali","Kooroppada","Koothrapally","Koottickal","Koovappally","Koruthodu","Kothala","Kothanalloor","Kozhikombu","Kozhuvanal","Kudakkachira","Kulasekharamangalam","Kumarakom","Kumaranalloor","Kummanam","Kunnonny","Kuravilangad","Kurichithanam","Kurichy","Kurumulloor","Kuruvamoozhy","Kuzhimattom","Lakkattoor","Lalam","Madappally(Kottayam)","Madathiparambu","Madukka","Mallikassery","Malloossery","Mammood","Mampathy","Manathoor","Manimala","Manjoor(village)","Mannakkanad","Marangattupilly","Marangoly","Maravanthuruthu","Mathumoola","Mattakkara","Mattathippara","Meenachil","Meenachil(Kottayam)","Meenadam","Melukavu","Memury","Monippally","Moonilavu","Moscow, India","Mukkoottuthara","Mulakulam","Mundakayam","Mundathanam","Mutholy","Muttampalam","Muttuchira","Naduvile","Narianganam","Nedumkunnam","Nedungadappally","Neeloor","Neendoor","Nellithanathumala","Njeezhoor","North Kuttanad","Paika","Paippad","Palackattumala","Pallickathodu","Pallom","Panachikkad","Panackapalam","Panakkachira","Panamattom","Pandavam","Panthathala","Parakal","Parathodu","Pathampuzha","Pathamuttom","Pattithanam","Payyappaddy","Peroor","Perumbaikad","Perumpanachy","Perunilam","Perunna","Peruva","Pinnakkanadu","Pizhaku","Plassanal","Podimattom","Poonjar","Poovarany","Poozhikol","Pothanpuram","Pothy","Puliyannoor","Punchavayal","Puthuvely","Puzhavathu","Sreekandamangalam","Teekoy","Thalanadu","Thalappalam","Thalayazham","Thalayolaparambu","Thampalakad","Thengana","Thiruvarppu","Thottackad","Thrikkodithanam","Ullanadu","Urulikunnam","Uzhavoor","Vadakkemuri","Vadayar","Vagamon","Vakathanam","Valavoor","Vallakam","Vallichira","Vandanpathal","Vayala","Vazhappally","Vazhappally Padinjaru","Vazhoor","Vechoor","Vedhagiri","Veliyannoor","Vellavoor","Vellilappally","Velloor","Veloor(Kottayam)","Veroor","Vettikkattumukku","Vijayapuram Grama Panchayat", "Villoonni","Vizhikkithodu","Yendayar"]; // Sample place data
+    
+            // Function to populate the hidden select element with options
+            function populateDropdown(optionsArray) {
+                optionsArray.forEach(place => {
+                    const option = document.createElement('option');
+                    option.value = place;
+                    option.textContent = place;
+                    placeSelect.appendChild(option);
+                });
+            }
+    
+            // Call the function to populate the hidden select element with your place data
+            populateDropdown(kottayamPlaces);
+    
+            // Function to show suggestions based on user input
+            function showSuggestions(input) {
+                const inputValue = input.value.toLowerCase();
+                placeSelect.innerHTML = ''; // Clear previous suggestions
+    
+                if (inputValue.length > 0) {
+                    const suggestions = kottayamPlaces.filter(place => place.toLowerCase().startsWith(inputValue));
+                    suggestions.forEach(suggestion => {
+                        const option = document.createElement('option');
+                        option.value = suggestion;
+                        option.textContent = suggestion;
+                        placeSelect.appendChild(option);
+                    });
+    
+                    if (suggestions.length > 0) {
+                        placeSelect.style.display = 'block'; // Show the dropdown
+                    } else {
+                        placeSelect.style.display = 'none'; // Hide the dropdown if no suggestions
+                    }
+                } else {
+                    placeSelect.style.display = 'none'; // Hide the dropdown if input is empty
+                }
+            }
+    
+            placeInput.addEventListener('input', () => {
+                showSuggestions(placeInput);
+            });
+    
+            placeInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    placeSelect.style.display = 'none'; // Hide the dropdown when input field loses focus
+                }, 200);
+            });
+    
+            submitButton.addEventListener('click', () => {
+                // Check if the selected value in the hidden select is not empty
+                if (placeSelect.value === "") {
+                    alert("Please select a valid place from the list.");
+                    return false; // Prevent form submission if validation fails
+                }
+            });
+        });
+    </script>
+    
+        
+     <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="{% static 'lib/twentytwenty/jquery.event.move.js' %}"></script>
+    <script src="{% static 'lib/twentytwenty/jquery.twentytwenty.js' %}"></script>
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

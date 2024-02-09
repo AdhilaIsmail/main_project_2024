@@ -1,0 +1,512 @@
+{% load static %}
+<html lang="en">
+
+
+<!-- departments23:21-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'staff/img/favicon.ico' %}">
+    <title>Medlab Blood Bank</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'staff/css/style.css' %}">
+    <style>
+        body {
+            background-image: url("{% static 'img/9.jpg' %}"); /* Replace 'background.jpg' with your image file name */
+            background-repeat: no-repeat;
+            background-size: cover; /* You can adjust this property to control how the image is displayed */
+        }
+		
+		.sidebar {
+			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+			top: 50px;
+			width: 230px;
+			z-index: 1039;
+			background-color:#d1bebc;
+			bottom: 0;
+			margin-top: 10px;
+			position: fixed;
+			left: 0;
+			transition: all 0.2s ease-in-out;
+		}
+		.sidebar.opened {
+			-webkit-transition: all 0.4s ease;
+			-moz-transition: all 0.4s ease;
+			transition: all 0.4s ease;
+		}
+		.sidebar-inner {
+			height: 100%;
+			transition: all 0.2s ease-in-out 0s;
+		}
+		.sidebar-menu ul {
+			font-size: 14px;
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		.sidebar-menu li a {
+			color: white;
+			display: block;
+			font-size: 13px;
+			height: auto;
+			padding: 0 20px;
+		}
+		.sidebar-menu li a:hover {
+			color: #802020;
+		}
+		.sidebar-menu li.active a {
+			color: #802020;
+			background-color: #f3f3f3;
+		}
+		.menu-title {
+			color: #333;
+			font-size: 15px;
+			font-weight: 500;
+			padding: 12px 20px;
+		}
+		.menu-title > i {
+			float: right;
+			line-height: 40px;
+		}
+		.sidebar-menu li.menu-title a {
+			color: #009efb;
+			display: inline-block;
+			float: right;
+			padding: 0;
+		}
+		.sidebar-menu li.menu-title a.btn {
+			color: #fff;
+			display: block;
+			float: none;
+			font-size: 15px;
+			line-height: inherit;
+			margin-bottom: 15px;
+		}
+		.sidebar-menu ul ul a.active {
+			color: #009efb;
+			text-decoration: underline;
+		}
+        .top-right-button {
+            position: absolute;
+            top: -50px;
+            right: -170px;
+        }
+    </style>   
+    {% comment %} <script>
+        function populateGramPanchayats() {
+          var gramPanchayatSelect = document.getElementById('gramPanchayat');
+          gramPanchayatSelect.innerHTML = '<option value="" selected disabled>Select a Gram Panchayat</option>';
+      
+          fetch('{% url "get_gram_panchayats" %}')
+            .then(response => response.json())
+            .then(data => {
+              data.forEach(panchayat => {
+                var option = document.createElement('option');
+                option.value = panchayat.name_of_grampanchayat;
+                option.text = panchayat.name_of_grampanchayat;
+                gramPanchayatSelect.add(option);
+              });
+            });
+        }
+      
+        // Call the function when the page is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+          populateGramPanchayats();
+        });
+      </script> {% endcomment %}
+      <script>
+        function populateGramPanchayats(assignedPanchayats) {
+            var gramPanchayatSelect = document.getElementById('gramPanchayat');
+            gramPanchayatSelect.innerHTML = '<option value="" selected disabled>Select a Gram Panchayat</option>';
+    
+            assignedPanchayats.forEach(panchayat => {
+                var option = document.createElement('option');
+                option.value = panchayat.name_of_grampanchayat;  // Use the correct variable name 'panchayat'
+                option.text = panchayat.name_of_grampanchayat;
+                gramPanchayatSelect.add(option);
+            });
+        }
+    
+        // Fetch the assigned Gram Panchayats
+        fetch('{% url "get_assigned_gram_panchayats" %}')
+            .then(response => response.json())
+            .then(data => {
+                // Call the function with the assigned Gram Panchayats
+                populateGramPanchayats(data);
+            });
+    </script>
+    
+    
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="header" style="background-color:white;height:60px;"> 
+			<div class="header-left">
+				<a href="{% url 'staffindex' %}" class="logo" style="color: black;">
+					<img src="{% static 'mainuser/img/logocopy.png' %}" width="75" height="40" alt="" style="margin-left:15px"> <span style="color: maroon;font-size: 20px;margin-top:10px; margin-left:-10px;white-space: nowrap;">Medlab Blood Bank</span>
+				</a>
+			</div>
+			<a id="toggle_btn" href="javascript:void(0);" style="color:#d69c98;margin-top:20px;margin-left:10px;"><i class="fa fa-bars"></i></a>
+            <a id="mobile_btn" class="mobile_btn float-left" href="#sidebar"><i class="fa fa-bars"></i></a>
+            <ul class="nav user-menu float-right">
+                
+                <li class="nav-item dropdown has-arrow">
+                    <a href="#" class="dropdown-toggle nav-link user-link" data-toggle="dropdown" style="color:maroon">
+                       
+                        <span style="color:maroon;">Staff</span>
+                    </a>
+					<div class="dropdown-menu">
+                        
+                      
+                        <a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
+					</div>
+                </li>
+            </ul>
+            <div class="dropdown mobile-user-menu float-right">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'profile1' %}">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'editprofile' %}">Edit Profile</a>
+                   
+                    <a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">Menu</li>
+                        <li>
+                            <a href="{% url 'staffindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        </li>
+						<li>
+                            <a href="{% url 'donorsstaff' %}"><i class="fa fa-users"></i> <span>Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'registereddonortablestaff' %}"><i class="fa fa-registered"></i> <span>Registered Donors</span></a>
+                        </li>
+                        <li  class="active">
+                            <a href="{% url 'bloodbankcamps' %}"><i class="fa fa-hospital-o"></i> <span>Schedule Camps</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'donorappointments' %}"><i class="fa fa-list-alt"></i> <span>View Appointements</span></a>
+                        </li>
+						
+						<li>
+                            <a href="{% url 'bloodinventorystaff' %}"><i class="fa fa-tint"></i> <span>Blood Inventory</span></a>
+                        </li>
+						<li class="submenu">
+							<a href="#"><i class="fa fa-user"></i> <span>Staffs </span> <span class="menu-arrow"></span></a>
+							<ul style="display: none;">
+								<li><a href="{% url 'stafflist' %}">Staffs List</a></li>
+							</ul>
+						</li> 
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="page-title" id="bloodbankcamp">Blood Bank Camp Schedule</h4>
+                            <!-- Add the button for viewing registered hospitals -->
+                       
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <a href="{% url 'view_camp_schedules' %}" class="btn btn-info top-right-button">View Camp Schedules</a>
+
+                        <form action="{% url 'create_blood_camp' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Date <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="date" name="campDate" id="campDate" required>
+                                        <p id="dateError" style="color: red;"></p>  <!-- Error message container -->
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Camp Name <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" name="campName" id="campName" required>
+                                        <p id="nameError" style="color: red;"></p>  <!-- Error message container -->
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Address <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" name="campAddress" rows="2" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>District <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" name="campDistrict"  value="Kottayam" readonly required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Contact <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="tel" name="campContact" value="{{ request.user.staff.user.phone }}" readonly required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Conducted By <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" name="conductedBy"value="Medlab Blood Bank" readonly required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Organized by <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" name="organizedBy" value="{{ request.user.staff.name }}" readonly required>
+                                    </div>
+                                </div>
+                               
+                                 <div class="col-sm-6">
+                                    <div class="form-group">
+                                      <label for="gramPanchayat">Gram Panchayat <span class="text-danger">*</span></label>
+                                      <select class="form-control" name="gramPanchayat" id="gramPanchayat" required>
+                                      </select>
+                                    </div>
+                                  </div>
+                                
+                                
+                                <div class="col-sm-6">
+                               
+                                    <div class="form-group">
+                                        <label>Start Time <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="time" name="startTime" id="startTime"required>
+                                        <p id="startTimeError" style="color: red;"></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>End Time <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="time" name="endTime" id="endTime"required>
+                                        <p id="timeError" style="color: red;"></p>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Start Time 2 <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="time" name="startTime2" id="startTime2" required>
+                                        <p id="startTimeError2" style="color: red;"></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>End Time 2 <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="time" name="endTime2" id="endTime2" required>
+                                        <p id="timeError2" style="color: red;"></p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                            
+                            <div class="m-t-20 text-center">
+                                <button class="btn btn-primary submit-btn" id="createhospital">Schedule</button>
+                            </div>
+                            <script>
+                                document.getElementById('campDate').addEventListener('input', function () {
+                                    const selectedDate = new Date(this.value);
+                                    const errorContainer = document.getElementById('dateError');
+                        
+                                    if (selectedDate.getDay() !== 0) {
+                                        errorContainer.textContent = 'Please select a Sunday.';
+                                        this.setCustomValidity('Invalid');  // Set a custom validity to trigger the browser's validation
+                                    } else {
+                                        errorContainer.textContent = '';  // Clear the error message
+                                        this.setCustomValidity('');  // Reset the custom validity
+                                    }
+                                });
+                            </script>
+                            
+                            
+                            <script>
+                                document.getElementById('campName').addEventListener('input', function () {
+                                    const nameValue = this.value;
+                                    const errorContainer = document.getElementById('nameError');
+                            
+                                    if (!/^[a-zA-Z\s]+$/.test(nameValue)) {
+                                        errorContainer.textContent = 'Camp Name should only contain alphabets and white spaces.';
+                                        this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
+                                    } else {
+                                        errorContainer.textContent = ''; // Clear the error message
+                                        this.setCustomValidity(''); // Reset the custom validity
+                                    }
+                                });
+                            </script>
+                            
+                            <script>
+                                document.getElementById('startTime').addEventListener('input', function () {
+                                    const startTimeValue = this.value;
+                                    const errorContainerend = document.getElementById('timeError');
+                                    const errorContainerstart = document.getElementById('startTimeError');
+                            
+                                    // Construct Date object using the current date and selected start time
+                                    const currentDate = new Date();
+                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
+                            
+                                    // Check if the start time is greater than 9 AM
+                                    if (startTime.getHours() < 9) {
+                                        errorContainerstart.textContent = 'Start Time should be greater than 9 AM.';
+                                        //this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
+                                    } else {
+                                        // Calculate end time as start time + 2 hours
+                                        const endTime = new Date(startTime.getTime() + (2 * 60 * 60 * 1000)); // 2 hours in milliseconds
+                            
+                                        // Format the calculated end time as HH:mm
+                                        const formattedEndTime = endTime.toISOString().substr(11, 5);
+                            
+                                        // Set the calculated end time in the End Time field
+                                        document.getElementById('endTime').value = formattedEndTime;
+                            
+                                        // Clear the error message and reset the custom validity
+                                        errorContainer.textContent = '';
+                                        document.getElementById('endTime').setCustomValidity('');
+                                    }
+                                });
+                            
+                                document.getElementById('endTime').addEventListener('input', function () {
+                                    const startTimeValue = document.getElementById('startTime').value;
+                                    const endTimeValue = this.value;
+                                    const errorContainer = document.getElementById('timeError');
+                            
+                                    // Construct Date objects using the current date and selected start/end times
+                                    const currentDate = new Date();
+                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
+                                    const endTime = new Date(`${currentDate.toISOString().split('T')[0]}T${endTimeValue}Z`);
+                            
+                                    if (endTime < startTime) {
+                                        errorContainer.textContent = 'End Time should not be less than Start Time.';
+                                        this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
+                                    } 
+                                });
+                            </script>
+                            
+                            <script>
+                                document.getElementById('startTime').addEventListener('input', function () {
+                                    const startTimeValue = this.value;
+                                    const errorContainer = document.getElementById('startTimeError');
+                            
+                                    // Construct Date object using the current date and selected start time
+                                    const currentDate = new Date();
+                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
+                            
+                                    // Check if start time is before 9 am
+                                    const nineAm = new Date(`${currentDate.toISOString().split('T')[0]}T09:00:00Z`);
+                                    if (startTime < nineAm) {
+                                        errorContainer.textContent = 'Start Time should not be earlier than 9:00 AM.';
+                                        this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
+                                    } else {
+                                        // Calculate end time as start time + 2 hours
+                                        const endTime = new Date(startTime.getTime() + (2 * 60 * 60 * 1000)); // 2 hours in milliseconds
+                            
+                                        // Format the calculated end time as HH:mm
+                                        const formattedEndTime = endTime.toISOString().substr(11, 5);
+                            
+                                        // Set the calculated end time in the End Time field
+                                        document.getElementById('endTime').value = formattedEndTime;
+                            
+                                        // Clear the error message and reset the custom validity
+                                        errorContainer.textContent = '';
+                                        document.getElementById('endTime').setCustomValidity('');
+                                    }
+                                });
+                            </script>
+                            <script>
+                                document.getElementById('startTime2').addEventListener('input', function () {
+                                    const startTimeValue = this.value;
+                                    const errorContainer = document.getElementById('startTimeError2');
+                            
+                                    // Construct Date object using the current date and selected start time
+                                    const currentDate = new Date();
+                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
+                            
+                                    // Check if start time is before 9 am
+                                    const nineAm = new Date(`${currentDate.toISOString().split('T')[0]}T09:00:00Z`);
+                                    if (startTime < nineAm) {
+                                        errorContainer.textContent = 'Start Time should not be earlier than 9:00 AM.';
+                                        this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
+                                    } else {
+                                        // Calculate end time as start time + 2 hours
+                                        const endTime = new Date(startTime.getTime() + (2 * 60 * 60 * 1000)); // 2 hours in milliseconds
+                            
+                                        // Format the calculated end time as HH:mm
+                                        const formattedEndTime = endTime.toISOString().substr(11, 5);
+                            
+                                        // Set the calculated end time in the End Time field
+                                        document.getElementById('endTime2').value = formattedEndTime;
+                            
+                                        // Clear the error message and reset the custom validity
+                                        errorContainer.textContent = '';
+                                        document.getElementById('endTime2').setCustomValidity('');
+                                    }
+                                });
+                            
+                                document.getElementById('endTime2').addEventListener('input', function () {
+                                    const startTimeValue = document.getElementById('startTime2').value;
+                                    const endTimeValue = this.value;
+                                    const errorContainer = document.getElementById('timeError2');
+                            
+                                    // Construct Date objects using the current date and selected start/end times
+                                    const currentDate = new Date();
+                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
+                                    const endTime = new Date(`${currentDate.toISOString().split('T')[0]}T${endTimeValue}Z`);
+                            
+                                    if (endTime < startTime) {
+                                        errorContainer.textContent = 'End Time should not be less than Start Time.';
+                                        this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
+                                    } else {
+                                        // Clear the error message and reset the custom validity
+                                        errorContainer.textContent = '';
+                                        this.setCustomValidity('');
+                                    }
+                                });
+                            </script>            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+		{% comment %} <div id="delete_department" class="modal fade delete-modal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-body text-center">
+						<img src="{% static 'staff/img/sent.png' %}" alt="" width="50" height="46">
+						<h3>Are you sure want to delete this Department?</h3>
+						<div class="m-t-20"> <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
+							<button type="submit" class="btn btn-danger">Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> {% endcomment %}
+    </div>
+    <div class="sidebar-overlay" data-reff=""></div>
+    <script src="{% static 'staff/js/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'staff/js/popper.min.js' %}"></script>
+    <script src="{% static 'staff/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'staff/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'staff/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'staff/js/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'staff/js/app.js' %}"></script>
+</body>
+
+
+<!-- departments23:21-->
+</html>

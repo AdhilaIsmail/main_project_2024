@@ -1,0 +1,335 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Medlab Blood Bank - Home</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"> 
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'lib/twentytwenty/twentytwenty.css' %}" rel="stylesheet" />
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            // Add a change event listener to the blood_group input
+            $('#blood_group').on('input', function () {
+                var bloodGroupInput = $(this).val().toUpperCase();
+                if (bloodGroupInput) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{% url "get_blood_quantity" %}',
+                        data: {'blood_group': bloodGroupInput},
+                        dataType: 'json',
+                        success: function (response) {
+                            $('#blood_quantity_message').text('Available quantity: ' + response.quantity + ' units');
+                            // After fetching blood quantity, also validate the entered quantity
+                            validateQuantity();
+                        },
+                        error: function () {
+                            $('#blood_quantity_message').text('Error fetching quantity');
+                            // If there's an error fetching blood quantity, clear and validate the entered quantity
+                            validateQuantity();
+                        }
+                    });
+                } else {
+                    $('#blood_quantity_message').text('');  // Clear the message if blood group is empty
+                    // If blood group is empty, also validate the entered quantity
+                    validateQuantity();
+                }
+            });
+    
+            // Add a click event listener to the Immediate Request button
+            document.querySelector('.immediate-request-button').addEventListener('click', function () {
+                document.querySelector('input[name="is_immediate"]').value = "true";
+            });
+    
+            const quantityInput = document.getElementById("quantity");
+    
+            quantityInput.addEventListener("input", function () {
+                // Validate the entered quantity
+                validateQuantity();
+            });
+    
+            
+        });
+    </script>
+    <script>
+        function checkQuantityAvailability() {
+            var bloodGroup = $('#blood_group').val();
+            var quantity = $('#quantity').val();
+    
+            if (bloodGroup && quantity) {
+                $.ajax({
+                    url: '/get_blood_quantity/',  // Replace with the correct URL
+                    data: { 'blood_group': bloodGroup },
+                    dataType: 'json',
+                    success: function (data) {
+                        var availableQuantity = data.quantity;
+                        if (quantity > availableQuantity) {
+                            $('#quantity_availability_message').text('Not available that much quantity');
+                            $('#submitButton').prop('disabled', true);  // Disable submit button
+                        } else {
+                            $('#quantity_availability_message').text('');
+                            $('#submitButton').prop('disabled', false);  // Enable submit button
+                        }
+                    },
+                    error: function () {
+                        $('#quantity_availability_message').text('Error checking quantity availability');
+                        $('#submitButton').prop('disabled', true);  // Disable submit button on error
+                    }
+                });
+            }
+        }
+    </script>
+    
+    
+    
+    
+</head>
+<body>    
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
+        <a href="{% url 'homebloodbank' %}" class="navbar-brand p-0">
+            <h4 class="m-0 text-danger"><img height="40px" width="70px" src="{% static 'img/logo.png' %}">Medlab Blood Bank</h4>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="{% url 'hospitalhome' %}" class="nav-item nav-link">Home</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'bloodavailability' %}" class="nav-item nav-link">Blood Availability</a>
+                <a href="{% url 'requestblood' %}" class="nav-item nav-link active">Blood Request</a>
+               
+                {% endif %}
+                <a href="{% url 'hospitalabout' %}" class="nav-item nav-link">About Us</a>
+                <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                {% if user.is_authenticated %}
+                <a href="#" class="nav-item nav-link">{{user.email}}</a>
+                <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a>
+                {% else %}
+                <a class="nav-item nav-link" href="{% url 'loginn' %}">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Full Screen Search Start -->
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(192, 109, 109, 0.7);">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center">
+                    <div class="input-group" style="max-width: 600px;">
+                        <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
+                        <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Screen Search End -->
+
+    <!-- Carousel Start -->
+    <div class="container-fluid p-0">
+        <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="w-100" src="{% static 'img/bg16.jpg' %} " alt="Image">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 900px;">
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">"Empowering Hospitals Through Digital Blood Bank Management: Efficient, Lifesaving, and Connected"</h5>
+                            <form method="post" action="{% url 'bloodrequest' is_immediate=True %}" class="animated slideInUp" id="bloodrequestform">
+                                {% csrf_token %}
+                                {% comment %} <input type="hidden" name="is_immediate" value="{{ is_immediate }}"> {% endcomment %}
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" name="email" placeholder="Email Address" value="{{ user.email }}" readonly required>
+                                    <div class="error" data-error-for="email"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="tel" class="form-control" name="phone" placeholder="Phone Number" value="{{ user.phone }}" readonly required>
+                                    <div class="error" data-error-for="phone"></div>
+                                </div>
+                               
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" name="blood_group" id="blood_group" placeholder="Blood Group"  required>
+                                    <div id="blood_quantity_message" class="text-muted"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" name="quantity" id="quantity" placeholder="Quantity (units)" required oninput="checkQuantityAvailability()">
+                                    <div id="quantity_availability_message" class="text-muted"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="purpose" id="purpose" placeholder="Purpose for Requesting Blood" rows="4" required></textarea>
+                                    <div class="error" data-error-for="purpose"></div>
+                                </div>
+                                <button type="submit" id="submitButton" class="btn btn-danger py-md-3 px-md-5 me-3">Request Blood</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+    <!-- Carousel End -->
+
+    
+    
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light py-5 wow fadeInUp" data-wow-delay="0.3s" style="margin-top: -75px;">
+        <div class="container pt-5">
+            <div class="row g-5 pt-4">
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="text-white mb-4">Quick Links</h3>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-light mb-2" href="{% url 'hospitalhome' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                        <a class="text-light mb-2" href="{% url 'hospitalabout' %}"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                        <!-- <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a> -->
+                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="text-white mb-4">Popular Links</h3>
+                    <div class="d-flex flex-column justify-content-start">
+                        <a class="text-light mb-2" href="{% url 'hospitalhome' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                        <a class="text-light mb-2" href="{% url 'hospitalabout' %}"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                        {% comment %} <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a> {% endcomment %}
+                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="text-white mb-4">Get In Touch</h3>
+                    <p class="mb-2"><i class="bi bi-geo-alt text-primary me-2"></i>123 Street, Kottayam</p>
+                    <p class="mb-2"><i class="bi bi-envelope-open text-primary me-2"></i>info@example.com</p>
+                    <p class="mb-0"><i class="bi bi-telephone text-primary me-2"></i>+012 345 67890</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid text-light py-4" style="background: #051225;">
+        <div class="container">
+            <div class="row g-0">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-md-0">&copy; <a class="text-white border-bottom" href="#">Medlab Blood Bank</a>. All Rights Reserved.</p>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- JavaScript Libraries -->
+    <script>
+        // Add a click event listener to the Immediate Request button
+        document.querySelector('.immediate-request-button').addEventListener('click', function () {
+            document.querySelector('input[name="is_immediate"]').value = "true";
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const quantityInput = document.getElementById("quantity");
+            const errorDiv = document.querySelector(".error[data-error-for='quantity']");
+        
+            quantityInput.addEventListener("input", function() {
+                const inputValue = parseInt(quantityInput.value, 10);
+        
+                if (isNaN(inputValue) || inputValue < 0 || inputValue > 10) {
+                    errorDiv.textContent = "Quantity must be a number between 0 and 10.";
+                    quantityInput.setCustomValidity("Invalid");
+                } else {
+                    errorDiv.textContent = "";
+                    quantityInput.setCustomValidity("");
+                }
+            });
+        });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quantityInput = document.getElementById("quantity");
+                const errorDiv = document.querySelector(".error[data-error-for='quantity']");
+
+                quantityInput.addEventListener("input", function() {
+                    const inputValue = parseInt(quantityInput.value, 10);
+
+                    // Remove the validation for checking whether the quantity entered is between 0 and 10
+                    errorDiv.textContent = "";
+                    quantityInput.setCustomValidity("");
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const quantityInput = document.getElementById("quantity");
+                const purposeTextarea = document.getElementById("purpose");
+                const purposeErrorDiv = document.querySelector(".error[data-error-for='purpose']");
+                const quantityErrorDiv = document.querySelector(".error[data-error-for='quantity']");
+            
+                quantityInput.addEventListener("input", function() {
+                    const quantityValue = parseInt(quantityInput.value, 10);
+            
+                    
+                        quantityErrorDiv.textContent = "";
+                        quantityInput.setCustomValidity("");
+                    
+                });
+            
+                purposeTextarea.addEventListener("input", function() {
+                    const purposeValue = purposeTextarea.value;
+            
+                    // Use a regular expression to check if the input contains only numbers or a mix of special characters and numbers
+                    if (/^\d+$/.test(purposeValue) || /^[0-9!@#$%^&*()-_=+[\]{};:'",<>./?\\|]*$/.test(purposeValue)) {
+                        purposeErrorDiv.textContent = "Give a valid purpose.";
+                        purposeTextarea.setCustomValidity("Invalid");
+                    } else {
+                        purposeErrorDiv.textContent = "";
+                        purposeTextarea.setCustomValidity("");
+                    }
+                });
+            });
+            
+               
+            </script>
+            
+            
+            
+    {% comment %} <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> {% endcomment %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="{% static 'lib/twentytwenty/jquery.event.move.js' %}"></script>
+    <script src="{% static 'lib/twentytwenty/jquery.twentytwenty.js' %}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>

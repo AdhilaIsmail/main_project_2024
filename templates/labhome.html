@@ -1,0 +1,247 @@
+{% extends 'baselab.html' %}
+{% block content %}
+
+{% load static %}
+<style>
+    .btn-container 
+    {
+        margin-right: 10px; /* Adjust the margin between buttons if needed */
+    }
+    .icon-box 
+    {
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .special-packages-section 
+    {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
+    .special-package-item 
+    {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 0 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+   .special-packages-carousel .carousel-inner 
+    {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .special-packages-carousel .carousel-item 
+    {
+        width: calc(100% / 3); /* Show only 3 items at a time */
+        overflow: hidden;
+    }
+
+    .test-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .test-box {
+        flex: 0 0 30%; /* Adjust the width as needed */
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .test-box h3 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .test-box p {
+        color: #777;
+    }
+
+    .know-more-btn {
+        margin-top: auto; /* Move the button to the bottom */
+        background-color: #007bff;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .know-more-btn:hover {
+        background-color: #0056b3;
+    }
+    .carousel-item 
+    {
+        display: flex;
+        justify-content: space-between;
+    }
+    .test-box 
+    {
+        width: calc(32% - 10px); /* 32% width for each box with some margin in between */
+        margin-bottom: 20px;
+    }
+</style>
+
+    <!-- Full Screen Search Start -->
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="background: rgba(192, 109, 109, 0.7);">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center">
+                    <div class="input-group" style="max-width: 600px;">
+                        <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
+                        <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full Screen Search End -->
+
+    <!-- Carousel Start -->
+    <div class="container-fluid p-0">
+        <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active position-relative">
+                    <img class="w-100" src="{% static 'img/lab.png' %} " alt="Image">
+                    <div class="carousel-caption-lab d-flex flex-column align-items-start justify-content-center position-absolute top-50 start-0 translate-middle-y p-3 ms-auto" style="background-color: transparent;">
+                        <div class="p-5" style="width: 1100px;">
+                            <div class="container py-5">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control form-control-lg" placeholder="Type here...">
+                                        </div>
+                                        <div class="d-flex justify-content-start">
+
+
+                                            <div class="btn-container">
+                                                <a href="{% url 'upload_prescription_view' %}" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
+                                                    <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                        <img src="{% static 'img/presciptionlogo.svg' %}" alt="Upload Icon" style="height: 20px;">
+                                                    </div>
+                                                    Upload Prescription
+                                                </a>
+                                            </div>
+
+                                            <div class="btn-container">
+                                                <a href="{% url 'download_report_view' %}" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;" >
+                                                    <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                        <img src="{% static 'img/labreportlogo.svg' %}" alt="Download Icon" style="height: 20px;">
+                                                    </div>
+                                                     Download Report
+                                                </a>
+                                            </div>
+                                        
+                                            <div class="btn-container">
+                                                <a href="{% url 'find_lab_view' %}" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
+                                                    <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                        <img src="{% static 'img/lablogo1.svg' %}" alt="Find Lab Icon" style="height: 20px;">
+                                                    </div>
+                                                     Find Our Lab
+                                                </a>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% comment %}                             
+                            {% if user.role == user.REGISTEREDDONOR %}
+                                <a href="{% url 'registereddonortodonatenow' %}" class="btn btn-danger py-md-3 px-md-5 me-3 animated slideInLeft">Donate Blood</a>
+                            {% else %}
+                                <a href="{% url 'registerasdonor' %}" class="btn btn-danger py-md-3 px-md-5 me-3 animated slideInLeft">Donate Blood</a>
+                            {% endif %} {% endcomment %}
+                         
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+    <!-- Carousel End -->
+    
+    
+    <div class="container">
+        <h2 class="text-center mb-5">Specialized Health Packages</h2>
+        <div class="test-container">
+            {% if lab_tests_page %}
+                {% for test in lab_tests_page %}
+                    {% comment %} <div class="test-box">
+                        <h3>{{ test.test_name }}</h3>
+                        <p>Price: ${{ test.test_price }}</p>
+                        <button class="know-more-btn">Know More</button>
+                    </div> {% endcomment %}
+                    <div class="test-box">
+                        <h3>{{ test.test_name }}</h3>
+                        <p>Price: ${{ test.test_price }}</p>
+                        <a href="{% url 'show_test_details' test.id %}" class="know-more-btn">Know More</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No data available.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+ 
+
+
+    
+
+
+   
+
+    <!-- Testimonial Start -->
+    <div class="container-fluid bg-primary bg-testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="owl-carousel testimonial-carousel rounded p-5 wow zoomIn" data-wow-delay="0.6s">
+                        <div class="testimonial-item text-center text-dark">
+                            <img class="img-fluid mx-auto rounded mb-4" src="{% static 'img/testimonial-1.jpg' %}" alt="">
+                            <p class="fs-5">Dolores sed duo clita justo dolor et stet lorem kasd dolore lorem ipsum. At lorem lorem magna ut et, nonumy labore diam erat. Erat dolor rebum sit ipsum.</p>
+                            <hr class="mx-auto w-25">
+                            <h4 class="text-dark mb-0">Client Name</h4>
+                        </div>
+                        <div class="testimonial-item text-center text-dark">
+                            <img class="img-fluid mx-auto rounded mb-4" src="{% static 'img/testimonial-2.jpg' %}" alt="">
+                            <p class="fs-5">Dolores sed duo clita justo dolor et stet lorem kasd dolore lorem ipsum. At lorem lorem magna ut et, nonumy labore diam erat. Erat dolor rebum sit ipsum.</p>
+                            <hr class="mx-auto w-25">
+                            <h4 class="text-dark mb-0">Client Name</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add these script tags to your HTML file -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% endblock %}

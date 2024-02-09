@@ -1,0 +1,77 @@
+
+
+{% block content %}
+    <h1>Search Results</h1>
+
+    <form id="searchForm">
+        <label for="grampanchayat">Select Gram Panchayat:</label>
+        <select name="grampanchayat" id="grampanchayat">
+            <option value="">-- All --</option>
+            {% for gp in grampanchayats %}
+                <option value="{{ gp.name_of_grampanchayat }}" {% if gp.name_of_grampanchayat == selected_grampanchayat %}selected{% endif %}>{{ gp.name_of_grampanchayat }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Search">
+    </form>
+
+    <table id="campTable" class="table table-bordered table-striped custom-table datatable mb-0">
+        <thead>
+            <tr>
+                <th>Camp Date</th>
+                <th>Camp Name</th>
+                <th>Camp Address</th>
+                <th>Camp District</th>
+                <th>Conducted By</th>
+                <th>Organized By</th>
+                <th>Gram Panchayat</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Register</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for camp in camps %}
+                <tr>
+                    <td>{{ camp.campDate }}</td>
+                    <td>{{ camp.campName }}</td>
+                    <td>{{ camp.campAddress }}</td>
+                    <td>{{ camp.campDistrict }}</td>
+                    <td>{{ camp.conductedBy }}</td>
+                    <td>{{ camp.organizedBy }}</td>
+                    <td>{{ camp.gramPanchayat }}</td>
+                    <td>{{ camp.startTime }}</td>
+                    <td>{{ camp.endTime }}</td>
+                    <td>
+                        <button style="color: white; background-color: red;border-radius:5px; border: none;" onclick="registerFunction('{{ camp.id }}')">Register</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#searchForm').submit(function (e) {
+                e.preventDefault();
+                var selectedGrampanchayat = $('#grampanchayat').val();
+                updateTable(selectedGrampanchayat);
+            });
+
+            function updateTable(selectedGrampanchayat) {
+                $.ajax({
+                    url: '{% url "search_results" %}',
+                    type: 'GET',
+                    data: { 'grampanchayat': selectedGrampanchayat },
+                    success: function (data) {
+                        $('#campTable tbody').html(data);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

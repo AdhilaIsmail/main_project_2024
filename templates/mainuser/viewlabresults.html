@@ -1,0 +1,270 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'mainuser/img/favicon.ico' %}">
+    <title>Medlab Blood Bank</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'mainuser/css/style.css' %}">
+    <script src="https://kit.fontawesome.com/044329719f.js" crossorigin="anonymous"></script>
+    <style>
+		body {
+            background-image: url("{% static 'img/9.jpg' %}"); /* Replace 'background.jpg' with your image file name */
+            background-repeat: no-repeat;
+            background-size: cover; /* You can adjust this property to control how the image is displayed */
+        }
+		
+		.sidebar {
+			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+			top: 50px;
+			width: 230px;
+			z-index: 1039;
+			background-color:#d1bebc;
+			bottom: 0;
+			margin-top: 10px;
+			position: fixed;
+			left: 0;
+			transition: all 0.2s ease-in-out;
+		}
+		.sidebar.opened {
+			-webkit-transition: all 0.4s ease;
+			-moz-transition: all 0.4s ease;
+			transition: all 0.4s ease;
+		}
+		.sidebar-inner {
+			height: 100%;
+			transition: all 0.2s ease-in-out 0s;
+		}
+		.sidebar-menu ul {
+			font-size: 14px;
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		.sidebar-menu li a {
+			color: white;
+			display: block;
+			font-size: 13px;
+			height: auto;
+			padding: 0 20px;
+		}
+		.sidebar-menu li a:hover {
+			color: #802020;
+		}
+		.sidebar-menu li.active a {
+			color: #802020;
+			background-color: #f3f3f3;
+		}
+		.menu-title {
+			color: #333;
+			font-size: 15px;
+			font-weight: 500;
+			padding: 12px 20px;
+		}
+		.menu-title > i {
+			float: right;
+			line-height: 40px;
+		}
+		.sidebar-menu li.menu-title a {
+			color: #009efb;
+			display: inline-block;
+			float: right;
+			padding: 0;
+		}
+		.sidebar-menu li.menu-title a.btn {
+			color: #fff;
+			display: block;
+			float: none;
+			font-size: 15px;
+			line-height: inherit;
+			margin-bottom: 15px;
+		}
+		.sidebar-menu ul ul a.active {
+			color: #009efb;
+			text-decoration: underline;
+		}
+	</style>   
+
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="header" style="background-color:white;height:60px;"> 
+			<div class="header-left">
+				<a href="{% url 'adminindex' %}" class="logo" style="color: black;">
+					<img src="{% static 'mainuser/img/logocopy.png' %}" width="75" height="40" alt="" style="margin-left:15px"> <span style="color: maroon;font-size: 20px;margin-top:10px; margin-left:-10px;white-space: nowrap;">Medlab Blood Bank</span>
+				</a>
+			</div>
+			<a id="toggle_btn" href="javascript:void(0);" style="color:#d69c98;margin-top:20px;margin-left:10px;"><i class="fa fa-bars"></i></a>
+            <a id="mobile_btn" class="mobile_btn float-left" href="#sidebar"><i class="fa fa-bars"></i></a>
+            <ul class="nav user-menu float-right">
+                
+                <li class="nav-item dropdown has-arrow">
+                    <a href="#" class="dropdown-toggle nav-link user-link" data-toggle="dropdown" style="color:maroon">
+                        
+						<span style="color:maroon;">Admin</span>
+                    </a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="{% url 'profile1' %}" style="color:maroon;">My Profile</a>
+						<a class="dropdown-item" href="{% url 'editprofile' %}" style="color:maroon;">Edit Profile</a>
+						
+						<a class="dropdown-item" href="{% url 'loggout' %}" style="color:maroon;">Logout</a>
+					</div>
+                </li>
+                
+            </ul> 
+            <div class="dropdown mobile-user-menu float-right">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'profile1' %}" style="color:maroon;">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'editprofile' %}" style="color:maroon;">Edit Profile</a>
+                  
+                    <a class="dropdown-item" href="{% url 'loggout' %}" style="color:maroon;">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">Main</li>
+                        <li>
+                            <a href="{% url 'adminindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        </li>
+						<li>
+                            <a href="{% url 'donors' %}"><i class="fa fa-users"></i> <span>Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'registereddonortable' %}"><i class="fa fa-registered"></i> <span>Registered Donors</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'registeredhospitaltable' %}"><i class="fa fa-hospital-o" id="hospitalid"></i> <span>Add Hospitals</span></a>
+                        </li>
+						<li>
+                            <a href="{% url 'registeredstafftable' %}"><i class="fa fa-address-book-o"></i> <span>Add Staffs</span></a>
+                        </li> 
+                      
+                        <li>
+                            <a href="{% url 'departments' %}"><i class="fa fa-hospital-o"></i> <span>Blood Bank Camps</span></a>
+                        </li>
+                       
+						<li>
+                            <a href="{% url 'blood_request_list' %}"><i class="fa fa-list-alt"></i> <span>View Requests</span></a>
+                        </li>
+						<li class="active">
+                            <a href="{% url 'view_uploaded_files' %}"><i class="fa fa-list-alt"></i> <span>View Lab Results</span></a>
+                        </li>
+						<li>
+                            <a href="{% url 'blood_inventory' %}"><i class="fa fa-tint"></i> <span>Blood Inventory</span></a>
+                        </li>
+                        <li>
+                            <a href="{% url 'laboratory' %}"><i class="fa-solid fa-vials"></i> <span>Laboratory</span></a>
+                        </li>
+						<li class="submenu">
+							<a href="#"><i class="fa fa-user"></i> <span>Staffs </span> <span class="menu-arrow"></span></a>
+							<ul style="display: none;">
+								<li><a href="{% url 'registeredstafftable' %}">Blood Bank Staff</a></li>
+                                <li><a href="{% url 'registeredstafftablelab' %}">Laboratory Staff</a></li>
+								<li><a href="{% url 'listgps' %}">Add Gramapanchayats</a></li>
+								<li><a href="{% url 'assign_staff' %}">Assign Staffs</a></li>
+							</ul>
+						</li> 
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <div class="content">
+				
+				<div class="row">
+					<div class="col-12 col-md-6 col-lg-8 col-xl-8">
+						<div class="card">
+							<div class="card-header">
+								<h4 class="card-title d-inline-block">Uploaded Lab Results</h4>
+							</div>
+							<div class="card-body p-0">
+								<div class="table-responsive">
+									<table class="table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>File Name</th>
+                                                <th>Action</th>
+                                                <th>Approval Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if uploaded_files %}
+                                                {% for uploaded_file in uploaded_files %}
+                                                    <tr>
+                                                        <td>{{ uploaded_file.file.name|cut:"media/uploads/" }}</td>
+                                                        <td>
+                                                            <a href="{% url 'download_file' file_id=uploaded_file.id %}" target="_blank">Download</a>
+                                                        </td>
+                                                        <td id="approval-status-{{ uploaded_file.id }}">{{ uploaded_file.approval_status }}</td>
+                                                        <td>
+                                                            <button class="btn btn-success" onclick="toggleApprovalStatus({{ uploaded_file.id }}, 'Approved')">Approve</button>
+                                                            <button class="btn btn-danger" onclick="toggleApprovalStatus({{ uploaded_file.id }}, 'Rejected')">Reject</button>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="4">No files uploaded yet.</td>
+                                                </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+								</div>
+							</div>
+						</div>
+					</div>
+                    
+				</div>
+				
+            </div>
+            
+        </div>
+    </div>
+    <div class="sidebar-overlay" data-reff=""></div>
+    <script src="{% static 'mainuser/js/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'mainuser/js/popper.min.js' %}"></script>
+    <script src="{% static 'mainuser/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'mainuser/js/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'mainuser/js/app.js' %}"></script>
+    <script>
+        function toggleApprovalStatus(fileId, newStatus) {
+            // Update the approval status directly in the HTML
+            var statusElement = document.getElementById(`approval-status-${fileId}`);
+            if (statusElement) {
+                statusElement.innerText = newStatus;
+    
+                // Make an AJAX request to update the approval status in the database
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '{% url "update_approval_status" %}', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log('Approval status updated in the database.');
+                    }
+                };
+    
+                var data = JSON.stringify({
+                    fileId: fileId,
+                    newStatus: newStatus
+                });
+    
+                xhr.send(data);
+            } else {
+                console.error(`Element with ID 'approval-status-${fileId}' not found.`);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+<!-- confirmpage.html -->
+
+{% extends 'base.html' %}
+{% block active_menu %}appointment{% endblock %}
+{% block content %}
+
+<div class="container mt-5 mb-5 pb-5">
+    <h2 class="mb-4">Booking Confirmation</h2>
+
+    {% if appointment %}
+        <p>Thank you for booking!</p>
+        <p>Appointment Details:</p>
+        <ul>
+            <li><strong>Blood Camp:</strong> {{ appointment.camp.campName }}</li>
+            <li><strong>Time Slot:</strong> {{ appointment.time_slot }}</li>
+            <!-- Add more details as needed -->
+        </ul>
+    {% else %}
+        <p>Oops! Something went wrong. Please try again.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
