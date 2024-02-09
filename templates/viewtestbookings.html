@@ -57,19 +57,18 @@
 </style>
 
 <div class="container">
-    
-
     <br><br><h2>Your Test Bookings</h2>
 
     {% if bookings %}
         <ul>
-        {% for booking in bookings %}
-            <li>{{ booking }}</li>
-        {% endfor %}
+            {% for booking in bookings %}
+                <li>{{ booking }}</li>
+            {% endfor %}
         </ul>
     {% else %}
         <p>No bookings found.</p>
     {% endif %}
 </div>
+
 
 {% endblock %}

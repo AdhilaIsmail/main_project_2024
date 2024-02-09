@@ -56,8 +56,11 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superadmin = models.BooleanField(default=False)
+
     
-    
+    patient = models.OneToOneField('website.Patient', on_delete=models.CASCADE, null=True, blank=True, related_name='user_patient')
+
+
     REQUIRED_FIELDS = ['phone']
 
     objects = UserManager()
@@ -403,7 +406,7 @@ class LaboratoryTest(models.Model):
 from django.db import models
 
 class Patient(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1, related_name='patient_user')
     full_name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=15)

@@ -1953,28 +1953,33 @@ def labstaffindex(request):
     return render(request,'labstaff/index.html')
 
 
+import logging
 from django.shortcuts import render
 from .models import Booking, Patient
 from django.contrib.auth.decorators import login_required
 
+logger = logging.getLogger(__name__)
+
 @login_required
 def viewtestbookings(request):
-    # Assuming the user and patient are related through a one-to-one relationship
-    # If such a relationship does not exist, modify the following line accordingly
-    try:
-        patient = request.user.patient
-    except Patient.DoesNotExist:
-        patient = None
-
-    # Check if a patient is associated with the user
-    if patient:
+    
+    patient = request.user.id
         # Retrieve bookings for the patient
-        bookings = Booking.objects.filter(patient=patient)
-
+    bookings=[]
+    variable=Patient.objects.filter(user_id=patient)
+    print(variable)
+    print("Hello")
+    for i in variable:
+        bookings.extend(Booking.objects.filter(patient_id=i.id))
+    
+    print(bookings)
+        # Debugging: Log the bookings
+    for booking in bookings:
+        logger.debug(f"Booking for {booking.patient.full_name} on {booking.booked_date}")
+        
         # Pass the bookings to the template context
-        context = {'bookings': bookings}
-    else:
+    context = {'bookings': bookings}
+
         # Handle the case where there is no patient associated with the user
-        context = {'bookings': None}
 
     return render(request, 'viewtestbookings.html', context)
