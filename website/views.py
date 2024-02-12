@@ -41,19 +41,7 @@ def homebloodbank(request):
     return render(request, 'homebloodbank.html')
 def testimonial(request):
     return render(request, 'testimonial.html')
-# def loginn(request):
-#     if request.method == "POST":
-#         username=request.POST['email']
-#         password=request.POST['password']
-#         user = authenticate(username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return redirect('/')
-#         else:
-#             messages.info(request, "Invalid Login")
-#             return redirect('loginn')
-#     else:
-#         return render(request, 'login.html')  
+
 
 ##checking
 from django.contrib.auth import authenticate, login
@@ -1973,9 +1961,14 @@ def viewtestbookings(request):
         bookings.extend(Booking.objects.filter(patient_id=i.id))
     
     print(bookings)
+    current_time = timezone.now()
+
         # Debugging: Log the bookings
     for booking in bookings:
-        logger.debug(f"Booking for {booking.patient.full_name} on {booking.booked_date}")
+        time_difference = booking.booked_date - current_time
+        booking.is_cancelable = time_difference.total_seconds() > 0 and time_difference.total_seconds() < 86400
+
+        # logger.debug(f"Booking for {booking.patient.full_name} on {booking.booked_date}")
         
         # Pass the bookings to the template context
     context = {'bookings': bookings}
@@ -1983,3 +1976,6 @@ def viewtestbookings(request):
         # Handle the case where there is no patient associated with the user
 
     return render(request, 'viewtestbookings.html', context)
+
+
+

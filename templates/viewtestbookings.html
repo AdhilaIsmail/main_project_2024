@@ -54,21 +54,96 @@
         padding: 10px;
         margin-bottom: 20px;
     }
-</style>
 
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border: 3px solid #3498db; /* Thick blue border around the entire table */
+        }
+    
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #3498db; /* Blue background color for heading cells */
+            color: #fff; /* White text color for heading cells */
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* White background color for even rows */
+        }
+    
+        tr:nth-child(odd) {
+            background-color: #ebf5fb; /* Light blue background color for odd rows */
+        }
+        .go-back-button {
+            margin-top: 20px; /* Adjust the margin-top as needed */
+        }
+        {% comment %} tr:hover {
+            background-color: #f5f5f5;
+        } {% endcomment %}
+ 
+    
+</style>
 <div class="container">
-    <br><br><h2>Your Test Bookings</h2>
+    <br><br>
+    <h2>Your Test Bookings</h2>
 
     {% if bookings %}
-        <ul>
-            {% for booking in bookings %}
-                <li>{{ booking }}</li>
-            {% endfor %}
-        </ul>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Serial No</th>
+                    <th>Patient Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Gender</th>
+                    <th>Date of Birth</th>
+                    <th>Test Name</th>
+                    <th>Test Price</th>
+                    <th>Booked Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ booking.patient.full_name }}</td>
+                        <td>{{ booking.patient.email }}</td>
+                        <td>{{ booking.patient.phone }}</td>
+                        <td>{{ booking.patient.address }}</td>
+                        <td>{{ booking.patient.gender }}</td>
+                        <td>{{ booking.patient.date_of_birth }}</td>
+                        <td>{{ booking.patient.selected_test.test_name }}</td>
+                        <td>{{ booking.patient.selected_test.test_price }}</td>
+                        <td>{{ booking.booked_date }}</td>
+                        <td>
+                            {% if booking.is_cancelable %}
+                                Cancel
+                            {% elif booking.booked_date > current_time %}
+                                Booked
+                            {% else %}
+                                Expired
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="go-back-button">
+            <a href="{% url 'homelab' %}" class="btn btn-primary">Go Back</a>
+        </div>
     {% else %}
         <p>No bookings found.</p>
     {% endif %}
 </div>
+
 
 
 {% endblock %}
