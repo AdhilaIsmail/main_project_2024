@@ -1,14 +1,31 @@
 {% extends 'baselab.html' %}
 {% block content %}
+{% load static %}
 <style>
-    .booking-details-box {
+    body {
+        background-image: url("{% static 'img/labbook2.jpg' %}");
+        background-size: cover; /* Ensure the background image covers the entire body */
+        background-repeat: no-repeat; /* Prevent the background image from repeating */
+        background-attachment: fixed; /* Fix the background image while scrolling */
+    }
+    .container {
+       
+        max-width: 800px; /* Set the maximum width of the container */
+        margin: 0 auto; /* Center the container on the page */
+    }
+
+    .booking-section {
         margin-top: 30px;
+        margin-bottom: 80px; /* Adjust as needed */
     }
-    .booking-details-box, .booking-form {
-        margin-bottom: 100px; /* Adjust as needed */
-    }
+
+    .booking-details-box,
     .booking-form {
-        margin-top: 10px;
+        background-color:white;
+        border:30px solid white;
+        max-width: 550px; /* Set the maximum width of the form and details box */
+        margin: 0 auto; /* Center the form and details box on the page */
+        margin-bottom: 20px;
     }
 
     .booking-form label {
@@ -18,7 +35,8 @@
     }
 
     .booking-form input,
-    .booking-form textarea {
+    .booking-form textarea,
+    .booking-form select {
         width: 100%;
         padding: 8px;
         margin-bottom: 12px;
@@ -27,9 +45,9 @@
         box-sizing: border-box;
     }
 
-    .booking-form button {
-        background-color: #00CED1;
-        color: white;
+    .booking-form button,
+    .booking-form a {
+        width: 100%;
         padding: 10px 15px;
         border: none;
         border-radius: 5px;
@@ -38,61 +56,70 @@
 </style>
 
 <div class="container">
+    
     <h2 class="text-center mb-5">Book a Test</h2>
+    <div class="booking-section">
+        <div class="booking-details-box">
+            <h3>Test Details</h3>
+        
+            <p>Test Name: {{ test_name }}</p>
+            <p>Price: ${{ test_price }}</p>
+        </div>
 
-    <div class="booking-details-box">
-        <h3>Test Details</h3>
-       
-        <p>Test Name: {{ test_name }}</p>
-        <p>Price: ${{ test_price }}</p>
-    </div>
+        <div class="booking-form">
+            <form id="bookingForm" method="post" action="{% url 'submit_booking' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="full_name">Full Name:</label>
+                    <input type="text" id="full_name" name="full_name" required oninput="validateFullName()">
+                    <p id="fullNameError" class="text-danger"></p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required oninput="validateEmail()">
+                    <p id="emailError" class="text-danger"></p>
+                </div>
 
-    <div class="booking-form">
-        <form id="bookingForm" method="post" action="{% url 'submit_booking' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="full_name">Full Name:</label>
-                <input type="text" id="full_name" name="full_name" required oninput="validateFullName()">
-                <p id="fullNameError" class="text-danger"></p>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required oninput="validateEmail()">
-                <p id="emailError" class="text-danger"></p>
-            </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="text" id="phone" name="phone" required oninput="validatePhone()">
+                    <p id="phoneError" class="text-danger"></p>
 
-            <div class="form-group">
-                <label for="phone">Phone Number:</label>
-                <input type="text" id="phone" name="phone" required oninput="validatePhone()">
-                <p id="phoneError" class="text-danger"></p>
+                </div>
 
-            </div>
+                <div class="form-group">
+                    <label for="booking_date">Booking Date:</label>
+                    <input type="date" id="booking_date" name="booking_date" required oninput="validateBookingDate()">
+                    <p id="bookingDateError" class="text-danger"></p>
+                </div>
+                
 
-            <div class="form-group">
-                <label for="address">Address:</label>
-                <textarea id="address" name="address" required oninput="validateAddress()"></textarea>
-                <p id="addressError" class="text-danger"></p>
-            </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <textarea id="address" name="address" required oninput="validateAddress()"></textarea>
+                    <p id="addressError" class="text-danger"></p>
+                </div>
 
-            <div class="form-group">
-                <label for="gender">Gender:</label>
-                <select id="gender" name="gender" required>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="date_of_birth">Date of Birth:</label>
-                <input type="date" id="date_of_birth" name="date_of_birth" required oninput="validateDateOfBirth()">
-                <p id="dateOfBirthError" class="text-danger"></p>
-            </div>
-            <input type="hidden" name="selected_test" value="{{ test_id }}">
-            <button type="submit" id="submitBtn">Submit Booking</button>
-            <a href="{% url 'homelab' %}" class="btn btn-secondary">Cancel</a>
-        </form>
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth:</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" required oninput="validateDateOfBirth()">
+                    <p id="dateOfBirthError" class="text-danger"></p>
+                </div>
+                <input type="hidden" name="selected_test" value="{{ test_id }}">
+                <button type="submit" id="submitBtn">Submit Booking</button>
+                <a href="{% url 'homelab' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
     </div>
 
     <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -200,22 +227,17 @@
             document.getElementById('addressError').innerText = '';
         }
     }
-    function validateDateOfBirth() {
-        var dateOfBirth = document.getElementById('date_of_birth').value;
-        var selectedDate = new Date(dateOfBirth);
+    function validateBookingDate() {
+        var bookingDate = document.getElementById('booking_date').value;
+        var selectedBookingDate = new Date(bookingDate);
         var currentDate = new Date();
     
-        // Calculate the maximum allowed date (current date - 5 years)
-        var maxDate = new Date();
-        maxDate.setFullYear(maxDate.getFullYear() - 5);
-    
-        if (selectedDate > currentDate || selectedDate < maxDate) {
-            document.getElementById('dateOfBirthError').innerText = 'Invalid date. Please select a date within the last 5 years.';
+        if (selectedBookingDate < currentDate) {
+            document.getElementById('bookingDateError').innerText = 'Invalid booking date. Please select a date in the future.';
         } else {
-            document.getElementById('dateOfBirthError').innerText = '';
+            document.getElementById('bookingDateError').innerText = '';
         }
     }
-    
 </script>
 
 {% endblock %}

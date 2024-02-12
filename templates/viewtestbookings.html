@@ -107,6 +107,7 @@
                     <th>Test Name</th>
                     <th>Test Price</th>
                     <th>Booked Date</th>
+                    <th>Test Date</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -123,6 +124,7 @@
                         <td>{{ booking.patient.selected_test.test_name }}</td>
                         <td>{{ booking.patient.selected_test.test_price }}</td>
                         <td>{{ booking.booked_date }}</td>
+                        <td>{{ bookinh.test_date }}</td>
                         <td>
                             {% if booking.is_cancelable %}
                                 Cancel
