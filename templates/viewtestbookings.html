@@ -83,9 +83,41 @@
         .go-back-button {
             margin-top: 20px; /* Adjust the margin-top as needed */
         }
-        {% comment %} tr:hover {
-            background-color: #f5f5f5;
-        } {% endcomment %}
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+    
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+    
+        /* Close button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+    
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
  
     
 </style>
@@ -109,6 +141,7 @@
                     <th>Booked Date</th>
                     <th>Test Date</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -125,7 +158,24 @@
                         <td>{{ booking.patient.selected_test.test_price }}</td>
                         <td>{{ booking.booked_date }}</td>
                         <td>{{ booking.test_date }}</td>
+                        <td>{{ booking.status }}</td>
                         <td>
+                            {% if booking.test_date %}
+                                {% if booking.is_cancelable %}
+                                    <!-- Add cancel button with class 'cancel-booking-btn' -->
+                                    <button class="btn btn-danger cancel-booking-btn" data-booking-id="{{ booking.id }}">Cancel</button>
+
+
+                                {% elif booking.test_date > timezone.now %}
+                                    Booked
+                                {% else %}
+                                    Expired
+                                {% endif %}
+                            {% else %}
+                                Test Date Not Set
+                            {% endif %}
+                        </td>
+                        {% comment %} <td>
                             {% if booking.test_date %}
                                 {% if booking.is_cancelable %}
                                     <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger">Cancel</a>
@@ -137,7 +187,7 @@
                             {% else %}
                                 Test Date Not Set
                             {% endif %}
-                        </td>
+                        </td> {% endcomment %}
                     </tr>
                 {% endfor %}
             </tbody>
@@ -148,7 +198,136 @@
     {% else %}
         <p>No bookings found.</p>
     {% endif %}
+
+
+
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Are you sure you want to cancel this booking?</p>
+            <button id="confirmCancelBtn" class="btn btn-danger">Yes, Cancel</button>
+        </div>
+    </div>
 </div>
 
 
+{% comment %} <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById("cancelModal");
+        var cancelButtons = document.querySelectorAll(".cancel-booking-btn");
+
+        cancelButtons.forEach(function(cancelButton) {
+            cancelButton.addEventListener("click", function() {
+                modal.style.display = "block";
+                var bookingId = this.getAttribute("data-booking-id");
+                console.log("Booking ID:", bookingId); // Log the booking ID
+                modal.setAttribute("data-booking-id", bookingId);
+            });
+        });
+
+        var confirmCancelBtn = document.getElementById("confirmCancelBtn");
+        confirmCancelBtn.addEventListener("click", function() {
+            modal.style.display = "none";
+            var bookingId = modal.getAttribute("data-booking-id");
+            console.log("Canceling booking with ID:", bookingId); // Log the booking ID
+            fetch("{% url 'cancel_booking' 0 %}".replace('0', bookingId), {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    booking_id: bookingId
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    throw new Error('Failed to cancel booking.');
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while canceling the booking. Please try again.");
+            });
+        });
+
+        var closeButton = document.getElementsByClassName("close")[0];
+        closeButton.addEventListener("click", function() {
+            modal.style.display = "none";
+        });
+
+        window.addEventListener("click", function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+</script> {% endcomment %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById("cancelModal");
+        var confirmCancelBtn = document.getElementById("confirmCancelBtn");
+
+        confirmCancelBtn.addEventListener("click", function() {
+            modal.style.display = "none";
+            var bookingId = modal.getAttribute("data-booking-id");
+
+            // Construct the URL with the bookingId
+            var url = "{% url 'cancel_booking' 0 %}".replace('0', bookingId);
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reload the page to reflect the updated status
+                    window.location.reload();
+                } else {
+                    throw new Error('Failed to cancel booking.');
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while canceling the booking. Please try again.");
+            });
+        });
+
+        // Show the modal when cancel button is clicked
+        var cancelButtons = document.querySelectorAll(".cancel-booking-btn");
+        cancelButtons.forEach(function(cancelButton) {
+            cancelButton.addEventListener("click", function() {
+                modal.style.display = "block";
+                var bookingId = this.getAttribute("data-booking-id");
+                modal.setAttribute("data-booking-id", bookingId);
+            });
+        });
+
+        // Close the modal when close button is clicked
+        var closeButton = document.getElementsByClassName("close")[0];
+        closeButton.addEventListener("click", function() {
+            modal.style.display = "none";
+        });
+
+        // Close the modal when clicking outside the modal
+        window.addEventListener("click", function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+</script>
+
+
+
+
+    
+    
+    
+        
 {% endblock %}

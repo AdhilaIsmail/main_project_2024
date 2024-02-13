@@ -2030,7 +2030,8 @@ import datetime
 
 logger = logging.getLogger(__name__)
 
-@login_required
+
+# @login_required
 # def viewtestbookings(request):
 #     patient = request.user.id
 #     # Retrieve bookings for the patient
@@ -2047,7 +2048,7 @@ logger = logging.getLogger(__name__)
 #                 if isinstance(booking.test_date, datetime.date):
 #                     time_difference = booking.test_date - datetime.date.today()
 #                     booking.is_cancelable = (
-#                         time_difference.days > 1
+#                         time_difference.days > 0
 #                     )
 #                     print(f"Booking for {booking.patient.full_name} - is_cancelable: {booking.is_cancelable}")
 #                     print(f"Booked Date: {booking.booked_date}")
@@ -2061,6 +2062,8 @@ logger = logging.getLogger(__name__)
 #     context = {'bookings': bookings}
 
 #     return render(request, 'viewtestbookings.html', context)
+
+
 @login_required
 def viewtestbookings(request):
     patient = request.user.id
@@ -2071,6 +2074,9 @@ def viewtestbookings(request):
     if variable.exists():
         for i in variable:
             bookings.extend(Booking.objects.filter(patient_id=i.id))
+
+        # Filter out cancelled bookings
+        bookings = [booking for booking in bookings if booking.status != 'cancelled']
 
         # Debugging: Log the bookings
         for booking in bookings:
@@ -2095,30 +2101,87 @@ def viewtestbookings(request):
 
 
 
-
 from django.shortcuts import get_object_or_404, redirect
 from .models import Booking
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
+from django.http import JsonResponse
+
 @login_required
 
 
+
 def cancel_booking(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
+    # Retrieve the booking object
+    booking = get_object_or_404(Booking, id=booking_id)
 
-    if booking.test_date and booking.test_date > timezone.now().date():
-        # Check if the booking is cancelable (test_date is in the future)
-        booking.status = 'cancelled'  # Update the status to "cancelled"
-        booking.save()  # Save the changes to the database
-        booking.delete()
-        messages.success(request, 'Booking canceled successfully.')
-    else:
-        messages.error(request, 'Unable to cancel booking. Test date has already passed.')
+    # Update the status to 'cancelled'
+    booking.status = 'cancelled'
+    booking.save()
 
-    return redirect('viewtestbookings')
+    # Return a success response
+    return JsonResponse({'success': True})
+# def cancel_booking(request):
+#     if request.method == 'POST':
+#         # Get the booking ID from the request body
+#         booking_id = request.POST.get('booking_id')
+
+#         print("Booking ID received:", booking_id)  # Add this line for debugging
+
+#         # Retrieve the booking object
+#         booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
+
+#         if booking.test_date and booking.test_date > timezone.now().date():
+#             # Check if the booking is cancelable (test_date is in the future)
+#             booking.status = 'cancelled'  # Update the status to "cancelled"
+#             booking.save()  # Save the changes to the database
+#             return JsonResponse({'success': True})  # Return success response
+#         else:
+#             return JsonResponse({'success': False, 'error': 'Test date has already passed.'})  # Return error response
+
+#     # Handle invalid request method
+#     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+
+# @login_required
+# def cancel_booking(request, booking_id):
+#     booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
+
+#     if booking.test_date and booking.test_date > timezone.now().date():
+#         # Check if the booking is cancelable (test_date is in the future)
+#         booking.status = 'cancelled'  # Update the status to "cancelled"
+#         booking.save()  # Save the changes to the database
+#         messages.success(request, 'Booking canceled successfully.')
+#     else:
+#         messages.error(request, 'Unable to cancel booking. Test date has already passed.')
+
+#     return redirect('viewtestbookings')
 
 
 
 
+
+
+# from django.http import JsonResponse
+
+# @login_required
+# def cancel_booking(request):
+#     if request.method == 'POST':
+#         # Get the booking ID from the request body
+#         booking_id = request.POST.get('booking_id')
+
+#         # Retrieve the booking object
+#         booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
+
+#         if booking.test_date and booking.test_date > timezone.now().date():
+#             # Check if the booking is cancelable (test_date is in the future)
+#             booking.status = 'cancelled'  # Update the status to "cancelled"
+#             booking.save()  # Save the changes to the database
+#             return JsonResponse({'success': True})  # Return success response
+#         else:
+#             return JsonResponse({'success': False, 'error': 'Test date has already passed.'})  # Return error response
+
+#     # Handle invalid request method
+#     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
