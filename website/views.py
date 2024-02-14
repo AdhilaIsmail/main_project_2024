@@ -1898,6 +1898,7 @@ def submit_booking(request):
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
+        test_date = request.POST.get('test_date')
         address = request.POST.get('address')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('date_of_birth')
@@ -1908,6 +1909,7 @@ def submit_booking(request):
             full_name=full_name,
             email=email,
             phone=phone,
+            
             address=address,
             gender=gender,
             date_of_birth=date_of_birth,
@@ -1915,7 +1917,7 @@ def submit_booking(request):
         )
 
         # Create a Booking object
-        Booking.objects.create(patient=patient)
+        Booking.objects.create(patient=patient, test_date=test_date)
 
         # Return a JSON response indicating success
         return JsonResponse({'success': True})
@@ -1941,44 +1943,182 @@ def labstaffindex(request):
     return render(request,'labstaff/index.html')
 
 
+# import logging
+# from django.shortcuts import render
+# from .models import Booking, Patient
+# from django.contrib.auth.decorators import login_required
+# from django.utils import timezone
+
+# logger = logging.getLogger(__name__)
+
+# @login_required
+# def viewtestbookings(request):
+    
+#     patient = request.user.id
+#         # Retrieve bookings for the patient
+#     bookings=[]
+#     variable=Patient.objects.filter(user_id=patient)
+#     print(variable)
+#     print("Hello")
+#     for i in variable:
+#         bookings.extend(Booking.objects.filter(patient_id=i.id))
+    
+    
+#     current_time = timezone.now()
+
+#         # Debugging: Log the bookings
+#     for booking in bookings:
+#         time_difference = booking.test_date - current_time
+#         booking.is_cancelable = time_difference.total_seconds() > 0 and time_difference.total_seconds() < 86400
+
+#         # logger.debug(f"Booking for {booking.patient.full_name} on {booking.booked_date}")
+        
+#         # Pass the bookings to the template context
+#     context = {'bookings': bookings}
+
+#         # Handle the case where there is no patient associated with the user
+
+#     return render(request, 'viewtestbookings.html', context)
+
+
+# views.py
+
+# import logging
+# from django.shortcuts import render
+# from .models import Booking, Patient
+# from django.contrib.auth.decorators import login_required
+# from django.utils import timezone  # Add this import statement
+
+# logger = logging.getLogger(__name__)
+
+# @login_required
+# def viewtestbookings(request):
+    
+#     patient = request.user.id
+#     # Retrieve bookings for the patient
+#     bookings = []
+#     variable = Patient.objects.filter(user_id=patient)
+
+#     if variable.exists():
+#         for i in variable:
+#             bookings.extend(Booking.objects.filter(patient_id=i.id))
+
+#         # Debugging: Log the bookings
+#         for booking in bookings:
+#             time_difference = booking.booked_date - timezone.now()
+#             booking.is_cancelable = (
+#                 time_difference.total_seconds() > 0 and
+#                 time_difference.total_seconds() < 86400
+#             )
+#             print(f"Booking for {booking.patient.full_name} - is_cancelable: {booking.is_cancelable}")
+#             print(f"Booked Date: {booking.booked_date}")
+#             print(f"Test Date: {booking.test_date}")
+#     else:
+#         print("No bookings found for the patient.")
+
+#     # Pass the bookings to the template context
+#     context = {'bookings': bookings}
+
+#     return render(request, 'viewtestbookings.html', context)
+
 import logging
 from django.shortcuts import render
-from .models import Booking, Patient
+from .models import Booking, Patient, LaboratoryTest
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+import datetime
 
 logger = logging.getLogger(__name__)
 
 @login_required
+# def viewtestbookings(request):
+#     patient = request.user.id
+#     # Retrieve bookings for the patient
+#     bookings = []
+#     variable = Patient.objects.filter(user_id=patient)
+
+#     if variable.exists():
+#         for i in variable:
+#             bookings.extend(Booking.objects.filter(patient_id=i.id))
+
+#         # Debugging: Log the bookings
+#         for booking in bookings:
+#             if booking.test_date:
+#                 if isinstance(booking.test_date, datetime.date):
+#                     time_difference = booking.test_date - datetime.date.today()
+#                     booking.is_cancelable = (
+#                         time_difference.days > 1
+#                     )
+#                     print(f"Booking for {booking.patient.full_name} - is_cancelable: {booking.is_cancelable}")
+#                     print(f"Booked Date: {booking.booked_date}")
+#                     print(f"Test Date: {booking.test_date}")
+#                 else:
+#                     print(f"Invalid test_date for {booking.patient.full_name}: {booking.test_date}")
+#     else:
+#         print("No bookings found for the patient.")
+
+#     # Pass the bookings to the template context
+#     context = {'bookings': bookings}
+
+#     return render(request, 'viewtestbookings.html', context)
+@login_required
 def viewtestbookings(request):
-    
     patient = request.user.id
-        # Retrieve bookings for the patient
-    bookings=[]
-    variable=Patient.objects.filter(user_id=patient)
-    print(variable)
-    print("Hello")
-    for i in variable:
-        bookings.extend(Booking.objects.filter(patient_id=i.id))
-    
-    print(bookings)
-    current_time = timezone.now()
+    # Retrieve bookings for the patient
+    bookings = []
+    variable = Patient.objects.filter(user_id=patient)
+
+    if variable.exists():
+        for i in variable:
+            bookings.extend(Booking.objects.filter(patient_id=i.id))
 
         # Debugging: Log the bookings
-    for booking in bookings:
-        time_difference = booking.booked_date - current_time
-        booking.is_cancelable = time_difference.total_seconds() > 0 and time_difference.total_seconds() < 86400
+        for booking in bookings:
+            if booking.test_date:
+                if isinstance(booking.test_date, datetime.date):
+                    time_difference = booking.test_date - datetime.date.today()
+                    booking.is_cancelable = (
+                        time_difference.days > 0
+                    )
+                    print(f"Booking for {booking.patient.full_name} - is_cancelable: {booking.is_cancelable}")
+                    print(f"Booked Date: {booking.booked_date}")
+                    print(f"Test Date: {booking.test_date}")
+                else:
+                    print(f"Invalid test_date for {booking.patient.full_name}: {booking.test_date}")
+    else:
+        print("No bookings found for the patient.")
 
-        # logger.debug(f"Booking for {booking.patient.full_name} on {booking.booked_date}")
-        
-        # Pass the bookings to the template context
+    # Pass the bookings to the template context
     context = {'bookings': bookings}
-
-        # Handle the case where there is no patient associated with the user
 
     return render(request, 'viewtestbookings.html', context)
 
 
-# views.py
+
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Booking
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
+@login_required
+
+
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
+
+    if booking.test_date and booking.test_date > timezone.now().date():
+        # Check if the booking is cancelable (test_date is in the future)
+        booking.status = 'cancelled'  # Update the status to "cancelled"
+        booking.save()  # Save the changes to the database
+        booking.delete()
+        messages.success(request, 'Booking canceled successfully.')
+    else:
+        messages.error(request, 'Unable to cancel booking. Test date has already passed.')
+
+    return redirect('viewtestbookings')
+
 
 
 

@@ -124,14 +124,18 @@
                         <td>{{ booking.patient.selected_test.test_name }}</td>
                         <td>{{ booking.patient.selected_test.test_price }}</td>
                         <td>{{ booking.booked_date }}</td>
-                        <td>{{ bookinh.test_date }}</td>
+                        <td>{{ booking.test_date }}</td>
                         <td>
-                            {% if booking.is_cancelable %}
-                                Cancel
-                            {% elif booking.booked_date > current_time %}
-                                Booked
+                            {% if booking.test_date %}
+                                {% if booking.is_cancelable %}
+                                    <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger">Cancel</a>
+                                {% elif booking.test_date > timezone.now %}
+                                    Booked
+                                {% else %}
+                                    Expired
+                                {% endif %}
                             {% else %}
-                                Expired
+                                Test Date Not Set
                             {% endif %}
                         </td>
                     </tr>
@@ -145,7 +149,6 @@
         <p>No bookings found.</p>
     {% endif %}
 </div>
-
 
 
 {% endblock %}

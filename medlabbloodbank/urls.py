@@ -129,7 +129,7 @@ urlpatterns = [
     path('download_file/<int:file_id>/', download_file, name='download_file'),
     path('viewlabresults', viewlabresults, name='viewlabresults'),
     path('update_approval_status',update_approval_status,name='update_approval_status'),
-
+    path('cancel_booking/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
    
     
     #hospital

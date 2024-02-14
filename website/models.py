@@ -419,8 +419,6 @@ class Patient(models.Model):
         return self.full_name
 
 
-
-
     
 from django.db import models
 
