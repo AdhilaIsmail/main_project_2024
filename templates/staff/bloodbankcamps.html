@@ -244,7 +244,8 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Address <span class="text-danger">*</span></label>
-                                        <textarea class="form-control" name="campAddress" rows="2" required></textarea>
+                                        <textarea class="form-control" name="campAddress" id="campAddress" rows="2" required></textarea>
+                                        <p id="addressError" style="color: red;"></p> <!-- Error message container -->
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
@@ -323,10 +324,14 @@
                             <script>
                                 document.getElementById('campDate').addEventListener('input', function () {
                                     const selectedDate = new Date(this.value);
+                                    const currentDate = new Date();
                                     const errorContainer = document.getElementById('dateError');
-                        
+                            
                                     if (selectedDate.getDay() !== 0) {
                                         errorContainer.textContent = 'Please select a Sunday.';
+                                        this.setCustomValidity('Invalid');  // Set a custom validity to trigger the browser's validation
+                                    } else if (selectedDate < currentDate) {
+                                        errorContainer.textContent = 'Please select a future date for scheduling.';
                                         this.setCustomValidity('Invalid');  // Set a custom validity to trigger the browser's validation
                                     } else {
                                         errorContainer.textContent = '';  // Clear the error message
@@ -335,7 +340,21 @@
                                 });
                             </script>
                             
+                            <script>
+                                document.getElementById('campAddress').addEventListener('input', function () {
+                                    const addressInput = this.value;
+                                    const errorContainer = document.getElementById('addressError');
+                                    const regex = /^[a-zA-Z0-9\s@,.()]*$/;
                             
+                                    if (!regex.test(addressInput)) {
+                                        errorContainer.textContent = 'Address can only contain letters, numbers, and @,.()';
+                                        this.setCustomValidity('Invalid');
+                                    } else {
+                                        errorContainer.textContent = '';
+                                        this.setCustomValidity('');
+                                    }
+                                });
+                            </script>
                             <script>
                                 document.getElementById('campName').addEventListener('input', function () {
                                     const nameValue = this.value;
@@ -432,42 +451,49 @@
                                 document.getElementById('startTime2').addEventListener('input', function () {
                                     const startTimeValue = this.value;
                                     const errorContainer = document.getElementById('startTimeError2');
-                            
-                                    // Construct Date object using the current date and selected start time
+                                
+                                    // Get the current date and time in local timezone
                                     const currentDate = new Date();
-                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
-                            
+                                    const currentDateString = currentDate.toISOString().split('T')[0];
+                                    const currentTimeString = startTimeValue;
+                                
+                                    // Construct Date object using the local date and selected start time
+                                    const startTime = new Date(`${currentDateString}T${currentTimeString}`);
+                                
                                     // Check if start time is before 9 am
-                                    const nineAm = new Date(`${currentDate.toISOString().split('T')[0]}T09:00:00Z`);
+                                    const nineAm = new Date(`${currentDateString}T09:00:00`);
                                     if (startTime < nineAm) {
                                         errorContainer.textContent = 'Start Time should not be earlier than 9:00 AM.';
                                         this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
                                     } else {
                                         // Calculate end time as start time + 2 hours
                                         const endTime = new Date(startTime.getTime() + (2 * 60 * 60 * 1000)); // 2 hours in milliseconds
-                            
+                                
                                         // Format the calculated end time as HH:mm
-                                        const formattedEndTime = endTime.toISOString().substr(11, 5);
-                            
+                                        const formattedEndTime = `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`;
+                                
                                         // Set the calculated end time in the End Time field
                                         document.getElementById('endTime2').value = formattedEndTime;
-                            
+                                
                                         // Clear the error message and reset the custom validity
                                         errorContainer.textContent = '';
                                         document.getElementById('endTime2').setCustomValidity('');
                                     }
                                 });
-                            
+                                
                                 document.getElementById('endTime2').addEventListener('input', function () {
                                     const startTimeValue = document.getElementById('startTime2').value;
                                     const endTimeValue = this.value;
                                     const errorContainer = document.getElementById('timeError2');
-                            
-                                    // Construct Date objects using the current date and selected start/end times
+                                
+                                    // Get the current date and time in local timezone
                                     const currentDate = new Date();
-                                    const startTime = new Date(`${currentDate.toISOString().split('T')[0]}T${startTimeValue}Z`);
-                                    const endTime = new Date(`${currentDate.toISOString().split('T')[0]}T${endTimeValue}Z`);
-                            
+                                    const currentDateString = currentDate.toISOString().split('T')[0];
+                                
+                                    // Construct Date objects using the local date and selected start/end times
+                                    const startTime = new Date(`${currentDateString}T${startTimeValue}`);
+                                    const endTime = new Date(`${currentDateString}T${endTimeValue}`);
+                                
                                     if (endTime < startTime) {
                                         errorContainer.textContent = 'End Time should not be less than Start Time.';
                                         this.setCustomValidity('Invalid'); // Set a custom validity to trigger the browser's validation
