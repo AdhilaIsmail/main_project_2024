@@ -21,6 +21,7 @@ from django.views.decorators.http import require_POST
 User = get_user_model()
 
 def index(request):
+
     return render(request, 'index.html')
 def about(request):
     return render(request, 'about.html')
@@ -411,8 +412,9 @@ def adminindex(request):
     donor_count = donors.count() 
     request_count= Request.count()
     staff_count= staffs.count()
+    notifications = Notification.objects.all()
 
-    return render(request, 'mainuser/index.html',{'donors': donors, 'donor_count': donor_count,'request_count':request_count,'staff_count':staff_count})
+    return render(request, 'mainuser/index.html',{'donors': donors, 'donor_count': donor_count,'request_count':request_count,'staff_count':staff_count, 'notifications': notifications})
 
 def activities(request):
     return render(request, 'mainuser/activities.html')
@@ -1548,7 +1550,12 @@ def requestsent(request,blood_request_id):
     return render(request,'hospital/requestsent.html', context=context)
 
 from .models import BloodInventory, BloodType
-
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+from django.utils import timezone
+from .models import Payment, BloodRequest, Notification
 @csrf_exempt
 def paymenthandler(request, blood_request_id):
     user=request.user
@@ -1599,6 +1606,14 @@ def paymenthandler(request, blood_request_id):
                 blood_inventory.quantity -= quantity_ml
                 blood_inventory.save()
 
+                admin_user = get_user_model().objects.filter(is_superadmin=True).first()
+            
+                print("hello")
+                notification_message = f"{user.email} from {user.hospitalregister.hospitalName} has requested blood and the payment is successful."
+                notification_type = 'blood_request'
+                Notification.objects.create(recipient=admin_user, message=notification_message, timestamp=timezone.now(), notification_type=notification_type)
+
+
                 # Redirect to a success page with payment details
                 return redirect('hospitalhome')  # Replace 'orders' with your actual success page name or URL
             else:
@@ -1625,18 +1640,7 @@ from django.core.mail import send_mail
 from datetime import datetime
 from .models import BloodRequest, BloodInventory, BloodType
 
-# def get_blood_quantity(request):
-#     blood_group = request.GET.get('blood_group', '')
-#     try:
-#         blood_type = BloodType.objects.get(blood_type=blood_group)
-#         blood_inventory = BloodInventory.objects.get(blood_type=blood_type)
-#         quantity_units = blood_inventory.quantity // 450  # Convert milliliters to units
-       
-#         return JsonResponse({'quantity': quantity_units})
-#     except BloodType.DoesNotExist:
-#         return JsonResponse({'error': 'Blood type not found'}, status=404)
-#     except BloodInventory.DoesNotExist:
-#         return JsonResponse({'error': 'Blood inventory not found'}, status=404)
+
 from django.http import JsonResponse
 from .models import BloodInventory, BloodType
 
@@ -1661,7 +1665,8 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail
-from datetime import datetime
+import datetime # Import datetime correctly
+from django.views.decorators.csrf import csrf_exempt
 from .models import BloodRequest
 @csrf_exempt  # Use csrf_exempt for simplicity; consider proper CSRF protection in production
 @login_required
@@ -1686,8 +1691,11 @@ def bloodrequest(request, is_immediate):
         # Use send_mail to send the OTP email
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
-        requested_date = datetime.now().date()
-        requested_time = datetime.now().time()
+        current_datetime = datetime.datetime.now()
+
+        # Extract the date and time from the current datetime
+        requested_date = current_datetime.date()
+        requested_time = current_datetime.time()
 
         is_immediate = is_immediate.lower() == 'true'
         # Calculate the amount based on the quantity (units) requested

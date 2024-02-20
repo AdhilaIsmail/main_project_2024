@@ -104,36 +104,36 @@
             <a id="mobile_btn" class="mobile_btn float-left" href="#sidebar"><i class="fa fa-bars"></i></a>
             <ul class="nav user-menu float-right">
                 <li class="nav-item dropdown d-none d-sm-block">
-                    <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"><i class="fa fa-bell-o"></i> <span class="badge badge-pill bg-danger float-right">3</span></a>
-                    <div class="dropdown-menu notifications">
-                        <div class="topnav-dropdown-header">
-                            <span>Notifications</span>
-                        </div>
-                        <div class="drop-scroll">
-                            <ul class="notification-list">
-                                <li class="notification-message">
-                                    <a href="activities.html">
-                                        <div class="media">
+                    <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" id="notification-bell">
+						<i class="fa fa-bell-o" style="color:red"></i>
+						<span class="badge badge-pill bg-danger float-right" id="notification-count">{{ unread_notifications_count }}</span>
+					</a>
+                    <div class="dropdown-menu notifications" id="notification-dropdown">
+						<div class="topnav-dropdown-header">
+							<span>Notifications</span>
+						</div>
+						<div class="drop-scroll">
+							<ul class="notification-list">
+								{% for notification in notifications %}
+								<li class="notification-message">
+									<a href="#">
+										<div class="media">
 											<span class="avatar">
-												<img alt="John Doe" src="assets/img/user.jpg" class="img-fluid">
+												<img alt="{{ notification.recipient.email }}" src="{% static 'mainuser/img/user.jpg' %}" class="img-fluid">
 											</span>
 											<div class="media-body">
-												<p class="noti-details"><span class="noti-title">John Doe</span> added new task <span class="noti-title">Patient appointment booking</span></p>
-												<p class="noti-time"><span class="notification-time">4 mins ago</span></p>
+												<p class="noti-details">{{ notification.message }}</p>
+												<p class="noti-time">{{ notification.timestamp }}</p>
 											</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                
-                                
-                                
-                                
-                            </ul>
-                        </div>
-                        <div class="topnav-dropdown-footer">
-                            <a href="activities.html">View all Notifications</a>
-                        </div>
-                    </div>
+										</div>
+									</a>
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="topnav-dropdown-footer">
+							<a href="#">View all Notifications</a>
+						</div>
                 </li>
                 {% comment %} <li class="nav-item dropdown d-none d-sm-block">
                     <a href="javascript:void(0);" id="open_msg_box" class="hasnotifications nav-link"><i class="fa fa-comment-o"></i> <span class="badge badge-pill bg-danger float-right">8</span></a>
@@ -336,6 +336,21 @@
         </div>
     </div>
     <div class="sidebar-overlay" data-reff=""></div>
+	<script>
+		$(document).ready(function() {
+			// Toggle notification dropdown
+			$('#notification-bell').click(function() {
+				$('#notification-dropdown').toggleClass('show');
+			});
+	
+			// Close notification dropdown when clicking outside
+			$(document).click(function(event) {
+				if (!$(event.target).closest('#notification-dropdown').length && !$(event.target).is('#notification-bell')) {
+					$('#notification-dropdown').removeClass('show');
+				}
+			});
+		});
+	</script>
     <script src="{% static 'mainuser/js/jquery-3.2.1.min.js' %}"></script>
 	<script src="{% static 'mainuser/js/popper.min.js' %}"></script>
     <script src="{% static 'mainuser/js/bootstrap.min.js' %}"></script>

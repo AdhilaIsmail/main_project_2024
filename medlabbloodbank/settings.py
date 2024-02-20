@@ -93,7 +93,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False 
 EMAIL_HOST_USER = 'adhilaismail2@gmail.com'
-EMAIL_HOST_PASSWORD = 'uylxnpnoqsnvmwpq'
+# EMAIL_HOST_PASSWORD = 'uylxnpnoqsnvmwpq'
+EMAIL_HOST_PASSWORD = 'solzbtdwcqqiyozq'
 #DEFAULT_FROM_EMAIL = 'adhilaismail2@gmail.com'
 
 

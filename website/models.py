@@ -167,7 +167,9 @@ class BloodInventory(models.Model):
 
 
 #blood request model
-from datetime import datetime 
+# from datetime import datetime 
+from django.db import models
+from django.utils import timezone 
 class BloodRequest(models.Model):
 
     user=models.ForeignKey(CustomUser,on_delete=models.CASCADE, default=None)
@@ -176,8 +178,8 @@ class BloodRequest(models.Model):
     
     purpose = models.TextField()
     is_immediate = models.BooleanField(default=False)
-    requested_date = models.DateField(default=datetime.now)
-    requested_time = models.TimeField(default=datetime.now)
+    requested_date = models.DateField(default=timezone.now)
+    requested_time = models.TimeField(default=timezone.now)
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
         ('Accepted', 'Accepted'),
@@ -436,4 +438,22 @@ class Booking(models.Model):
     def __str__(self):
         return f"Booking for {self.patient.full_name} on {self.booked_date}"
     
-   
+
+from django.db import models
+from django.contrib.auth import get_user_model
+
+# Define notification types
+NOTIFICATION_TYPES = [
+    ('blood_request', 'Blood Request'),
+    # Add more notification types as needed
+]
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+
+    def __str__(self):
+        return f"To: {self.recipient}, Message: {self.message}, Type: {self.notification_type}, Timestamp: {self.timestamp}, Read: {self.is_read}"
