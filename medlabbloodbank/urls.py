@@ -23,7 +23,7 @@ from website.views import index, about,  service, testimonial, contact, loginn, 
 from website.views import registereddonorresponse, registereddonortodonatenow, notificationfordonation, send_sms, uploadresult, uploadresult2
 from website.views import homebloodbank, register, loggout
 from django.contrib.auth import views as auth_views
-from website.views import adminindex, activities, appointments, donors, departments, employees, profile1, editprofile,requestsent,campschedulesfordonor,confirmpage,donorappointments,bloodinventorystaff,registeredstafftablelab
+from website.views import adminindex, activities,notificationpage, appointments, donors, departments, employees, profile1, editprofile,requestsent,campschedulesfordonor,confirmpage,donorappointments,bloodinventorystaff,registeredstafftablelab
 from website.views import registereddonortable, search_by_name, search_by_place, search_by_blood_group, addhospitals, hospitalregistration,waitforemail,view_uploaded_files,viewlabresults
 from website.views import hospital_registration, registeredhospitaltable, bloodrequest, registeredstafftable, staff_registration,getlaboratories,send_confirmation_email,download_file, get_assigned_gram_panchayats
 from website.views import addnewgroup, addblood, requests, requestblood,donorappointments,hospitalhome, bloodavailability, hospitalabout, blood_request_list, verify_hospital, staffindex,validate_assign_grampanchayat,blood_inventory
@@ -82,8 +82,15 @@ urlpatterns = [
 
 
     #admindashboard
-    path('adminindex', adminindex, name='adminindex'),
-    path('activities', activities, name='activities'),
+    path('adminindex/', adminindex, name='adminindex'),
+    path('notificationpage/', notificationpage, name='notificationpage'),
+    path('notification/<int:notification_id>/', views.notification_detail, name='notification_detail'),
+    path('notification/<int:notification_id>/accept/', views.accept_request, name='accept_request'),
+    path('notification/<int:notification_id>/reject/', views.reject_request, name='reject_request'),
+   
+    
+    
+
     path('appointments', appointments, name='appointments'),
     path('departments', departments, name='departments'),
     path('donors', donors, name='donors'),

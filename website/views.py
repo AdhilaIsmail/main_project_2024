@@ -413,11 +413,40 @@ def adminindex(request):
     request_count= Request.count()
     staff_count= staffs.count()
     notifications = Notification.objects.all()
+    
 
     return render(request, 'mainuser/index.html',{'donors': donors, 'donor_count': donor_count,'request_count':request_count,'staff_count':staff_count, 'notifications': notifications})
 
-def activities(request):
-    return render(request, 'mainuser/activities.html')
+
+
+
+from django.shortcuts import render
+from .models import Notification
+
+def notificationpage(request):
+    notifications = Notification.objects.all()
+    return render(request, 'mainuser/notificationpage.html', {'notifications': notifications})
+
+from django.shortcuts import render, get_object_or_404
+from .models import Notification
+
+def notification_detail(request, notification_id):
+    notification = get_object_or_404(Notification, pk=notification_id)
+    if not notification.is_read:
+        notification.mark_as_read()
+    return render(request, 'mainuser/notification_detail.html', {'notification': notification})
+
+from django.http import HttpResponse
+
+def accept_request(request, notification_id):
+    # Handle accept request logic here
+    return HttpResponse("Request Accepted")
+
+def reject_request(request, notification_id):
+    # Handle reject request logic here
+    return HttpResponse("Request Rejected")
+
+
 
 def appointments(request):
     return render(request, 'mainuser/appointments.html')

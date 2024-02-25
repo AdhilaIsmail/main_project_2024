@@ -94,34 +94,58 @@
 			margin: 0;
 			padding: 0;
 		}
-		.black-widget {
-			background-color: black;
-			padding: 20px;
-			margin-bottom: 20px;
-			border-radius: 5px;
-			color: white;
-		}
-		
-		.black-widget .dash-widget {
-			border: 1px solid #ddd;
-			border-radius: 5px;
-		}
-		
-		.black-widget h3 {
-			font-size: 24px;
-			margin-bottom: 10px;
-		}
-		
-		.black-widget .widget-title2 {
-			font-size: 16px;
-			color: #ccc;
-		}
-		
-		.dash-widget {
-			color: black; /* Set text color to black */
-			background-color: white	; /* Set background color to white */
-		}
-		
+        .notification-details {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .notification-details h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .notification-details p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .notification-details form {
+            margin-top: 15px;
+        }
+        .notification-details button.accept-request {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #28a745; /* Green color */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .notification-details button.reject-request {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #dc3545; /* Red color */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        {% comment %} .notification-details button {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        } {% endcomment %}
+        
+        .notification-details button:hover {
+            opacity: 0.8; /* Reduce opacity on hover for both buttons */
+        }
+
 	</style>   
 
 </head>
@@ -150,12 +174,10 @@
 							<ul class="notification-list">
                                 {% for notification in notifications %}
                                 <li class="notification-message">
-                                    <a href="{% url 'notification_detail' notification_id=notification.id %}?read={{ notification.is_read }}">
+                                    <a href="{% url 'notification_detail' notification_id=notification.id %}">
                                         <div class="media">
                                             <div class="media-body">
-												<p class="noti-details {% if not notification.is_read %}font-weight-bold{% endif %}">
-													{{ notification.message }}
-												</p>
+                                                <p class="noti-details">{{ notification.message }}</p>
                                                 <p class="noti-time">{{ notification.timestamp }}</p>
                                             </div>
                                         </div>
@@ -202,7 +224,7 @@
                 <div id="sidebar-menu" class="sidebar-menu">
                     <ul>
                         <li class="menu-title">Main</li>
-                        <li class="active">
+                        <li>
                             <a href="{% url 'adminindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                         </li>
 						<li>
@@ -247,77 +269,58 @@
                 </div>
             </div>
         </div>
+
         <div class="page-wrapper">
-			<div class="content">
-				<div class="row">
-					<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-						<div class="black-widget">
-							<div class="dash-widget" style="color:black">
-								<span class="dash-widget-bg2"><i class="fa fa-user-o"></i></span>
-								<div class="dash-widget-info text-right">
-									<h3>{{ donor_count }}</h3>
-									<span class="widget-title2">Registered Donors</span>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-						<div class="black-widget">
-							<div class="dash-widget" style="color:black">
-								<span class="dash-widget-bg2"><i class="fa fa-user-o"></i></span>
-								<div class="dash-widget-info text-right">
-									<h3>{{ request_count }}</h3>
-									<span class="widget-title2">Blood Requests</span>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-						<div class="black-widget">
-							<div class="dash-widget" style="color:black">
-								<span class="dash-widget-bg2"><i class="fa fa-user-o"></i></span>
-								<div class="dash-widget-info text-right">
-									<h3>{{ staff_count }}</h3>
-									<span class="widget-title2">Blood Bank Staffs</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		
-    </div>
-    <div class="sidebar-overlay" data-reff=""></div>
-	<script>
-		$(document).ready(function() {
-			// Toggle notification dropdown
-			$('#notification-bell').click(function() {
-				$('#notification-dropdown').toggleClass('show');
-			});
-	
-			// Close notification dropdown when clicking outside
-			$(document).click(function(event) {
-				if (!$(event.target).closest('#notification-dropdown').length && !$(event.target).is('#notification-bell')) {
-					$('#notification-dropdown').removeClass('show');
-				}
-			});
-		});
-	</script>
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			var viewMoreLinks = document.querySelectorAll('.view-more');
-			viewMoreLinks.forEach(function(link) {
-				link.addEventListener('click', function(event) {
-					event.preventDefault();
-					var notificationMessage = link.parentElement.querySelector('.truncated-text');
-					notificationMessage.textContent = "{{ notification.message }}";
-					link.style.display = 'none';
-				});
-			});
-		});
-	</script>
+            <div class="content">
+                <div class="notification-details">
+                    <h2>{{ notification.message }}</h2>
+                    <p>Time: {{ notification.timestamp }}</p>
+        
+                    {% if notification.notification_type == 'blood_request' %}
+                        
+                    <form action="{% url 'accept_request' notification_id=notification.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="accept-request">Accept Request</button>
+                    </form>
+                    
+                    <form action="{% url 'reject_request' notification_id=notification.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="reject-request">Reject Request</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar-overlay" data-reff=""></div>
+        <script>
+            $(document).ready(function() {
+                // Toggle notification dropdown
+                $('#notification-bell').click(function() {
+                    $('#notification-dropdown').toggleClass('show');
+                });
+        
+                // Close notification dropdown when clicking outside
+                $(document).click(function(event) {
+                    if (!$(event.target).closest('#notification-dropdown').length && !$(event.target).is('#notification-bell')) {
+                        $('#notification-dropdown').removeClass('show');
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var viewMoreLinks = document.querySelectorAll('.view-more');
+                viewMoreLinks.forEach(function(link) {
+                    link.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        var notificationMessage = link.parentElement.querySelector('.truncated-text');
+                        notificationMessage.textContent = "{{ notification.message }}";
+                        link.style.display = 'none';
+                    });
+                });
+            });
+        </script>
     <script src="{% static 'mainuser/js/jquery-3.2.1.min.js' %}"></script>
 	<script src="{% static 'mainuser/js/popper.min.js' %}"></script>
     <script src="{% static 'mainuser/js/bootstrap.min.js' %}"></script>

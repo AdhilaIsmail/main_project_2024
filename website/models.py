@@ -457,3 +457,7 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"To: {self.recipient}, Message: {self.message}, Type: {self.notification_type}, Timestamp: {self.timestamp}, Read: {self.is_read}"
+
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()
