@@ -2068,31 +2068,7 @@ def submit_lab_results(request):
     else:
         return redirect('labstaffindex')  # Redirect to home page if not a POST request
     
-# from django.shortcuts import render, redirect
-# from .models import Booking, LaboratoryTest
 
-# def save_lab_results(request):
-#     if request.method == 'POST':
-#         # Retrieve the appointment ID from the POST data
-#         appointment_id = request.POST.get('appointment_id')
-        
-#         # Retrieve the booking associated with the appointment ID
-#         try:
-#             booking = Booking.objects.get(id=appointment_id)
-#         except Booking.DoesNotExist:
-#             # Handle the case where the booking does not exist
-#             # Redirect to an appropriate page or display an error message
-#             return redirect('labstaffindex')
-
-#         # Logic to save the lab results can be added here
-#         # For example, you can retrieve the lab results from the POST data
-#         # and update the booking object with the lab results
-        
-#         # Once the lab results are saved, you can redirect to a success page
-#         return redirect('labstaffindex')
-#     else:
-#         # If the request method is not POST, redirect to the home page
-#         return redirect('labstaffindex')
     
 
 # views.py
@@ -2127,22 +2103,6 @@ def save_lab_results(request):
 
 
 
-# from django.shortcuts import render, redirect
-# from .models import Booking
-
-# def submit_lab_results(request):
-#     if request.method == 'POST':
-#         appointment_id = request.POST.get('appointment_id')
-#         test_name = request.POST.get('test_name')
-#         # Assuming you have logic to retrieve package details based on the test_name
-#         # Replace this logic with your actual implementation
-#         package_details = {'field1': 'Label 1', 'field2': 'Label 2'}  # Example package details
-        
-#         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
-#     else:
-#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
-    
-# views.py
 from django.shortcuts import render, redirect
 from .models import Booking, LaboratoryTest
 
@@ -2162,23 +2122,7 @@ def submit_lab_results(request):
 
 
 
-# from django.shortcuts import render, redirect
-# from .models import Booking
 
-# def submit_lab_results(request):
-#     if request.method == 'POST':
-#         appointment_id = request.POST.get('appointment_id')
-#         test_name = request.POST.get('test_name')
-#         # Assuming you have logic to retrieve package details based on the test_name
-#         # Replace this logic with your actual implementation
-#         package_details = {'field1': 'Label 1', 'field2': 'Label 2'}  # Example package details
-        
-#         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
-#     else:
-#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
-    
-# views.py
-# views.py
 from django.shortcuts import render, redirect
 from .models import Booking, LaboratoryTest
 import json
@@ -2197,20 +2141,10 @@ def submit_lab_results(request):
         # Parse package_details if it's stored as JSON string
         if isinstance(package_details, str):
             package_details = json.loads(package_details)
+        
+
+        
 
         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
     else:
         return redirect('labstaffindex')  # Redirect to home page if not a POST request
-# def submit_lab_results(request):
-#     if request.method == 'POST':
-#         appointment_id = request.POST.get('appointment_id')
-#         booking = Booking.objects.get(id=appointment_id)
-#         test_name = booking.patient.selected_test.test_name
-
-#         # Retrieve package details based on the test name
-#         lab_test = LaboratoryTest.objects.get(test_name=test_name)
-#         package_details = lab_test.package_details
-
-#         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
-#     else:
-#         return redirect('labstaffindex')  # Redirect to home page if not a POST request

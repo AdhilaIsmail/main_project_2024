@@ -147,33 +147,13 @@
         <div class="page-wrapper">
             <div class="content">
                 <div class="row">
-                    
-					
-					
-					
-					{% comment %} <form action="{% url 'save_lab_results' %}" method="post">
+                    <form action="{% url 'save_lab_results' %}" method="post" id="lab_results_form">
 						{% csrf_token %}
 						<h1>Lab Results for {{ test_name }}</h1>
-						<p>Package Details: {{ package_details }}</p>
-						<!-- Render form fields for lab results -->
-						<p>Package Details:</p>
-						{% for key, value in package_details.items %}
-							<label for="{{ key }}">{{ key }}</label>
-							<input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}"><br>
-						{% endfor %}
-						<button type="submit">Submit</button>
-					</form> {% endcomment %}
-					<form action="{% url 'save_lab_results' %}" method="post" id="lab_results_form">
-						{% csrf_token %}
-						<h1>Lab Results for {{ test_name }}</h1>
-						<!-- Render form fields for lab results -->
-						
-						<div id="package_details_fields" style="margin-bottom: 10px;">
-							<!-- JavaScript will populate this div with input fields -->
+						<div id="package_details_fields" style="margin-bottom: 10px; display: flex; flex-direction: column; border-radius:5px">	
 						</div>
 						<button type="submit" class="btn btn-primary">Submit</button>
 					</form>
-					
                 </div>	
             </div>    
         </div>
@@ -204,7 +184,7 @@
 			input.setAttribute('type', 'text');
 			input.setAttribute('name', value);
 			input.setAttribute('value', ''); // Set value as empty initially
-			input.style.marginBottom = '30px';
+			input.style.width = '200px';
 			// Append the label and input elements to the container div
 			packageDetailsFields.appendChild(label);
 			packageDetailsFields.appendChild(input);
