@@ -67,7 +67,7 @@ urlpatterns = [
     path('download_report_view', download_report_view,name='download_report_view'),
     path('find_lab_view',find_lab_view,name='find_lab_view'),
     path('labtestbookings',views.labtestbookings, name='labtestbookings'),
-    path('labstaffindex',views.labstaffindex,name='labstaffindex'),
+    
    
 
     # path('uploadresult2/<path:lab_selection_timestamp>/', uploadresult2, name='uploadresult2'),
@@ -184,4 +184,11 @@ urlpatterns = [
     path('check-appointment-status/<int:appointment_id>/', views.check_appointment_status, name='check_appointment_status'),
     
     path('view_profile/', views.view_profile, name='view_profile'),
+
+
+
+    #labstaff
+    path('labstaffindex',views.labstaffindex,name='labstaffindex'),
+    path('submit_lab_results', views.submit_lab_results, name='submit_lab_results'),
+    path('save_lab_results/', views.save_lab_results, name='save_lab_results'),
 ]

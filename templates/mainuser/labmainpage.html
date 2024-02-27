@@ -440,57 +440,63 @@
                 });
             }
         });
-    </script>
     
-    function submitForm(formId) {
-        var form = document.getElementById(formId);
     
-        if (!form || form.tagName !== 'FORM') {
-            console.error('Invalid form element.');
-            return;
-        }
-    
-        var formData = new FormData(form);
-        formData.append('labTestName', document.getElementById('labTestName').value);
-        formData.append('labTestPrice', document.getElementById('labTestPrice').value);
-        console.log('Submitting form:', formId);
-        console.log('Form Data:', formData);
-    
-        // Convert packageDetails input values to an array
-        var packageDetails = [];
-        var packageDetailInputs = form.querySelectorAll('ul#packageDetailsList input');
-        packageDetailInputs.forEach(function (input) {
-            packageDetails.push(input.value);
-        });
-    
-        // Add packageDetails to formData
-        formData.append('packageDetails', JSON.stringify(packageDetails));
-        console.log(formData);
-        fetch('/save_laboratory_test/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response:', data);
-            if (data.status === 'success') {
-                alert('Data saved successfully');
-                resetForm(formId);
-                // You can perform additional actions after successful submission
-            } else {
-                alert('Error saving data: ' + data.message);
-                // You can handle errors or display appropriate messages
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-    
+        function submitForm(formId) {
+            var form = document.getElementById(formId);
         
+            if (!form || form.tagName !== 'FORM') {
+                console.error('Invalid form element.');
+                return;
+            }
+        
+            var formData = new FormData(form);
+            formData.append('labTestName', document.getElementById('labTestName').value);
+            formData.append('labTestPrice', document.getElementById('labTestPrice').value);
+        
+            // Convert packageDetails input values to an array
+            var packageDetails = [];
+            var packageDetailInputs = form.querySelectorAll('ul#packageDetailsList input');
+            packageDetailInputs.forEach(function (input) {
+                packageDetails.push(input.value);
+            });
+        
+            // Ensure packageDetails is always sent as a JSON array
+            formData.append('packageDetails', JSON.stringify(packageDetails));
+        
+            fetch('/save_laboratory_test/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Server Error: ' + response.statusText);
+                }
+            })
+            .then(data => {
+                console.log('Response:', data);
+                if (data.status === 'success') {
+                    alert('Data saved successfully');
+                    resetForm(formId);
+                    // You can perform additional actions after successful submission
+                } else {
+                    alert('Error saving data: ' + data.message);
+                    // You can handle errors or display appropriate messages
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving data: ' + error.message);
+            });
+        }
+        
+        
+
         // Function to get CSRF token from cookies
         function getCookie(name) {
             var cookieValue = null;
@@ -504,15 +510,15 @@
                     }
                 }
             }
-            return cookieValue;
-        }
-        function resetForm(formId) {
-            var form = document.getElementById(formId);
-            if (form && form.tagName === 'FORM') {
-                form.reset();
+                return cookieValue;
             }
-        }
-        
+            function resetForm(formId) {
+                var form = document.getElementById(formId);
+                if (form && form.tagName === 'FORM') {
+                    form.reset();
+                }
+            }
+            
     </script>
     
     

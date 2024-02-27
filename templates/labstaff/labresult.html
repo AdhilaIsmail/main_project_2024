@@ -86,6 +86,7 @@
 			color: #009efb;
 			text-decoration: underline;
 		}
+		
 	</style>   
 
 </head>
@@ -129,24 +130,16 @@
                 <div id="sidebar-menu" class="sidebar-menu">
                     <ul>
                         <li class="menu-title">Menu</li>
-                        <li class="active">
+                        <li >
                             <a href="{% url 'labstaffindex' %}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                         </li>
 						<li>
                             <a href="{% url 'labtestbookings' %}"><i class="fa fa-address-book-o"></i> <span>Bookings</span></a>
                         </li>
-						{% comment %} <li>
-                            <a href=""><i class="fa fa-address-book-o"></i> <span>Lab Reports</span></a>
-                        </li>
-                        {% endcomment %}
+						
+                       
                         
-{% comment %} 	
-						<li class="submenu">
-							<a href="#"><i class="fa fa-user"></i> <span>Staffs </span> <span class="menu-arrow"></span></a>
-							<ul style="display: none;">
-								<li><a href="{% url 'stafflist' %}">Staffs List</a></li>
-							</ul>
-						</li>  {% endcomment %}
+
                     </ul>
                 </div>
             </div>
@@ -154,32 +147,35 @@
         <div class="page-wrapper">
             <div class="content">
                 <div class="row">
-                    {% comment %} <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                        <div class="dash-widget">
-                            <span class="dash-widget-bg2"><i class="fa fa-user-o"></i></span>
-                            <div class="dash-widget-info text-right">
-								<h3>{{ donor_count }}</h3>
-								<span class="widget-title2">Registered Donors </span>
-							</div>
-                        </div>
-                    </div> {% endcomment %}
                     
-                    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                        <div class="dash-widget">
-                            <span class="dash-widget-bg2"><i class="fa fa-user-o"></i></span>
-                            <div class="dash-widget-info text-right">
-								<h3>{{ staff_count }}</h3>
-								<span class="widget-title2">Blood Bank Staffs</span>
-							</div>
-                        </div>
-                    </div>
-                    
-                </div>
-				
-				
-				
-            </div>
-            
+					
+					
+					
+					{% comment %} <form action="{% url 'save_lab_results' %}" method="post">
+						{% csrf_token %}
+						<h1>Lab Results for {{ test_name }}</h1>
+						<p>Package Details: {{ package_details }}</p>
+						<!-- Render form fields for lab results -->
+						<p>Package Details:</p>
+						{% for key, value in package_details.items %}
+							<label for="{{ key }}">{{ key }}</label>
+							<input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}"><br>
+						{% endfor %}
+						<button type="submit">Submit</button>
+					</form> {% endcomment %}
+					<form action="{% url 'save_lab_results' %}" method="post" id="lab_results_form">
+						{% csrf_token %}
+						<h1>Lab Results for {{ test_name }}</h1>
+						<!-- Render form fields for lab results -->
+						
+						<div id="package_details_fields" style="margin-bottom: 10px;">
+							<!-- JavaScript will populate this div with input fields -->
+						</div>
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</form>
+					
+                </div>	
+            </div>    
         </div>
     </div>
     <div class="sidebar-overlay" data-reff=""></div>
@@ -190,7 +186,31 @@
     <script src="{% static 'staff/js/Chart.bundle.js' %}"></script>
     <script src="{% static 'staff/js/chart.js' %}"></script>
     <script src="{% static 'staff/js/app.js' %}"></script>
-
+	<script>
+		// Extract package details JSON data from the template variable
+		var packageDetails = {{ package_details|safe }};
+	
+		// Get the container div where input fields will be appended
+		var packageDetailsFields = document.getElementById('package_details_fields');
+	
+		// Iterate over each key-value pair in the package details JSON
+		Object.values(packageDetails).forEach(function(value) {
+			// Create a label element
+			var label = document.createElement('label');
+			label.textContent = value;
+	
+			// Create an input element
+			var input = document.createElement('input');
+			input.setAttribute('type', 'text');
+			input.setAttribute('name', value);
+			input.setAttribute('value', ''); // Set value as empty initially
+			input.style.marginBottom = '30px';
+			// Append the label and input elements to the container div
+			packageDetailsFields.appendChild(label);
+			packageDetailsFields.appendChild(input);
+			packageDetailsFields.appendChild(document.createElement('br')); // Add line break for better spacing
+		});
+	</script>
 </body>
 
 </html>

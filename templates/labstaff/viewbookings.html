@@ -91,6 +91,9 @@
 			color: #009efb;
 			text-decoration: underline;
 		}
+		.table-striped.custom-table tbody td {
+			font-size: 13px; /* Adjust the font size as needed */
+		}
 	</style>   
 
 </head>
@@ -163,10 +166,11 @@
                                         <th>Date of Birth</th>
                                         <th>Test Name</th>
                                         <th>Booked Date</th>
+										<th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for appointment in appointments %}
+                                    {% for appointment in appointments|dictsortreversed:"booked_date" %}
                                         <tr>
                                             {% comment %} <td>{{ appointment.id }}</td> {% endcomment %}
                                             <td>{{ appointment.patient.full_name }}</td>
@@ -177,6 +181,15 @@
                                             <td>{{ appointment.patient.date_of_birth }}</td>
                                             <td>{{ appointment.patient.selected_test.test_name }}</td>
                                             <td>{{ appointment.booked_date }}</td>
+											<td>
+												<!-- Button for submitting lab results -->
+												<form id="lab_results_form_{{ appointment.id }}" action="{% url 'submit_lab_results' %}" method="post">
+													{% csrf_token %}
+													<input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+													<input type="hidden" name="test_name" value="{{ appointment.patient.selected_test.test_name }}">
+													<button type="submit" class="btn btn-primary">Submit Lab Results</button>
+												</form>
+											</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -224,7 +237,36 @@
                     format: 'LT'
                 });
             });
-     </script>
+    </script>
+	<script>
+		$(document).ready(function() {
+			$(".submit-lab-results").click(function(event) {
+				event.preventDefault(); // Prevent the default form submission
+	
+				// Get the form associated with the clicked button
+				var form = $(this).closest('form');
+	
+				// Serialize form data
+				var formData = form.serialize();
+	
+				// Send AJAX request to submit lab results
+				$.ajax({
+					type: form.attr('method'),
+					url: form.attr('action'),
+					data: formData,
+					success: function(response) {
+						// Handle success response
+						console.log('Lab results submitted successfully!');
+					},
+					error: function(xhr, status, error) {
+						// Handle error response
+						console.error('Error submitting lab results:', error);
+					}
+				});
+			});
+		});
+	</script>
+
 </body>
 
 

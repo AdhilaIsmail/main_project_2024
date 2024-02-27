@@ -78,6 +78,8 @@ def loginn(request):
                 return redirect('hospitalhome')
             elif user.role == CustomUser.STAFF:
                 return redirect('staffindex')
+            elif user.role == CustomUser.LABSTAFF:
+                return redirect('labstaffindex')
             else:
                 return redirect('index')  # Redirect to the custom dashboard for non-admin users
         else:
@@ -1845,6 +1847,7 @@ def save_laboratory_test(request):
         package_details_json = request.POST.get('packageDetails')
 
         try:
+            print("Received package_details_json:", package_details_json)  # Debugging statement
             # Parse JSON data
             package_details = json.loads(package_details_json)
 
@@ -1865,7 +1868,7 @@ def save_laboratory_test(request):
         # Handle GET requests to display laboratory test data
         lab_tests = LaboratoryTest.objects.all()
         context = {'lab_tests': lab_tests}
-        return render(request, 'labhome.html', context)
+        return render(request, 'mainuser/labmainpage.html', context)
     else:
         # Handle other request methods (e.g., PUT, DELETE) if needed
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
@@ -1980,83 +1983,6 @@ def labstaffindex(request):
     return render(request,'labstaff/index.html')
 
 
-# import logging
-# from django.shortcuts import render
-# from .models import Booking, Patient
-# from django.contrib.auth.decorators import login_required
-# from django.utils import timezone
-
-# logger = logging.getLogger(__name__)
-
-# @login_required
-# def viewtestbookings(request):
-    
-#     patient = request.user.id
-#         # Retrieve bookings for the patient
-#     bookings=[]
-#     variable=Patient.objects.filter(user_id=patient)
-#     print(variable)
-#     print("Hello")
-#     for i in variable:
-#         bookings.extend(Booking.objects.filter(patient_id=i.id))
-    
-    
-#     current_time = timezone.now()
-
-#         # Debugging: Log the bookings
-#     for booking in bookings:
-#         time_difference = booking.test_date - current_time
-#         booking.is_cancelable = time_difference.total_seconds() > 0 and time_difference.total_seconds() < 86400
-
-#         # logger.debug(f"Booking for {booking.patient.full_name} on {booking.booked_date}")
-        
-#         # Pass the bookings to the template context
-#     context = {'bookings': bookings}
-
-#         # Handle the case where there is no patient associated with the user
-
-#     return render(request, 'viewtestbookings.html', context)
-
-
-# views.py
-
-# import logging
-# from django.shortcuts import render
-# from .models import Booking, Patient
-# from django.contrib.auth.decorators import login_required
-# from django.utils import timezone  # Add this import statement
-
-# logger = logging.getLogger(__name__)
-
-# @login_required
-# def viewtestbookings(request):
-    
-#     patient = request.user.id
-#     # Retrieve bookings for the patient
-#     bookings = []
-#     variable = Patient.objects.filter(user_id=patient)
-
-#     if variable.exists():
-#         for i in variable:
-#             bookings.extend(Booking.objects.filter(patient_id=i.id))
-
-#         # Debugging: Log the bookings
-#         for booking in bookings:
-#             time_difference = booking.booked_date - timezone.now()
-#             booking.is_cancelable = (
-#                 time_difference.total_seconds() > 0 and
-#                 time_difference.total_seconds() < 86400
-#             )
-#             print(f"Booking for {booking.patient.full_name} - is_cancelable: {booking.is_cancelable}")
-#             print(f"Booked Date: {booking.booked_date}")
-#             print(f"Test Date: {booking.test_date}")
-#     else:
-#         print("No bookings found for the patient.")
-
-#     # Pass the bookings to the template context
-#     context = {'bookings': bookings}
-
-#     return render(request, 'viewtestbookings.html', context)
 
 import logging
 from django.shortcuts import render
@@ -2066,39 +1992,6 @@ from django.utils import timezone
 import datetime
 
 logger = logging.getLogger(__name__)
-
-
-# @login_required
-# def viewtestbookings(request):
-#     patient = request.user.id
-#     # Retrieve bookings for the patient
-#     bookings = []
-#     variable = Patient.objects.filter(user_id=patient)
-
-#     if variable.exists():
-#         for i in variable:
-#             bookings.extend(Booking.objects.filter(patient_id=i.id))
-
-#         # Debugging: Log the bookings
-#         for booking in bookings:
-#             if booking.test_date:
-#                 if isinstance(booking.test_date, datetime.date):
-#                     time_difference = booking.test_date - datetime.date.today()
-#                     booking.is_cancelable = (
-#                         time_difference.days > 0
-#                     )
-#                     print(f"Booking for {booking.patient.full_name} - is_cancelable: {booking.is_cancelable}")
-#                     print(f"Booked Date: {booking.booked_date}")
-#                     print(f"Test Date: {booking.test_date}")
-#                 else:
-#                     print(f"Invalid test_date for {booking.patient.full_name}: {booking.test_date}")
-#     else:
-#         print("No bookings found for the patient.")
-
-#     # Pass the bookings to the template context
-#     context = {'bookings': bookings}
-
-#     return render(request, 'viewtestbookings.html', context)
 
 
 @login_required
@@ -2137,19 +2030,15 @@ def viewtestbookings(request):
     return render(request, 'viewtestbookings.html', context)
 
 
-
+#cancel booking
 from django.shortcuts import get_object_or_404, redirect
 from .models import Booking
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-
 from django.http import JsonResponse
 
 @login_required
-
-
-
 def cancel_booking(request, booking_id):
     # Retrieve the booking object
     booking = get_object_or_404(Booking, id=booking_id)
@@ -2160,65 +2049,168 @@ def cancel_booking(request, booking_id):
 
     # Return a success response
     return JsonResponse({'success': True})
-# def cancel_booking(request):
+
+
+
+from django.shortcuts import render, redirect
+from .models import Booking, LaboratoryTest
+
+def submit_lab_results(request):
+    if request.method == 'POST':
+        appointment_id = request.POST.get('appointment_id')
+        booking = Booking.objects.get(id=appointment_id)
+        selected_test = booking.patient.selected_test
+
+        # Retrieve package details of selected lab test
+        package_details = selected_test.package_details
+
+        return render(request, 'labstaff/labresult.html', {'selected_test': selected_test, 'package_details': package_details})
+    else:
+        return redirect('labstaffindex')  # Redirect to home page if not a POST request
+    
+# from django.shortcuts import render, redirect
+# from .models import Booking, LaboratoryTest
+
+# def save_lab_results(request):
 #     if request.method == 'POST':
-#         # Get the booking ID from the request body
-#         booking_id = request.POST.get('booking_id')
+#         # Retrieve the appointment ID from the POST data
+#         appointment_id = request.POST.get('appointment_id')
+        
+#         # Retrieve the booking associated with the appointment ID
+#         try:
+#             booking = Booking.objects.get(id=appointment_id)
+#         except Booking.DoesNotExist:
+#             # Handle the case where the booking does not exist
+#             # Redirect to an appropriate page or display an error message
+#             return redirect('labstaffindex')
 
-#         print("Booking ID received:", booking_id)  # Add this line for debugging
-
-#         # Retrieve the booking object
-#         booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
-
-#         if booking.test_date and booking.test_date > timezone.now().date():
-#             # Check if the booking is cancelable (test_date is in the future)
-#             booking.status = 'cancelled'  # Update the status to "cancelled"
-#             booking.save()  # Save the changes to the database
-#             return JsonResponse({'success': True})  # Return success response
-#         else:
-#             return JsonResponse({'success': False, 'error': 'Test date has already passed.'})  # Return error response
-
-#     # Handle invalid request method
-#     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
-
-
-# @login_required
-# def cancel_booking(request, booking_id):
-#     booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
-
-#     if booking.test_date and booking.test_date > timezone.now().date():
-#         # Check if the booking is cancelable (test_date is in the future)
-#         booking.status = 'cancelled'  # Update the status to "cancelled"
-#         booking.save()  # Save the changes to the database
-#         messages.success(request, 'Booking canceled successfully.')
+#         # Logic to save the lab results can be added here
+#         # For example, you can retrieve the lab results from the POST data
+#         # and update the booking object with the lab results
+        
+#         # Once the lab results are saved, you can redirect to a success page
+#         return redirect('labstaffindex')
 #     else:
-#         messages.error(request, 'Unable to cancel booking. Test date has already passed.')
+#         # If the request method is not POST, redirect to the home page
+#         return redirect('labstaffindex')
+    
 
-#     return redirect('viewtestbookings')
+# views.py
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import LaboratoryTest
+
+@csrf_exempt
+def save_lab_results(request):
+    if request.method == 'POST':
+        # Retrieve form data
+        test_name = request.POST.get('test_name')
+        package_details = request.POST.dict()
+        package_details.pop('csrfmiddlewaretoken')  # Remove csrfmiddlewaretoken from package_details
+
+        try:
+            print("Received package_details:", package_details)  # Debugging statement
+            # Create a LaboratoryTest object and save it to the database
+            laboratory_test = LaboratoryTest(test_name=test_name, package_details=package_details)
+            laboratory_test.save()
+
+            # Return a JSON response indicating success
+            return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+        except Exception as e:
+            # Handle errors
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    else:
+        # Handle invalid requests
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
 
+# from django.shortcuts import render, redirect
+# from .models import Booking
 
-
-
-# from django.http import JsonResponse
-
-# @login_required
-# def cancel_booking(request):
+# def submit_lab_results(request):
 #     if request.method == 'POST':
-#         # Get the booking ID from the request body
-#         booking_id = request.POST.get('booking_id')
+#         appointment_id = request.POST.get('appointment_id')
+#         test_name = request.POST.get('test_name')
+#         # Assuming you have logic to retrieve package details based on the test_name
+#         # Replace this logic with your actual implementation
+#         package_details = {'field1': 'Label 1', 'field2': 'Label 2'}  # Example package details
+        
+#         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
+#     else:
+#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
+    
+# views.py
+from django.shortcuts import render, redirect
+from .models import Booking, LaboratoryTest
 
-#         # Retrieve the booking object
-#         booking = get_object_or_404(Booking, id=booking_id, patient__user=request.user)
+def submit_lab_results(request):
+    if request.method == 'POST':
+        appointment_id = request.POST.get('appointment_id')
+        booking = Booking.objects.get(id=appointment_id)
+        selected_test = booking.patient.selected_test.test_name
 
-#         if booking.test_date and booking.test_date > timezone.now().date():
-#             # Check if the booking is cancelable (test_date is in the future)
-#             booking.status = 'cancelled'  # Update the status to "cancelled"
-#             booking.save()  # Save the changes to the database
-#             return JsonResponse({'success': True})  # Return success response
-#         else:
-#             return JsonResponse({'success': False, 'error': 'Test date has already passed.'})  # Return error response
+        # Retrieve package details based on the selected test name
+        lab_test = LaboratoryTest.objects.get(test_name=selected_test)
+        package_details = lab_test.package_details
 
-#     # Handle invalid request method
-#     return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+        return render(request, 'labstaff/labresult.html', {'selected_test': selected_test, 'package_details': package_details})
+    else:
+        return redirect('labstaffindex')  # Redirect to home page if not a POST request
+
+
+
+# from django.shortcuts import render, redirect
+# from .models import Booking
+
+# def submit_lab_results(request):
+#     if request.method == 'POST':
+#         appointment_id = request.POST.get('appointment_id')
+#         test_name = request.POST.get('test_name')
+#         # Assuming you have logic to retrieve package details based on the test_name
+#         # Replace this logic with your actual implementation
+#         package_details = {'field1': 'Label 1', 'field2': 'Label 2'}  # Example package details
+        
+#         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
+#     else:
+#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
+    
+# views.py
+# views.py
+from django.shortcuts import render, redirect
+from .models import Booking, LaboratoryTest
+import json
+import json
+
+def submit_lab_results(request):
+    if request.method == 'POST':
+        appointment_id = request.POST.get('appointment_id')
+        booking = Booking.objects.get(id=appointment_id)
+        selected_test = booking.patient.selected_test
+
+        # Retrieve test name and package details of selected lab test
+        test_name = selected_test.test_name
+        package_details = selected_test.package_details
+
+        # Parse package_details if it's stored as JSON string
+        if isinstance(package_details, str):
+            package_details = json.loads(package_details)
+
+        return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
+    else:
+        return redirect('labstaffindex')  # Redirect to home page if not a POST request
+# def submit_lab_results(request):
+#     if request.method == 'POST':
+#         appointment_id = request.POST.get('appointment_id')
+#         booking = Booking.objects.get(id=appointment_id)
+#         test_name = booking.patient.selected_test.test_name
+
+#         # Retrieve package details based on the test name
+#         lab_test = LaboratoryTest.objects.get(test_name=test_name)
+#         package_details = lab_test.package_details
+
+#         return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
+#     else:
+#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
