@@ -402,21 +402,7 @@ class LaboratoryTest(models.Model):
     def __str__(self):
         return self.test_name
     
-    def create_package_detail_model(self):
-        # Create a dynamic model name based on the test name
-        model_name = f"{self.test_name.replace(' ', '')}PackageDetail"
-
-        # Define the dynamic model fields
-        fields = {
-            'laboratory_test': models.ForeignKey(LaboratoryTest, on_delete=models.CASCADE, related_name='package_details'),
-        }
-        for key, value in self.package_details.items():
-            fields[key] = models.CharField(max_length=255)
-
-        # Create the dynamic model
-        dynamic_model = type(model_name, (models.Model,), fields)
-
-        return dynamic_model
+    
     
 
 

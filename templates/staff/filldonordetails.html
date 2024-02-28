@@ -304,23 +304,7 @@
     <script src="{% static 'staff/js/dataTables.bootstrap4.min.js' %}"></script>
     <script src="{% static 'staff/js/jquery.slimscroll.js' %}"></script>
     <script src="{% static 'staff/js/app.js' %}"></script>
-    {% comment %} <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Get the camp date and expiry date elements
-            var campDateElement = document.getElementById('camp_date');
-            var expiryDateElement = document.getElementById('expiry_date');
-        
-            // Calculate the expiry date as 56 days from the camp date
-            var campDate = new Date(campDateElement.value);
-            var expiryDate = new Date(campDate.getTime() + (56 * 24 * 60 * 60 * 1000));
-        
-            // Format the expiry date as YYYY-MM-DD
-            var formattedExpiryDate = expiryDate.toISOString().split('T')[0];
-        
-            // Set the initial value of the expiry date field
-            expiryDateElement.value = formattedExpiryDate;
-        });
-        </script> {% endcomment %}
+   
 </body>
 
 
