@@ -402,11 +402,10 @@ class LaboratoryTest(models.Model):
     def __str__(self):
         return self.test_name
     
-    
-    
-
-
 # models.py
+    
+
+    
 from django.db import models
 
 class Patient(models.Model):
@@ -418,13 +417,10 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
     date_of_birth = models.DateField()
     selected_test = models.ForeignKey(LaboratoryTest, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.IntegerField(default=0)
 
     def __str__(self):
         return self.full_name
-
-
-    
-from django.db import models
 
 class Booking(models.Model):
     STATUS_CHOICES = (
@@ -439,6 +435,47 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking for {self.patient.full_name} on {self.booked_date}"
+    
+
+from django.db import models
+
+class LabResult(models.Model):
+    # Use DecimalField with max_digits and decimal_places to store both integers and decimals
+    FBS = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    PPBS = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    HBA1C = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    LIPID = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    TSH = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    UREA = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    CREATININE = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    MICROALBUMINSPOT = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    URINEANALYSIS = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    CBC = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    LFTWITHOUTGGT = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    RENEALPROFILE = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    TFT = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    TIBC = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    VITAMIND = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    ELECTROLYTES = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    TMT = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    USGABDOMENPELVIS = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    MAMMOGRAPHY = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    CYTOLOGYCSPAPSMEAR = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    URICACID = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    BUN = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    TPC = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    HYDROXYVITAMIND = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    PSA = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    USGTHYROID= models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    CALCIUM = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    
+   
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='lab_results',null=True, blank=True)
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE,null=True, blank=True)
+
+    def __str__(self):
+        return f"Lab result for Patient: {self.patient.full_name}, Booking ID: {self.booking.id}"
+    
     
 
 from django.db import models

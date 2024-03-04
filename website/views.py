@@ -2124,7 +2124,7 @@ def viewtestbookings(request):
 
 #cancel booking
 from django.shortcuts import get_object_or_404, redirect
-from .models import Booking
+from .models import Booking,LabResult
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -2143,87 +2143,150 @@ def cancel_booking(request, booking_id):
     return JsonResponse({'success': True})
 
 
-
-from django.shortcuts import render, redirect
-from .models import Booking, LaboratoryTest
-
-def submit_lab_results(request):
-    if request.method == 'POST':
-        appointment_id = request.POST.get('appointment_id')
-        booking = Booking.objects.get(id=appointment_id)
-        selected_test = booking.patient.selected_test
-
-        # Retrieve package details of selected lab test
-        package_details = selected_test.package_details
-
-        return render(request, 'labstaff/labresult.html', {'selected_test': selected_test, 'package_details': package_details})
-    else:
-        return redirect('labstaffindex')  # Redirect to home page if not a POST request
-    
-
-    
-
-# views.py
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import LaboratoryTest
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from .models import Booking, LaboratoryTest, Patient, LabResult
 
-@csrf_exempt
+
 def save_lab_results(request):
     if request.method == 'POST':
-        # Retrieve form data
-        test_name = request.POST.get('test_name')
-        package_details = request.POST.dict()
-        package_details.pop('csrfmiddlewaretoken')  # Remove csrfmiddlewaretoken from package_details
+        # Retrieve data from the submitted form
+        test_name = request.POST.get('test_name')        
+        # Extract patient_id and booking_id from hidden fields
+        patient_id = request.POST.get('patient_id')
+        print(patient_id)
+        booking_id = request.POST.get('booking_id')
+        
 
+        print(booking_id)
+
+        # Create a LabResult instance and save it
+        lab_result = LabResult(
+            FBS=request.POST.get('FBS'),
+            PPBS=request.POST.get('PPBS'),
+            HBA1C=request.POST.get('HBA1C'),
+            LIPID=request.POST.get('LIPID'),
+            TSH=request.POST.get('TSH'),
+            UREA=request.POST.get('UREA'),
+            CREATININE=request.POST.get('CREATININE'),
+            MICROALBUMINSPOT=request.POST.get('MICRO ALBUMIN(SPOT)'),
+            URINEANALYSIS=request.POST.get('URINE ANALYSIS'),
+            CBC=request.POST.get('CBC'),
+            LFTWITHOUTGGT=request.POST.get('LFT WITH OUT GGT'),
+            RENEALPROFILE=request.POST.get('RENEAL PROFILE'),
+            TFT=request.POST.get('TFT'),
+            TIBC=request.POST.get('TIBC'),
+            VITAMIND=request.POST.get('VITAMIND'),
+            ELECTROLYTES=request.POST.get('ELECTROLYTES'),
+            TMT=request.POST.get('TMT'),
+            USGABDOMENPELVIS=request.POST.get('USG ABDOMEN & PELVIS'),
+            MAMMOGRAPHY=request.POST.get('MAMMOGRAPHY'),
+            CYTOLOGYCSPAPSMEAR=request.POST.get('CYTOLOGY CS PAPSMEAR'),
+            URICACID=request.POST.get('URIC ACID'),
+            BUN=request.POST.get('BUN'),
+            TPC=request.POST.get('TPC'),
+            HYDROXYVITAMIND=request.POST.get('25 - HYDROXY VITAMIN D'),
+            PSA=request.POST.get('PSA'),
+            USGTHYROID=request.POST.get('USG THYROID'),
+            CALCIUM=request.POST.get('CALCIUM'),
+            patient_id=patient_id,
+            booking_id=booking_id,
+        )
+
+        lab_result.save()
+
+        # Update the status of the associated patient to 1
         try:
-            print("Received package_details:", package_details)  # Debugging statement
-            # Create a LaboratoryTest object and save it to the database
-            laboratory_test = LaboratoryTest(test_name=test_name, package_details=package_details)
-            laboratory_test.save()
-
-            # Return a JSON response indicating success
-            return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+            patient = get_object_or_404(Patient, id=patient_id)
+            patient.status = 1
+            patient.save()
+            return HttpResponse("Lab results saved successfully. Patient status updated.")
+        except Patient.DoesNotExist:
+            return HttpResponse("Lab results saved successfully, but failed to update patient status. Patient not found.")
         except Exception as e:
-            # Handle errors
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return HttpResponse(f"An error occurred: {str(e)}")
+        
     else:
-        # Handle invalid requests
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return HttpResponse("Invalid request method.")
 
 
+# from django.shortcuts import render, redirect
+# from .models import Booking, LaboratoryTest, Patient,LabResult
+# from django.http import JsonResponse
 
-from django.shortcuts import render, redirect
-from .models import Booking, LaboratoryTest
+# from django.shortcuts import render, get_object_or_404
 
+# def submit_lab_results(request):
+#     if request.method == 'POST':
+#         appointment_id = request.POST.get('appointment_id')
+        
+#         # Use get_object_or_404 to handle DoesNotExist exception
+#         booking = get_object_or_404(Booking, id=appointment_id)
+#         selected_test = booking.patient.selected_test
+
+#         # Retrieve test name and package details of selected lab test
+#         test_name = selected_test.test_name
+#         package_details = selected_test.package_details
+
+#         # Parse package_details if it's stored as JSON string
+#         if isinstance(package_details, str):
+#             package_details = json.loads(package_details)
+
+#         lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
+
+#         context = {
+#             'patient_id': booking.patient.id,
+#             'booking_id': booking.id,
+#             'test_name': test_name,
+#             'package_details': package_details,
+#             'lab_results_saved': lab_results_saved,
+#         }
+
+#         return render(request, 'labstaff/labresult.html', context)
+#     else:
+#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
+# from django.shortcuts import render, get_object_or_404
+# from django.http import JsonResponse
+# from .models import Booking, LaboratoryTest, Patient, LabResult
+# import json
+
+# def submit_lab_results(request):
+#     if request.method == 'POST':
+#         appointment_id = request.POST.get('appointment_id')
+        
+#         # Use get_object_or_404 to handle DoesNotExist exception
+#         booking = get_object_or_404(Booking, id=appointment_id)
+#         selected_test = booking.patient.selected_test
+
+#         # Retrieve test name and package details of selected lab test
+#         test_name = selected_test.test_name
+#         package_details = selected_test.package_details
+
+#         # Parse package_details if it's stored as JSON string
+#         if isinstance(package_details, str):
+#             package_details = json.loads(package_details)
+
+#         # Check if lab results have already been saved for this booking
+#         lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
+
+#         context = {
+#             'patient_id': booking.patient.id,
+#             'booking_id': booking.id,
+#             'test_name': test_name,
+#             'package_details': package_details,
+#             'lab_results_saved': lab_results_saved,
+#         }
+
+#         return render(request, 'labstaff/labresult.html', context)
+#     else:
+#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
 def submit_lab_results(request):
     if request.method == 'POST':
         appointment_id = request.POST.get('appointment_id')
-        booking = Booking.objects.get(id=appointment_id)
-        selected_test = booking.patient.selected_test.test_name
-
-        # Retrieve package details based on the selected test name
-        lab_test = LaboratoryTest.objects.get(test_name=selected_test)
-        package_details = lab_test.package_details
-
-        return render(request, 'labstaff/labresult.html', {'selected_test': selected_test, 'package_details': package_details})
-    else:
-        return redirect('labstaffindex')  # Redirect to home page if not a POST request
-
-
-
-
-from django.shortcuts import render, redirect
-from .models import Booking, LaboratoryTest
-import json
-import json
-
-def submit_lab_results(request):
-    if request.method == 'POST':
-        appointment_id = request.POST.get('appointment_id')
-        booking = Booking.objects.get(id=appointment_id)
+        
+        # Use get_object_or_404 to handle DoesNotExist exception
+        booking = get_object_or_404(Booking, id=appointment_id)
         selected_test = booking.patient.selected_test
 
         # Retrieve test name and package details of selected lab test
@@ -2233,10 +2296,18 @@ def submit_lab_results(request):
         # Parse package_details if it's stored as JSON string
         if isinstance(package_details, str):
             package_details = json.loads(package_details)
-        
 
-        
+        # Check if lab results have already been saved for this booking
+        lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
 
-        return render(request, 'labstaff/labresult.html', {'test_name': test_name, 'package_details': package_details})
+        context = {
+            'patient_id': booking.patient.id,
+            'booking_id': booking.id,
+            'test_name': test_name,
+            'package_details': package_details,
+            'lab_results_saved': lab_results_saved,
+        }
+
+        return render(request, 'labstaff/labresult.html', context)
     else:
-        return redirect('labstaffindex')  # Redirect to home page if not a POST request
+        return redirect('labstaffindex')  
