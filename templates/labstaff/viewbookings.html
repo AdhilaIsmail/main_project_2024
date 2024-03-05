@@ -94,6 +94,11 @@
 		.table-striped.custom-table tbody td {
 			font-size: 13px; /* Adjust the font size as needed */
 		}
+		.disabled-button {
+			background-color: #e1edfa; /* Light shade of primary blue */
+			border-color: #b8daff; /* Border color */
+			color: #9cc8f7; /* Text color */
+		}
 	</style>   
 
 </head>
@@ -164,7 +169,9 @@
                                         <th>Date of Birth</th>
                                         <th>Test Name</th>
                                         <th>Booked Date</th>
+										<th>Patient Status</th>
 										<th>Action</th>
+										<th>Lab Report</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -178,24 +185,44 @@
                                             <td>{{ appointment.patient.gender }}</td>
                                             <td>{{ appointment.patient.date_of_birth }}</td>
                                             <td>{{ appointment.patient.selected_test.test_name }}</td>
-                                            <td>{{ appointment.booked_date }}</td>
+											<td>{{ appointment.booked_date }}</td>
+											<td>{{ appointment.patient.status }}</td>
 											<td>
-												
 												<form id="lab_results_form_{{ appointment.id }}" action="{% url 'submit_lab_results' %}" method="post">
 													{% csrf_token %}
 													<input type="hidden" name="appointment_id" value="{{ appointment.id }}">
 													<input type="hidden" name="booking_id" value="{{ appointment.id }}">
 													<input type="hidden" name="test_name" value="{{ appointment.patient.selected_test.test_name }}">
-													{% comment %} <button type="submit" class="btn btn-primary">Submit Lab Results</button> {% endcomment %}
-													<button type="submit" class="btn btn-primary" {% if lab_results_saved %}disabled{% endif %}>
-														Submit Lab Results
-													</button>
+													
+													<!-- Disable the button if patient status is 1 -->
+													{% if lab_results_saved %}
+														<button type="submit" class="btn btn-primary" disabled>
+															Submit Lab Results
+														</button>
+													{% elif appointment.patient.status == 1 %}
+														<button type="submit" class="btn btn-primary disabled-button" disabled>
+															Submit Lab Results
+														</button>
+													{% else %}
+														<button type="submit" class="btn btn-primary">
+															Submit Lab Results
+														</button>
+													{% endif %}
 												</form>
+											</td>
+											<td>
+												<!-- Add a conditional check to display the download button if patient status is 1 -->
+												{% if appointment.patient.status == 1 %}
+													<a href="{% url 'download_lab_report' appointment.id %}" class="btn btn-primary">Download PDF</a>
+												{% else %}
+													<!-- Show an empty cell if patient status is not 1 -->
+												{% endif %}
 											</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+							Patient Status: {{ patient_status }}
                         </div>
                     </div>
                 </div>

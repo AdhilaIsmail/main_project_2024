@@ -2195,12 +2195,15 @@ def save_lab_results(request):
         )
 
         lab_result.save()
+        
 
         # Update the status of the associated patient to 1
         try:
             patient = get_object_or_404(Patient, id=patient_id)
+            print("Patient status before update:", patient.status)
             patient.status = 1
             patient.save()
+            print("Patient status after update:", patient.status)
             return HttpResponse("Lab results saved successfully. Patient status updated.")
         except Patient.DoesNotExist:
             return HttpResponse("Lab results saved successfully, but failed to update patient status. Patient not found.")
@@ -2211,45 +2214,6 @@ def save_lab_results(request):
         return HttpResponse("Invalid request method.")
 
 
-# from django.shortcuts import render, redirect
-# from .models import Booking, LaboratoryTest, Patient,LabResult
-# from django.http import JsonResponse
-
-# from django.shortcuts import render, get_object_or_404
-
-# def submit_lab_results(request):
-#     if request.method == 'POST':
-#         appointment_id = request.POST.get('appointment_id')
-        
-#         # Use get_object_or_404 to handle DoesNotExist exception
-#         booking = get_object_or_404(Booking, id=appointment_id)
-#         selected_test = booking.patient.selected_test
-
-#         # Retrieve test name and package details of selected lab test
-#         test_name = selected_test.test_name
-#         package_details = selected_test.package_details
-
-#         # Parse package_details if it's stored as JSON string
-#         if isinstance(package_details, str):
-#             package_details = json.loads(package_details)
-
-#         lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
-
-#         context = {
-#             'patient_id': booking.patient.id,
-#             'booking_id': booking.id,
-#             'test_name': test_name,
-#             'package_details': package_details,
-#             'lab_results_saved': lab_results_saved,
-#         }
-
-#         return render(request, 'labstaff/labresult.html', context)
-#     else:
-#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
-# from django.shortcuts import render, get_object_or_404
-# from django.http import JsonResponse
-# from .models import Booking, LaboratoryTest, Patient, LabResult
-# import json
 
 # def submit_lab_results(request):
 #     if request.method == 'POST':
@@ -2269,18 +2233,21 @@ def save_lab_results(request):
 
 #         # Check if lab results have already been saved for this booking
 #         lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
-
+#         patient_status = booking.patient.status
 #         context = {
 #             'patient_id': booking.patient.id,
 #             'booking_id': booking.id,
 #             'test_name': test_name,
 #             'package_details': package_details,
 #             'lab_results_saved': lab_results_saved,
+#             'patient_status': patient_status,
 #         }
-
+        
 #         return render(request, 'labstaff/labresult.html', context)
 #     else:
-#         return redirect('labstaffindex')  # Redirect to home page if not a POST request
+#         return redirect('labstaffindex')  
+    
+
 def submit_lab_results(request):
     if request.method == 'POST':
         appointment_id = request.POST.get('appointment_id')
@@ -2299,15 +2266,20 @@ def submit_lab_results(request):
 
         # Check if lab results have already been saved for this booking
         lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
-
+        
+        # Fetch patient status
+        patient_status = booking.patient.status
+        
+        # Include patient_status in the context dictionary
         context = {
             'patient_id': booking.patient.id,
             'booking_id': booking.id,
             'test_name': test_name,
             'package_details': package_details,
             'lab_results_saved': lab_results_saved,
+            'patient_status': patient_status,  # Include patient_status here
         }
-
+        
         return render(request, 'labstaff/labresult.html', context)
     else:
-        return redirect('labstaffindex')  
+        return redirect('labstaffindex')
