@@ -115,11 +115,11 @@
                             <h5 class="text-white text-uppercase mb-3 animated slideInDown">Revolutionizing Healthcare</h5>
                             <h4 class="display-1 text-white mb-md-4 animated zoomIn">Unifying Blood Bank and Laboratory Services for Enhanced Patient Care</h4>
                             {% if user.is_authenticated %}
-                            <a href="{% url 'homebloodbank' %}" class="btn btn-danger py-md-3 px-md-5 me-3 animated slideInLeft">Blood Bank</a>
-                            <a href="{% url 'homelab' %}" class="btn btn-primary py-md-3 px-md-5 animated slideInRight">Laboratory</a>
+                            <a href="{% url 'homebloodbank' %}" name="selected_button" value="bloodbank" class="btn btn-danger py-md-3 px-md-5 me-3 animated slideInLeft">Blood Bank</a>
+                            <a href="{% url 'homelab' %}" name="selected_button" value="laboratory" class="btn btn-primary py-md-3 px-md-5 animated slideInRight">Laboratory</a>
                             {% else %}
-                            <a href="{% url 'loginn' %}" class="btn btn-danger py-md-3 px-md-5 me-3 animated slideInLeft">Blood Bank</a>
-                            <a href="{% url 'loginn' %}" class="btn btn-primary py-md-3 px-md-5 animated slideInRight">Laboratory</a>
+                            <a href="{% url 'loginn' %}" name="selected_button" value="bloodbank" class="btn btn-danger py-md-3 px-md-5 me-3 animated slideInLeft">Blood Bank</a>
+                            <a href="{% url 'loginn' %}" name="selected_button" value="laboratory" class="btn btn-primary py-md-3 px-md-5 animated slideInRight">Laboratory</a>
                             {% endif %}
                             
                         </div>

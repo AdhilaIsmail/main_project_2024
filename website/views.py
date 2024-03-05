@@ -61,16 +61,20 @@ def loginn(request):
         if user is not None:
             login(request, user)
             if user.role == CustomUser.REGISTEREDDONOR:
-                lab_selection = LabSelection.objects.filter(donor=user).order_by('-timestamp').first()
-                if lab_selection and lab_selection.timestamp + timedelta(days=3) > timezone.now():
-                    return redirect('uploadresult2', lab_selection_timestamp=str(lab_selection.timestamp))
-                else:
-                    # Check if the user has already uploaded a file within the 3-day limit
-                    if UploadedFile.objects.filter(user=user, timestamp__gte=timezone.now() - timedelta(days=3)).exists():
-                        return redirect('waitforemail')
+                selected_button = request.POST.get('selected_button', None)
+                if selected_button == 'bloodbank':
+                    lab_selection = LabSelection.objects.filter(donor=user).order_by('-timestamp').first()
+                    if lab_selection and lab_selection.timestamp + timedelta(days=3) > timezone.now():
+                        return redirect('uploadresult2', lab_selection_timestamp=str(lab_selection.timestamp))
                     else:
-                        messages.warning(request, 'The three-day window for uploading results has expired.')
-                        return redirect('donatenow')
+                        # Check if the user has already uploaded a file within the 3-day limit
+                        if UploadedFile.objects.filter(user=user, timestamp__gte=timezone.now() - timedelta(days=3)).exists():
+                            return redirect('waitforemail')
+                        else:
+                            messages.warning(request, 'The three-day window for uploading results has expired.')
+                            return redirect('donatenow')
+                elif selected_button == 'laboratory':
+                    return redirect('homelab')
 
             if user.is_superadmin:  # Check if the user is a superuser (admin)
                 return redirect('adminindex')  # Redirect to the admin dashboard
@@ -82,9 +86,7 @@ def loginn(request):
                 return redirect('labstaffindex')
             else:
                 return redirect('index')  # Redirect to the custom dashboard for non-admin users
-        else:
-            # messages.error(request, "Invalid Login")
-            # return redirect('loginn')
+        else:   
             error_message = "Invalid login credentials."
             return render(request,'login.html', {'error_message': error_message})
     else:
