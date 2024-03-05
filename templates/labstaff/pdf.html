@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Report</title>
+  <style>
+    body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background-color: #e3e3e3;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      header p {
+        font-size: 14px;
+        margin: 0;
+      }
+      .main-container {
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table, th, td {
+        border: 1px solid black;
+        padding: 5px;
+      }
+      th {
+        text-align: left;
+      }
+      .footer {
+        text-align: center;
+        padding: 10px;
+        font-size: 12px;
+      }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MEDLAB BLOOD BANK</h1>
+    <p>Accurate | Caring | Instant</p>
+  </header>
+  <div class="main-container">
+    <h2>C.S.F. EXAMINATION ROUTINE</h2>
+    <p><strong>Patient Information:</strong></p>
+    <ul>
+      <li><strong>Name:</strong> {{ patient.full_name }}</li>
+      
+      <li><strong>Gender:</strong> {{ patient.gender }}</li>
+      <!-- Add more patient information as needed -->
+    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Investigation</th>
+          <th>Result</th>
+          <th>Reference Value</th>
+          <th>Unit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lab_result in lab_results %}
+        <tr>
+          <td><strong>{{ lab_result }}</strong></td>
+          <td>{{ lab_result.value }}</td>
+          <td>{{ lab_result.reference_value }}</td>
+          <td>{{ lab_result.unit }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <footer class="footer">
+    <!-- Your footer content -->
+  </footer>
+</body>
+</html>

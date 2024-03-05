@@ -99,6 +99,17 @@
 			border-color: #b8daff; /* Border color */
 			color: #9cc8f7; /* Text color */
 		}
+		.btn-danger {
+			color: #fff;
+			background-color: #dc3545; /* Red color */
+			border-color: #dc3545; /* Red color */
+		}
+		
+		.btn-danger:hover {
+			color: #fff;
+			background-color: #c82333; /* Darker shade of red for hover */
+			border-color: #bd2130; /* Darker shade of red for hover */
+		}
 	</style>   
 
 </head>
@@ -211,11 +222,11 @@
 												</form>
 											</td>
 											<td>
-												<!-- Add a conditional check to display the download button if patient status is 1 -->
 												{% if appointment.patient.status == 1 %}
-													<a href="{% url 'download_lab_report' appointment.id %}" class="btn btn-primary">Download PDF</a>
+													<a href="{% url 'download_lab_report' appointment.id %}" class="btn btn-danger">Download PDF</a>
 												{% else %}
-													<!-- Show an empty cell if patient status is not 1 -->
+													<!-- Show a disabled button if patient status is not 1 -->
+													<button class="btn btn-danger" disabled>Download PDF</button>
 												{% endif %}
 											</td>
                                         </tr>

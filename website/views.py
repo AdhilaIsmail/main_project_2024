@@ -2283,3 +2283,187 @@ def submit_lab_results(request):
         return render(request, 'labstaff/labresult.html', context)
     else:
         return redirect('labstaffindex')
+
+
+
+
+
+
+
+
+
+
+#pdf generation
+# views.py
+import io
+
+
+# import io
+# from django.http import HttpResponse
+# from reportlab.lib import colors
+# from reportlab.lib.pagesizes import letter
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+# from .models import LabResult, Patient, Booking
+# from django.shortcuts import get_object_or_404
+# from reportlab.lib.styles import getSampleStyleSheet
+
+# def download_lab_report(request, appointment_id):
+#     # Get the appointment instance
+#     appointment = get_object_or_404(Booking, id=appointment_id)
+
+#     # Get the patient and lab results associated with the appointment
+#     patient = appointment.patient
+#     lab_results = LabResult.objects.filter(patient=patient)
+
+#     # Create a buffer to store the PDF
+#     buffer = io.BytesIO()
+
+#     # Create a PDF document
+#     pdf = SimpleDocTemplate(buffer, pagesize=letter)
+#     elements = []
+
+#     # Create a style sheet
+#     styles = getSampleStyleSheet()
+
+#     # Add lab name as header
+#     lab_name = "Medlab Blood Bank"  # Replace with your lab name
+#     lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
+#     elements.append(lab_header)
+
+#     # Add patient information to the PDF
+#     patient_info = [
+#         f"<b>Patient Name:</b> {patient.full_name}",
+#         f"<b>Date of Birth:</b> {patient.date_of_birth}",
+#         f"<b>Gender:</b> {patient.gender}",
+#         f"<b>Email:</b> {patient.email}",
+#         f"<b>Phone:</b> {patient.phone}",
+#         f"<b>Address:</b> {patient.address}"
+#     ]
+
+#     for info in patient_info:
+#         paragraph = Paragraph(info, styles["Normal"])
+#         elements.append(paragraph)
+
+#     # Add lab results to the PDF in table format
+#     lab_result_data = [["Test Name", "Result"]]
+#     for lab_result in lab_results:
+#         lab_result_info = []
+#         for field in lab_result._meta.fields:
+#             field_name = field.verbose_name.capitalize()  # Get the field name
+#             field_value = getattr(lab_result, field.name)  # Get the field value
+#             if field_value is not None:  # Check if the field has a non-null value
+#                 lab_result_info.append(field_value)
+        
+#         if lab_result_info:
+#             # Add the lab result information to the table
+#             lab_result_data.append([lab_result_info[0], lab_result_info[1]])
+
+#     # Create the table
+#     lab_result_table = Table(lab_result_data)
+#     lab_result_table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.red),
+#                                           ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+#                                           ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#                                           ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#                                           ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#                                           ('BACKGROUND', (0, 1), (-1, -1), colors.white)]))
+    
+#     elements.append(lab_result_table)
+
+#     # Build the PDF document
+#     pdf.build(elements)
+
+#     # Get the PDF content from the buffer
+#     pdf_content = buffer.getvalue()
+#     buffer.close()
+
+#     # Prepare the HTTP response with PDF content
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="lab_report_{appointment_id}.pdf"'
+#     response.write(pdf_content)
+
+#     return response
+
+
+import io
+from django.http import HttpResponse
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from .models import LabResult, Patient, Booking
+from django.shortcuts import get_object_or_404
+from reportlab.lib.styles import getSampleStyleSheet
+
+def download_lab_report(request, appointment_id):
+    # Get the appointment instance
+    appointment = get_object_or_404(Booking, id=appointment_id)
+
+    # Get the patient and lab results associated with the appointment
+    patient = appointment.patient
+    lab_results = LabResult.objects.filter(patient=patient)
+
+    # Create a buffer to store the PDF
+    buffer = io.BytesIO()
+
+    # Create a PDF document
+    pdf = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+
+    # Create a style sheet
+    styles = getSampleStyleSheet()
+
+    # Add lab name as header
+    lab_name = "Medlab Blood Bank"  # Replace with your lab name
+    lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
+    elements.append(lab_header)
+
+    # Add patient information to the PDF
+    patient_info = [
+        f"<b>Patient Name:</b> {patient.full_name}",
+        f"<b>Date of Birth:</b> {patient.date_of_birth}",
+        f"<b>Gender:</b> {patient.gender}",
+        f"<b>Email:</b> {patient.email}",
+        f"<b>Phone:</b> {patient.phone}",
+        f"<b>Address:</b> {patient.address}"
+    ]
+
+    for info in patient_info:
+        paragraph = Paragraph(info, styles["Normal"])
+        elements.append(paragraph)
+
+    # Add lab results to the PDF in table format
+    lab_result_data = [["Test Name", "Result"]]
+    for lab_result in lab_results:
+        lab_result_info = []
+        for field in lab_result._meta.fields:
+            if field.name != "id" and getattr(lab_result, field.name, None) is not None:
+                field_value = getattr(lab_result, field.name)  # Get the field value
+                lab_result_info.append((field.verbose_name.capitalize(), field_value))
+        
+        if lab_result_info:
+            # Add the lab result information to the table
+            lab_result_data.extend(lab_result_info)
+
+    # Create the table
+    lab_result_table = Table(lab_result_data)
+    lab_result_table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.red),
+                                          ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                                          ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                          ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                          ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                          ('BACKGROUND', (0, 1), (-1, -1), colors.white)]))
+    
+    elements.append(lab_result_table)
+
+    # Build the PDF document
+    pdf.build(elements)
+
+    # Get the PDF content from the buffer
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    # Prepare the HTTP response with PDF content
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="lab_report_{appointment_id}.pdf"'
+    response.write(pdf_content)
+
+    return response
