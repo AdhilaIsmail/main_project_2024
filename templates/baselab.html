@@ -30,6 +30,105 @@
 
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+
+    <style>
+        /* Make the "Translate" button inline */
+        #google_translate_element .skiptranslate {
+            display: inline !important;
+        }
+
+        /* Hide Google Translate logo */
+        .goog-te-gadget {
+            color: transparent !important;
+        }
+
+        /* Dark Theme for the select dropdown */
+        .goog-te-combo {
+            padding: 8px;
+            /* Add padding for spacing */
+            font-size: 14px;
+            /* Set font size */
+            border: 1px solid #666;
+            /* Dark border */
+            border-radius: 4px;
+            /* Add rounded corners */
+            background-color: #fff;
+            /* Dark background color */
+            color: #blue;
+            /* Light text color */
+        }
+
+        /* Style the select dropdown when it's hovered */
+        .goog-te-combo:hover {
+            border-color: #999;
+            /* Darker border color on hover */
+        }
+
+        /* Style the select dropdown when it's focused (clicked) */
+        .goog-te-combo:focus {
+            outline: none;
+            /* Remove the default focus outline */
+            border-color: #007bff;
+            /* Change border color on focus */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            /* Add a shadow on focus */
+        }
+
+        /* Style the dropdown arrow */
+        .goog-te-combo-arrow {
+            font-size: 12px;
+            /* Adjust arrow size */
+            color: #fff;
+            /* Light arrow color */
+        }
+
+        /* Style the dropdown options */
+        .goog-te-menu-value {
+            font-size: 14px;
+            /* Set font size for options */
+            color: white;
+            /* Light text color for options */
+            background-color: white;
+            /* Dark background color for options */
+        }
+
+        /* Style the dropdown options on hover */
+        .goog-te-menu-value:hover {
+            background-color: whitex;
+            /* Change background color on hover */
+            color: #fff;
+            /* Light text color on hover */
+        }
+
+        /* Hide the translation preview iframe */
+        iframe#\:1.container {
+            display: hidden;
+        }
+    </style>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
+        }
+    </script>
+    <script>
+        // Define the function to hide the iframe
+        function hideIframe() {
+            // Get the iframe element
+            var iframe = document.getElementById(':1.container');
+
+            // Check if the iframe element exists
+            if (iframe) {
+                // Change the visibility to hidden
+                iframe.style.visibility = 'hidden';
+            }
+        }
+
+        // Call the function every 5 seconds (5000 milliseconds)
+        setInterval(hideIframe, 100);
+
+    </script>
 </head>
 
 <body>
@@ -56,7 +155,13 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div style="position: relative; color: #fff; margin-left: 10px;">
+                Select Language:
+                <div style="position: absolute; top: 0; left: 100%;" id="google_translate_element">
+                </div>
+            </div>
             <div class="navbar-nav ms-auto py-0">
+                
                 <a href="{% url 'homelab' %}" class="nav-item nav-link active">Home</a>
                 <a href="#" class="nav-item nav-link">Patients</a>
                 {% comment %} <a href="#" class="nav-item nav-link">Doctors</a> {% endcomment %}
@@ -75,9 +180,13 @@
                             <a class="dropdown-item" href="{% url 'loggout' %}">Logout</a>
                         </div>
                     </div>
+                    
                 {% else %}
                     <a href="{% url 'loginn' %}" class="nav-item nav-link">Login</a>
+                    
                 {% endif %}
+               
+                
             </div>
         </div>
     </nav>
