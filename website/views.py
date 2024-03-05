@@ -2289,17 +2289,6 @@ def submit_lab_results(request):
 
 
 
-
-
-
-
-
-
-#pdf generation
-# views.py
-import io
-
-
 # import io
 # from django.http import HttpResponse
 # from reportlab.lib import colors
@@ -2348,17 +2337,17 @@ import io
 
 #     # Add lab results to the PDF in table format
 #     lab_result_data = [["Test Name", "Result"]]
+    
 #     for lab_result in lab_results:
 #         lab_result_info = []
 #         for field in lab_result._meta.fields:
-#             field_name = field.verbose_name.capitalize()  # Get the field name
-#             field_value = getattr(lab_result, field.name)  # Get the field value
-#             if field_value is not None:  # Check if the field has a non-null value
-#                 lab_result_info.append(field_value)
+#             if field.name != "id" and getattr(lab_result, field.name, None) is not None:
+#                 field_value = getattr(lab_result, field.name)  # Get the field value
+#                 lab_result_info.append((field.verbose_name.capitalize(), field_value))
         
 #         if lab_result_info:
 #             # Add the lab result information to the table
-#             lab_result_data.append([lab_result_info[0], lab_result_info[1]])
+#             lab_result_data.extend(lab_result_info)
 
 #     # Create the table
 #     lab_result_table = Table(lab_result_data)
@@ -2386,6 +2375,8 @@ import io
 #     return response
 
 
+
+
 import io
 from django.http import HttpResponse
 from reportlab.lib import colors
@@ -2394,6 +2385,8 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from .models import LabResult, Patient, Booking
 from django.shortcuts import get_object_or_404
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Spacer
+
 
 def download_lab_report(request, appointment_id):
     # Get the appointment instance
@@ -2414,9 +2407,34 @@ def download_lab_report(request, appointment_id):
     styles = getSampleStyleSheet()
 
     # Add lab name as header
+    # lab_name = "Medlab Blood Bank"  # Replace with your lab name
+    # lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
+    # elements.append(lab_header)
     lab_name = "Medlab Blood Bank"  # Replace with your lab name
-    lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
+    lab_header_text = f"<b>{lab_name}</b>"
+    lab_header = Paragraph(lab_header_text, styles["Heading1"])
+
+    # Add phone number and email
+    phone_number = "123-456-7890"  # Replace with your lab phone number
+    email = "info@medlab.com"  # Replace with your lab email
+    contact_info_text = f"<i>Phone:</i> {phone_number}<br/><i>Email:</i> {email}"
+    contact_info = Paragraph(contact_info_text, styles["Normal"])
+
     elements.append(lab_header)
+    elements.append(Spacer(1, 12))  # Add some space between lab header and contact info
+    elements.append(contact_info)
+
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
+    elements.append(Spacer(1, 1))
 
     # Add patient information to the PDF
     patient_info = [
@@ -2434,25 +2452,29 @@ def download_lab_report(request, appointment_id):
 
     # Add lab results to the PDF in table format
     lab_result_data = [["Test Name", "Result"]]
+    
     for lab_result in lab_results:
         lab_result_info = []
         for field in lab_result._meta.fields:
-            if field.name != "id" and getattr(lab_result, field.name, None) is not None:
+            if field.name not in ["patient", "booking"] and getattr(lab_result, field.name, None) is not None:
                 field_value = getattr(lab_result, field.name)  # Get the field value
                 lab_result_info.append((field.verbose_name.capitalize(), field_value))
-        
         if lab_result_info:
-            # Add the lab result information to the table
+        # Add the lab result information to the table
             lab_result_data.extend(lab_result_info)
 
-    # Create the table
-    lab_result_table = Table(lab_result_data)
-    lab_result_table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.red),
-                                          ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                                          ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                                          ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                                          ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                                          ('BACKGROUND', (0, 1), (-1, -1), colors.white)]))
+    lab_result_table = Table(lab_result_data, colWidths=[300, 100])  # Adjust the width as needed
+    table_style = [
+        ('BACKGROUND', (0, 0), (-1, 0), colors.maroon),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white)]
+    # Add some space between lab header and lab result table
+    table_style.append(('ALIGN', (0, 1), (0, -1), 'LEFT'))
+    lab_result_table.setStyle(TableStyle(table_style))
+    elements.append(Spacer(1, 12))  
     
     elements.append(lab_result_table)
 
