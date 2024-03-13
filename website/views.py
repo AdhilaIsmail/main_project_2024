@@ -2289,14 +2289,17 @@ def submit_lab_results(request):
 
 
 
-# import io
-# from django.http import HttpResponse
-# from reportlab.lib import colors
-# from reportlab.lib.pagesizes import letter
-# from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
-# from .models import LabResult, Patient, Booking
-# from django.shortcuts import get_object_or_404
-# from reportlab.lib.styles import getSampleStyleSheet
+
+import io
+from django.http import HttpResponse
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from .models import LabResult, Patient, Booking
+from django.shortcuts import get_object_or_404
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Spacer
+
 
 # def download_lab_report(request, appointment_id):
 #     # Get the appointment instance
@@ -2317,9 +2320,34 @@ def submit_lab_results(request):
 #     styles = getSampleStyleSheet()
 
 #     # Add lab name as header
+#     # lab_name = "Medlab Blood Bank"  # Replace with your lab name
+#     # lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
+#     # elements.append(lab_header)
 #     lab_name = "Medlab Blood Bank"  # Replace with your lab name
-#     lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
+#     lab_header_text = f"<b>{lab_name}</b>"
+#     lab_header = Paragraph(lab_header_text, styles["Heading1"])
+
+#     # Add phone number and email
+#     phone_number = "123-456-7890"  # Replace with your lab phone number
+#     email = "info@medlab.com"  # Replace with your lab email
+#     contact_info_text = f"<i>Phone:</i> {phone_number}<br/><i>Email:</i> {email}"
+#     contact_info = Paragraph(contact_info_text, styles["Normal"])
+
 #     elements.append(lab_header)
+#     elements.append(Spacer(1, 12))  # Add some space between lab header and contact info
+#     elements.append(contact_info)
+
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
+#     elements.append(Spacer(1, 1))
 
 #     # Add patient information to the PDF
 #     patient_info = [
@@ -2341,22 +2369,25 @@ def submit_lab_results(request):
 #     for lab_result in lab_results:
 #         lab_result_info = []
 #         for field in lab_result._meta.fields:
-#             if field.name != "id" and getattr(lab_result, field.name, None) is not None:
+#             if field.name not in ["patient", "booking"] and getattr(lab_result, field.name, None) is not None:
 #                 field_value = getattr(lab_result, field.name)  # Get the field value
 #                 lab_result_info.append((field.verbose_name.capitalize(), field_value))
-        
 #         if lab_result_info:
-#             # Add the lab result information to the table
+#         # Add the lab result information to the table
 #             lab_result_data.extend(lab_result_info)
 
-#     # Create the table
-#     lab_result_table = Table(lab_result_data)
-#     lab_result_table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.red),
-#                                           ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-#                                           ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-#                                           ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-#                                           ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-#                                           ('BACKGROUND', (0, 1), (-1, -1), colors.white)]))
+#     lab_result_table = Table(lab_result_data, colWidths=[300, 100])  # Adjust the width as needed
+#     table_style = [
+#         ('BACKGROUND', (0, 0), (-1, 0), colors.maroon),
+#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#         ('BACKGROUND', (0, 1), (-1, -1), colors.white)]
+#     # Add some space between lab header and lab result table
+#     table_style.append(('ALIGN', (0, 1), (0, -1), 'LEFT'))
+#     lab_result_table.setStyle(TableStyle(table_style))
+#     elements.append(Spacer(1, 12))  
     
 #     elements.append(lab_result_table)
 
@@ -2373,19 +2404,84 @@ def submit_lab_results(request):
 #     response.write(pdf_content)
 
 #     return response
+    
+# views.py
+# import io
+# from django.http import HttpResponse
+# from django.template.loader import get_template
+# from reportlab.lib.pagesizes import letter
+# from reportlab.platypus import SimpleDocTemplate
+# from xhtml2pdf import pisa  # Import the required class
+# from .models import LabResult, Booking
+# from django.shortcuts import get_object_or_404
+# from reportlab.pdfgen import canvas
 
+# def download_lab_report(request, appointment_id):
+#     # Get the appointment instance
+#     appointment = get_object_or_404(Booking, id=appointment_id)
 
+#     # Get the patient and lab results associated with the appointment
+#     patient = appointment.patient
+#     lab_results = LabResult.objects.filter(patient=patient)
 
+#     # Prepare data to pass to the template
+#     context = {
+#         'lab_name': "Medlab Blood Bank",
+#         'phone_number': "123-456-7890",
+#         'email': "info@medlab.com",
+#         'patient': patient,
+#         'lab_results': lab_results,
+#     }
+    
 
-import io
+#     # Create a PDF response
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="lab_report_{appointment_id}.pdf"'
+
+#     # Create a PDF document using reportlab
+#     p = canvas.Canvas(response, pagesize=letter)  # Adjust the page size as needed
+
+#     # Define your PDF layout and content using reportlab commands
+#     p.setFont("Helvetica-Bold", 20)
+#     p.drawString(100, 750, "Medlab Blood Bank")
+
+#     p.setFont("Helvetica", 12)
+#     p.drawString(400, 750, "Phone: 123-456-7890")
+#     p.drawString(400, 735, f"Email: info@medlab.com")
+#     p.setLineWidth(3)  # Adjust the line thickness as needed
+#     p.setStrokeColorRGB(1, 0, 0)  # RGB values for red
+#     p.line(50, 710, 550, 710)
+#     p.line(50, 740, 550, 740)
+
+#     # Add patient information
+#     p.drawString(50, 700, f"Patient Name: {patient.full_name}")
+#     # Add more patient details as needed...
+
+#     p.line(50, 690, 550, 690)  # Horizontal line
+
+#     # Add lab results
+#     y_position = 670
+#     for lab_result in lab_results:
+#         # Assuming FBS is one of the lab results fields, replace it with the correct field name
+#         p.drawString(50, y_position, f"{lab_result._meta.verbose_name}: {lab_result.FBS}")
+#         # Add more fields as needed...
+#         y_position -= 20  # Adjust the spacing as needed
+
+#     # Save the PDF content
+#     p.showPage()
+#     p.save()
+
+# return response
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from django.template.loader import get_template
+from django.template import Context
+import io
+from reportlab.pdfgen import canvas
+from django.views import View
 from .models import LabResult, Patient, Booking
-from django.shortcuts import get_object_or_404
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Spacer
+from xhtml2pdf import pisa
+
 
 
 def download_lab_report(request, appointment_id):
@@ -2394,100 +2490,31 @@ def download_lab_report(request, appointment_id):
 
     # Get the patient and lab results associated with the appointment
     patient = appointment.patient
-    lab_results = LabResult.objects.filter(patient=patient)
+    lab_results = LabResult.objects.filter(patient=patient, booking=appointment)
+    lab_results_data = [lab_result.as_dict() for lab_result in lab_results]
+    # Prepare data to pass to the template
+    context = {
+        'lab_name': "Medlab Blood Bank",
+        'phone_number': "123-456-7890",
+        'email': "info@medlab.com",
+        'patient': patient,
+        'lab_results': lab_results_data,
+    }
 
-    # Create a buffer to store the PDF
-    buffer = io.BytesIO()
+    # Render the HTML template
+    template_path = 'labstaff/lab_report_template.html'  # Update with the actual path to your HTML template.
+    template = get_template(template_path)
+    html_content = template.render(context)
 
-    # Create a PDF document
-    pdf = SimpleDocTemplate(buffer, pagesize=letter)
-    elements = []
-
-    # Create a style sheet
-    styles = getSampleStyleSheet()
-
-    # Add lab name as header
-    # lab_name = "Medlab Blood Bank"  # Replace with your lab name
-    # lab_header = Paragraph(f"<b>{lab_name}</b>", styles["Heading1"])
-    # elements.append(lab_header)
-    lab_name = "Medlab Blood Bank"  # Replace with your lab name
-    lab_header_text = f"<b>{lab_name}</b>"
-    lab_header = Paragraph(lab_header_text, styles["Heading1"])
-
-    # Add phone number and email
-    phone_number = "123-456-7890"  # Replace with your lab phone number
-    email = "info@medlab.com"  # Replace with your lab email
-    contact_info_text = f"<i>Phone:</i> {phone_number}<br/><i>Email:</i> {email}"
-    contact_info = Paragraph(contact_info_text, styles["Normal"])
-
-    elements.append(lab_header)
-    elements.append(Spacer(1, 12))  # Add some space between lab header and contact info
-    elements.append(contact_info)
-
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-    elements.append(Spacer(1, 1))
-
-    # Add patient information to the PDF
-    patient_info = [
-        f"<b>Patient Name:</b> {patient.full_name}",
-        f"<b>Date of Birth:</b> {patient.date_of_birth}",
-        f"<b>Gender:</b> {patient.gender}",
-        f"<b>Email:</b> {patient.email}",
-        f"<b>Phone:</b> {patient.phone}",
-        f"<b>Address:</b> {patient.address}"
-    ]
-
-    for info in patient_info:
-        paragraph = Paragraph(info, styles["Normal"])
-        elements.append(paragraph)
-
-    # Add lab results to the PDF in table format
-    lab_result_data = [["Test Name", "Result"]]
-    
-    for lab_result in lab_results:
-        lab_result_info = []
-        for field in lab_result._meta.fields:
-            if field.name not in ["patient", "booking"] and getattr(lab_result, field.name, None) is not None:
-                field_value = getattr(lab_result, field.name)  # Get the field value
-                lab_result_info.append((field.verbose_name.capitalize(), field_value))
-        if lab_result_info:
-        # Add the lab result information to the table
-            lab_result_data.extend(lab_result_info)
-
-    lab_result_table = Table(lab_result_data, colWidths=[300, 100])  # Adjust the width as needed
-    table_style = [
-        ('BACKGROUND', (0, 0), (-1, 0), colors.maroon),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.white)]
-    # Add some space between lab header and lab result table
-    table_style.append(('ALIGN', (0, 1), (0, -1), 'LEFT'))
-    lab_result_table.setStyle(TableStyle(table_style))
-    elements.append(Spacer(1, 12))  
-    
-    elements.append(lab_result_table)
-
-    # Build the PDF document
-    pdf.build(elements)
-
-    # Get the PDF content from the buffer
-    pdf_content = buffer.getvalue()
-    buffer.close()
-
-    # Prepare the HTTP response with PDF content
+    # Create a PDF response
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="lab_report_{appointment_id}.pdf"'
-    response.write(pdf_content)
 
+    # Create a PDF using pisa
+    pisa_status = pisa.CreatePDF(
+        html_content,
+        dest=response,
+        link_callback=None  # Optional: Handle external links
+    )
+    
     return response

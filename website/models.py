@@ -475,6 +475,8 @@ class LabResult(models.Model):
 
     def __str__(self):
         return f"Lab result for Patient: {self.patient.full_name}, Booking ID: {self.booking.id}"
+    def as_dict(self):
+        return {field.name: getattr(self, field.name) for field in self._meta.fields if field.name not in ["patient", "booking"]}
     
     
 
