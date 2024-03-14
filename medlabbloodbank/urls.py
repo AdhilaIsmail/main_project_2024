@@ -191,6 +191,9 @@ urlpatterns = [
     path('labstaffindex',views.labstaffindex,name='labstaffindex'),
     path('submit_lab_results', views.submit_lab_results, name='submit_lab_results'),
     path('save_lab_results/', views.save_lab_results, name='save_lab_results'),
+    path('download-confirmation/<int:appointment_id>/', views.download_confirmation, name='download_confirmation'),
     path('download_lab_report/<int:appointment_id>/', views.download_lab_report, name='download_lab_report'),
+    
+    
 
 ]

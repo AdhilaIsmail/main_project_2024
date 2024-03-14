@@ -372,8 +372,6 @@ class NotDonatedReason(models.Model):
     
 
 
-
-
 class Payment(models.Model):
     PAYMENT_STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -393,7 +391,6 @@ class Payment(models.Model):
 
 
 from django.db import models
-
 class LaboratoryTest(models.Model):
     test_name = models.CharField(max_length=255)
     test_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -438,6 +435,7 @@ class Booking(models.Model):
     
 
 from django.db import models
+import uuid
 
 class LabResult(models.Model):
     # Use DecimalField with max_digits and decimal_places to store both integers and decimals
@@ -468,7 +466,7 @@ class LabResult(models.Model):
     PSA = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
     USGTHYROID= models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
     CALCIUM = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
-    
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
    
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='lab_results',null=True, blank=True)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE,null=True, blank=True)
@@ -479,7 +477,16 @@ class LabResult(models.Model):
         return {field.name: getattr(self, field.name) for field in self._meta.fields if field.name not in ["patient", "booking"]}
     
     
+class LabReportStorage(models.Model):
+    appointment = models.ForeignKey(Booking, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    pdf_file = models.FileField(upload_to='lab_reports/')
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Lab Report for {self.patient.full_name}"
+    
+    
 from django.db import models
 from django.contrib.auth import get_user_model
 

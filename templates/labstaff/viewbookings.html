@@ -221,9 +221,17 @@
 													{% endif %}
 												</form>
 											</td>
-											<td>
+											{% comment %} <td>
 												{% if appointment.patient.status == 1 %}
 													<a href="{% url 'download_lab_report' appointment.id %}" class="btn btn-danger">Download PDF</a>
+												{% else %}
+													<!-- Show a disabled button if patient status is not 1 -->
+													<button class="btn btn-danger" disabled>Download PDF</button>
+												{% endif %}
+											</td> {% endcomment %}
+											<td>
+												{% if appointment.patient.status == 1 %}
+													<a href="{% url 'download_confirmation' appointment.id %}" class="btn btn-danger">Download PDF</a>
 												{% else %}
 													<!-- Show a disabled button if patient status is not 1 -->
 													<button class="btn btn-danger" disabled>Download PDF</button>

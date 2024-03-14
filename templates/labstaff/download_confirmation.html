@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Confirmation</title>
+</head>
+<body>
+    <h1>Download Confirmation</h1>
+    <p>Do you want to download the lab report?</p>
+    <form action="{% url 'download_lab_report' appointment_id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Download PDF</button>
+    </form>
+    <a href="{% url 'labtestbookings' %}" class="btn btn-secondary">Cancel</a>
+</body>
+</html>
