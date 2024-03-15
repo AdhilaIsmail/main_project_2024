@@ -67,6 +67,7 @@ urlpatterns = [
     path('download_report_view', download_report_view,name='download_report_view'),
     path('find_lab_view',find_lab_view,name='find_lab_view'),
     path('labtestbookings',views.labtestbookings, name='labtestbookings'),
+    path('search_lab_tests', views.search_lab_tests,name='search_lab_tests'),
     
    
 
@@ -193,7 +194,8 @@ urlpatterns = [
     path('save_lab_results/', views.save_lab_results, name='save_lab_results'),
     path('download-confirmation/<int:appointment_id>/', views.download_confirmation, name='download_confirmation'),
     path('download_lab_report/<int:appointment_id>/', views.download_lab_report, name='download_lab_report'),
-    
+    path('download_report_view', views.download_report_view, name='download_report_view'),
+    path('download-report-by-phone/', views.download_report_by_phone, name='download_report_by_phone'),
     
 
 ]

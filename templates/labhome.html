@@ -2,6 +2,10 @@
 {% block content %}
 
 {% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Bing Maps API Script -->
+<script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
 <style>
     .btn-container 
     {
@@ -14,6 +18,10 @@
         align-items: center;
         justify-content: center;
     }
+    .map-container-hidden {
+        display: none;
+    }
+    
     .special-packages-section 
     {
         background-color: #f8f9fa;
@@ -91,6 +99,16 @@
         width: calc(32% - 10px); /* 32% width for each box with some margin in between */
         margin-bottom: 20px;
     }
+    #myMap {
+        display: none;
+    }
+    #mapContainer {
+        width: 90%;
+        height: 500px;
+        margin: auto;
+        margin-top: 20px; /* Adjust margin-top as needed */
+        display: none; /* Initially hide map container */
+    }
 </style>
 
     <!-- Full Screen Search Start -->
@@ -122,8 +140,15 @@
                             <div class="container py-5">
                                 <div class="row">
                                     <div class="col-lg-8">
+                                        {% comment %} <div class="input-group mb-3"> {% endcomment %}
+                                            {% comment %} <input type="text" class="form-control form-control-lg" placeholder="Type here..."> {% endcomment %}
+                                            {% comment %} <input type="text" class="form-control bg-transparent border-primary p-3" name="q" id="searchInput" placeholder="Type search keyword" value="{{ query }}">
+                                            <button class="btn btn-primary" id="searchButton">Search</button>
+                                        </div> {% endcomment %}
                                         <div class="input-group mb-3">
-                                            <input type="text" class="form-control form-control-lg" placeholder="Type here...">
+                                            <input type="text" class="form-control bg-transparent border-primary p-3" name="q" id="searchInput" placeholder="Type search keyword" value="{{ query }}">
+                                            <button class="btn btn-primary" id="searchButton">Search</button>
+                                            <div id="searchResults" class="dropdown-menu" style="display: none;"></div>
                                         </div>
                                         <div class="d-flex justify-content-start">
 
@@ -137,22 +162,26 @@
                                                 </a>
                                             </div>
 
+                                           
                                             <div class="btn-container">
-                                                <a href="{% url 'download_report_view' %}" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;" >
-                                                    <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
-                                                        <img src="{% static 'img/labreportlogo.svg' %}" alt="Download Icon" style="height: 20px;">
-                                                    </div>
-                                                     Download Report
-                                                </a>
+                                                <button id="downloadReportButton" class="btn btn-primary me-2 text-center" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
+                                                  <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                    <img src="{% static 'img/labreportlogo.svg' %}" alt="Download Icon" style="height: 20px;">
+                                                  </div>
+                                                  Download Report
+                                                </button>
                                             </div>
+                                              
                                         
-                                            <div class="btn-container">
-                                                <a href="{% url 'find_lab_view' %}" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
-                                                    <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
-                                                        <img src="{% static 'img/lablogo1.svg' %}" alt="Find Lab Icon" style="height: 20px;">
-                                                    </div>
-                                                     Find Our Lab
-                                                </a>
+                                            <div class="container">
+                                                <div class="btn-container">
+                                                    <a id="findLabButton" href="#" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
+                                                        <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                            <img src="{% static 'img/lablogo1.svg' %}" alt="Find Lab Icon" style="height: 20px;">
+                                                        </div>
+                                                        Find Our Lab
+                                                    </a>
+                                                </div>
                                             </div>
                                             
                                         </div>
@@ -168,8 +197,30 @@
             
         </div>
     </div>
+    <div class="container-fluid col-12 d-flex justify-content-center bg-dark">
+        <div id="mapContainer" class="map"></div>
+    </div>
     <!-- Carousel End -->
-    
+    <div class="modal fade" id="downloadReportModal" tabindex="-1" aria-labelledby="downloadReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="downloadReportModalLabel">Download Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="downloadReportForm" method="POST" action="{% url 'download_report_by_phone' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="container">
         <h2 class="text-center mb-5">Specialized Health Packages</h2>
@@ -188,28 +239,14 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <p>No data available.</p>
+                <p>No results found.</p>
                 
             {% endif %}
         </div>
     </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
- 
-
-
-    
-
-
-   
+    {% comment %} <div id="mapContainer" class="container-fluid col-12 d-flex justify-content-center bg-dark" style="display: none;">
+        <div class="map" id="myMap" style="width: 90%; height: 500px;"></div>
+    </div> {% endcomment %}
 
     <!-- Testimonial Start -->
     <div class="container-fluid bg-primary bg-testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -236,7 +273,85 @@
     </div>
     
     <!-- Add these script tags to your HTML file -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
+    <script>
+        $(document).ready(function() {
+            $('#downloadReportButton').click(function() {
+                $('#downloadReportModal').modal('show');
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Function to initialize the map
+            function initMap() {
+                var map = new Microsoft.Maps.Map(document.getElementById("mapContainer"), {
+                    credentials: "Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT",
+                    zoom: 10,
+                });
+    
+                // Add a marker for Kanjirappally
+                var kanjirappallyLocation = new Microsoft.Maps.Location(9.6113, 76.7725);
+                var marker = new Microsoft.Maps.Pushpin(kanjirappallyLocation, {
+                    title: "MedBlood bank",
+                    subTitle: "Kanjirappally, Kerala"
+                });
+                map.entities.push(marker);
+            }
+    
+            // Hide the map container initially
+            $('#mapContainer').hide();
+            var mapInitialized = false;
+    
+            // Toggle the map container visibility on button click
+            $('#findLabButton').click(function() {
+                $('#mapContainer').toggle();
+                // Initialize map if it's being shown and not initialized before
+                if ($('#mapContainer').is(':visible') && !mapInitialized) {
+                    initMap();
+                    mapInitialized = true;
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#searchButton').click(function() {
+                var query = $('#searchInput').val().trim().toLowerCase();
+                if (query !== '') {
+                    $.ajax({
+                        url: "{% url 'search_lab_tests' %}",
+                        data: {
+                            'query': query
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            displaySearchResults(data);
+                        }
+                    });
+                }
+            });
+    
+            function displaySearchResults(results) {
+                var searchResultsDropdown = $('#searchResults');
+                searchResultsDropdown.empty();
+                if (results.length > 0) {
+                    for (var i = 0; i < results.length; i++) {
+                        var test = results[i];
+                        var testLink = $('<a>').attr('href', test.url).text(test.test_name);
+                        var listItem = $('<li>').addClass('dropdown-item').append(testLink);
+                        searchResultsDropdown.append(listItem);
+                    }
+                    searchResultsDropdown.show();
+                } else {
+                    searchResultsDropdown.hide();
+                }
+            }
+        });
+    </script>
+    
+    
 
-    {% endblock %}
+{% endblock %}

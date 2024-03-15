@@ -398,6 +398,8 @@ class LaboratoryTest(models.Model):
 
     def __str__(self):
         return self.test_name
+    def get_absolute_url(self):
+        return reverse('show_test_details', kwargs={'test_id': self.id})
     
 # models.py
     
@@ -486,7 +488,7 @@ class LabReportStorage(models.Model):
     def __str__(self):
         return f"Lab Report for {self.patient.full_name}"
     
-    
+
 from django.db import models
 from django.contrib.auth import get_user_model
 

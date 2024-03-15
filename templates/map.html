@@ -1,0 +1,61 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-fluid col-12 d-flex justify-content-center bg-dark">
+        <div class="map" id="myMap" style="width: 90%; height: 500px"></div>
+      </div>
+</body>
+<script type="text/javascript"
+  src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
+
+  
+
+<script>
+  var map;
+  var searchManager;
+
+  function initMap() {
+    map = new Microsoft.Maps.Map("#myMap", {
+      credentials: "Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT",
+      zoom: 10,
+    });
+
+    // Retrieve data from Django view and loop through it
+    var locations = [
+      {% for record in stations %}
+      {
+        latitude: {{ record.latitude }},
+        longitude: {{ record.longitude }},
+        stname: "{{ record.stname }}",
+        place: "{{ record.place }}"
+      },
+      {% endfor %}
+      // Add a marker for Kanjirappally
+      {
+        latitude: 9.7425, // Example latitude for Kanjirappally
+        longitude: 76.6944, // Example longitude for Kanjirappally
+        stname: "Medlab Blood Bank",
+        place: "Kanjirappally"
+      }
+    ];
+
+    // Create markers for each location
+    for (var i = 0; i < locations.length; i++) {
+      var location = locations[i];
+      var marker = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(location.latitude, location.longitude), {
+        title: location.stname,
+        subTitle: location.place
+      });
+      map.entities.push(marker);
+    }
+  }
+
+  // Call the initMap function once the page is loaded
+  window.onload = initMap;
+</script>
+
+</html>

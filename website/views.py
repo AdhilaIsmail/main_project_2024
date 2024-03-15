@@ -1855,13 +1855,21 @@ def bloodrequest(request, is_immediate):
 
 from django.shortcuts import render
 from .models import LaboratoryTest
-
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+from django.db.models import Q
+
 
 def homelab(request):
     print("View function executed!")
-    # Retrieve all LaboratoryTest objects from the database
+    
     lab_tests = LaboratoryTest.objects.all()
+    query = request.GET.get('q', '')
+    if query:
+        lab_tests = lab_tests.filter(Q(test_name__icontains=query))
+
+    
     print("Number of records:", lab_tests.count())
 
     # Split lab_tests into chunks of 3
@@ -1883,11 +1891,27 @@ def homelab(request):
     # Pass the lab_tests_page data to the template context
     context = {
         'lab_tests_page': lab_tests_page,
+        'query': query,
     }
 
     # Render the HTML template with the data
     return render(request, 'labhome.html', context)
 
+
+from django.http import JsonResponse
+from .models import LaboratoryTest
+from django.urls import reverse
+
+
+def search_lab_tests(request):
+    query = request.GET.get('query', '')
+    if query:
+        lab_tests = LaboratoryTest.objects.order_by('id').filter(Q(test_name__icontains=query))
+
+        results = [{'test_name': lab_test.test_name, 'url': lab_test.get_absolute_url()} for lab_test in lab_tests]
+        return JsonResponse(results, safe=False)
+    else:
+        return JsonResponse([], safe=False)
 
 
 def upload_prescription_view(request):
@@ -1899,7 +1923,7 @@ def download_report_view(request):
 
 
 def find_lab_view(request):
-    return render(request, 'labhome.html')
+    return redirect('homelab')
 
 
 
@@ -2217,38 +2241,6 @@ def save_lab_results(request):
 
 
 
-# def submit_lab_results(request):
-#     if request.method == 'POST':
-#         appointment_id = request.POST.get('appointment_id')
-        
-#         # Use get_object_or_404 to handle DoesNotExist exception
-#         booking = get_object_or_404(Booking, id=appointment_id)
-#         selected_test = booking.patient.selected_test
-
-#         # Retrieve test name and package details of selected lab test
-#         test_name = selected_test.test_name
-#         package_details = selected_test.package_details
-
-#         # Parse package_details if it's stored as JSON string
-#         if isinstance(package_details, str):
-#             package_details = json.loads(package_details)
-
-#         # Check if lab results have already been saved for this booking
-#         lab_results_saved = LabResult.objects.filter(booking_id=booking.id).exists()
-#         patient_status = booking.patient.status
-#         context = {
-#             'patient_id': booking.patient.id,
-#             'booking_id': booking.id,
-#             'test_name': test_name,
-#             'package_details': package_details,
-#             'lab_results_saved': lab_results_saved,
-#             'patient_status': patient_status,
-#         }
-        
-#         return render(request, 'labstaff/labresult.html', context)
-#     else:
-#         return redirect('labstaffindex')  
-    
 
 def submit_lab_results(request):
     if request.method == 'POST':
@@ -2354,10 +2346,66 @@ def download_lab_report(request, appointment_id):
         print("Error occurred during PDF generation:", pisa_status.err)
     else:
         # Save the generated PDF to the LabReportStorage model
-        lab_report_storage = LabReportStorage.objects.create(
+        lab_report = LabReportStorage(
             appointment=appointment,
             patient=patient,
-            pdf_file=ContentFile(response.content),
-            # You can add additional fields as needed
+            # FileField expects a file-like object, so we wrap the response content in a ContentFile
+            pdf_file=ContentFile(response.content, name=f"lab_report_{appointment_id}.pdf"),
         )
+        lab_report.save()
     return response
+
+
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
+from .models import LabReportStorage, Booking
+
+def download_report_view(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get('phone')
+        booking = get_object_or_404(Booking, patient__phone=phone_number)
+
+        # Retrieve the LabReportStorage associated with the booking
+        lab_report = get_object_or_404(LabReportStorage, appointment=booking)
+
+        if lab_report:
+            # If a LabReportStorage instance is found, initiate the download
+            with open(lab_report.pdf_file.path, 'rb') as pdf_file:
+                response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+                response['Content-Disposition'] = f'attachment; filename="{lab_report.pdf_file.name}"'
+                return response
+        else:
+            return HttpResponse("Lab report not found for the provided appointment.")
+
+    return render(request, 'labhome.html')  # Render the same template
+
+
+
+
+
+from django.http import HttpResponseNotFound
+
+def download_report_by_phone(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get('phoneNumber')
+
+        # Query the database to find the booking associated with the provided phone number
+        try:
+            patient = Patient.objects.get(phone=phone_number)
+            booking = Booking.objects.filter(patient=patient).first()
+            if booking:
+                # Retrieve the lab report associated with the booking
+                lab_report = LabReportStorage.objects.filter(appointment=booking).first()
+                if lab_report:
+                    # Return the lab report PDF as a downloadable response
+                    response = HttpResponse(lab_report.pdf_file, content_type='application/pdf')
+                    response['Content-Disposition'] = f'attachment; filename="lab_report_{booking.id}.pdf"'
+                    return response
+                else:
+                    return HttpResponseNotFound("Lab report not found.")
+            else:
+                return HttpResponseNotFound("Booking not found.")
+        except Patient.DoesNotExist:
+            return HttpResponseNotFound("Patient not found.")
+    else:
+        return HttpResponseNotFound("Invalid request method.")
