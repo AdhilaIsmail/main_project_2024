@@ -67,7 +67,7 @@ urlpatterns = [
     path('download_report_view', download_report_view,name='download_report_view'),
     path('find_lab_view',find_lab_view,name='find_lab_view'),
     path('labtestbookings',views.labtestbookings, name='labtestbookings'),
-    path('search_lab_tests', views.search_lab_tests,name='search_lab_tests'),
+    path('search-laboratory-tests/', views.search_laboratory_tests, name='search_laboratory_tests'),
     
    
 

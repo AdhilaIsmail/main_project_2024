@@ -1899,19 +1899,22 @@ def homelab(request):
 
 
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 from .models import LaboratoryTest
-from django.urls import reverse
 
-
-def search_lab_tests(request):
-    query = request.GET.get('query', '')
+@require_GET
+def search_laboratory_tests(request):
+    query = request.GET.get('query', '').strip()
     if query:
-        lab_tests = LaboratoryTest.objects.order_by('id').filter(Q(test_name__icontains=query))
-
-        results = [{'test_name': lab_test.test_name, 'url': lab_test.get_absolute_url()} for lab_test in lab_tests]
-        return JsonResponse(results, safe=False)
+        results = LaboratoryTest.objects.filter(test_name__icontains=query)
     else:
-        return JsonResponse([], safe=False)
+        # If the query is empty, return all tests
+        results = LaboratoryTest.objects.all()
+    
+    serialized_results = [{'test_name': test.test_name, 'test_price': str(test.test_price)} for test in results]
+    return JsonResponse(serialized_results, safe=False)
+
+
 
 
 def upload_prescription_view(request):

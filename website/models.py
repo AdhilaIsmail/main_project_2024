@@ -398,8 +398,7 @@ class LaboratoryTest(models.Model):
 
     def __str__(self):
         return self.test_name
-    def get_absolute_url(self):
-        return reverse('show_test_details', kwargs={'test_id': self.id})
+    
     
 # models.py
     

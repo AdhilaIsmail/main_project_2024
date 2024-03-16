@@ -140,16 +140,18 @@
                             <div class="container py-5">
                                 <div class="row">
                                     <div class="col-lg-8">
-                                        {% comment %} <div class="input-group mb-3"> {% endcomment %}
-                                            {% comment %} <input type="text" class="form-control form-control-lg" placeholder="Type here..."> {% endcomment %}
-                                            {% comment %} <input type="text" class="form-control bg-transparent border-primary p-3" name="q" id="searchInput" placeholder="Type search keyword" value="{{ query }}">
-                                            <button class="btn btn-primary" id="searchButton">Search</button>
-                                        </div> {% endcomment %}
-                                        <div class="input-group mb-3">
-                                            <input type="text" class="form-control bg-transparent border-primary p-3" name="q" id="searchInput" placeholder="Type search keyword" value="{{ query }}">
-                                            <button class="btn btn-primary" id="searchButton">Search</button>
-                                            <div id="searchResults" class="dropdown-menu" style="display: none;"></div>
-                                        </div>
+                                        
+                                        {% comment %} <input type="text" class="form-control form-control-lg" placeholder="Type here..."> {% endcomment %}
+                                        <form id="searchForm">
+                                            <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type here...">
+                                            <div id="searchDropdown" class="dropdown-menu" aria-labelledby="searchInput">
+                                                <!-- Dropdown menu items will be appended here -->
+                                            </div>
+                                            <button type="submit" id="searchButton" class="btn btn-primary">Search</button>
+                                        </form>
+                                        
+                                            
+                                     
                                         <div class="d-flex justify-content-start">
 
 
@@ -200,6 +202,7 @@
     <div class="container-fluid col-12 d-flex justify-content-center bg-dark">
         <div id="mapContainer" class="map"></div>
     </div>
+    <div id="searchResults"></div>
     <!-- Carousel End -->
     <div class="modal fade" id="downloadReportModal" tabindex="-1" aria-labelledby="downloadReportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -227,11 +230,7 @@
         <div class="test-container">
             {% if lab_tests_page %}
                 {% for test in lab_tests_page %}
-                    {% comment %} <div class="test-box">
-                        <h3>{{ test.test_name }}</h3>
-                        <p>Price: ${{ test.test_price }}</p>
-                        <button class="know-more-btn">Know More</button>
-                    </div> {% endcomment %}
+                   
                     <div class="test-box">
                         <h3>{{ test.test_name }}</h3>
                         <p>Price: ${{ test.test_price }}</p>
@@ -244,6 +243,12 @@
             {% endif %}
         </div>
     </div>
+    {% comment %} <div class="container">
+        <h2 class="text-center mb-5">Specialized Health Packages</h2>
+        <div class="test-container" id="selectedTestContainer">
+            <!-- Selected test will be displayed here -->
+        </div>
+    </div> {% endcomment %}
     {% comment %} <div id="mapContainer" class="container-fluid col-12 d-flex justify-content-center bg-dark" style="display: none;">
         <div class="map" id="myMap" style="width: 90%; height: 500px;"></div>
     </div> {% endcomment %}
@@ -274,6 +279,77 @@
     
     <!-- Add these script tags to your HTML file -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to show all tests initially
+            function showAllTests() {
+                $('.test-box').show();
+            }
+        
+            // Function to hide all tests except the one with the specified test name
+            function showSearchedTest(testName) {
+                $('.test-box').each(function() {
+                    if ($(this).find('h3').text().trim() === testName) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        
+            // Function to handle search input
+            $('#searchInput').on('input', function() {
+                var query = $(this).val().trim(); // Get the current value of the input field
+                if (query === '') {
+                    showAllTests(); // Show all tests if the query is empty
+                    $('#searchDropdown').empty(); // Clear the dropdown if the query is empty
+                    return;
+                }
+        
+                // Make AJAX request to get matching tests
+                $.getJSON('/search-laboratory-tests/', {query: query}, function(data) {
+                    $('#searchDropdown').empty(); // Clear previous dropdown items
+                    if (data.length > 0) {
+                        $.each(data, function(index, test) {
+                            $('#searchDropdown').append('<button type="button" class="dropdown-item test-item" data-test-name="' + test.test_name + '">' + test.test_name + '</button>');
+                        });
+                        $('#searchDropdown').show(); // Show the dropdown
+                    } else {
+                        $('#searchDropdown').hide(); // Hide the dropdown if no results
+                    }
+                });
+        
+                // Show only the searched test
+                showSearchedTest(query);
+            });
+        
+            // Handle selecting a test from the dropdown
+            $(document).on('click', '.test-item', function() {
+                var testName = $(this).data('test-name');
+                $('#searchInput').val(testName); // Set the input value to the selected test name
+                $('#searchDropdown').hide(); // Hide the dropdown
+        
+                // Fetch the price of the selected test from the backend
+                $.getJSON('/get-test-price/', {test_name: testName}, function(data) {
+                    // Display the selected test with its price in the test container
+                    if (data.price) {
+                        $('#testContainer').empty();
+                        $('#testContainer').append('<div class="test-box"><h3>' + testName + '</h3><p>Price: $' + data.price + '</p></div>');
+                    } else {
+                        $('#testContainer').empty();
+                        $('#testContainer').append('<p>No price available for ' + testName + '</p>');
+                    }
+                });
+        
+                // Show only the searched test
+                showSearchedTest(testName);
+            });
+        
+            // Initially show all tests
+            showAllTests();
+        });
+    </script>
+        
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
     <script>
@@ -316,42 +392,4 @@
             });
         });
     </script>
-    <script>
-        $(document).ready(function() {
-            $('#searchButton').click(function() {
-                var query = $('#searchInput').val().trim().toLowerCase();
-                if (query !== '') {
-                    $.ajax({
-                        url: "{% url 'search_lab_tests' %}",
-                        data: {
-                            'query': query
-                        },
-                        dataType: 'json',
-                        success: function(data) {
-                            displaySearchResults(data);
-                        }
-                    });
-                }
-            });
-    
-            function displaySearchResults(results) {
-                var searchResultsDropdown = $('#searchResults');
-                searchResultsDropdown.empty();
-                if (results.length > 0) {
-                    for (var i = 0; i < results.length; i++) {
-                        var test = results[i];
-                        var testLink = $('<a>').attr('href', test.url).text(test.test_name);
-                        var listItem = $('<li>').addClass('dropdown-item').append(testLink);
-                        searchResultsDropdown.append(listItem);
-                    }
-                    searchResultsDropdown.show();
-                } else {
-                    searchResultsDropdown.hide();
-                }
-            }
-        });
-    </script>
-    
-    
-
 {% endblock %}
