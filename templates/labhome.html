@@ -109,6 +109,24 @@
         margin-top: 20px; /* Adjust margin-top as needed */
         display: none; /* Initially hide map container */
     }
+    .input-group {
+        position: relative;
+    }
+    
+    /* Style for the search icon */
+    .input-group-append {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 10px; /* Adjust right position as needed */
+    }
+    
+    .input-group-append button {
+        background-color: transparent;
+        border: none;
+        color: #007bff; /* Color of the search icon */
+        cursor: pointer;
+    }
 </style>
 
     <!-- Full Screen Search Start -->
@@ -142,12 +160,25 @@
                                     <div class="col-lg-8">
                                         
                                         {% comment %} <input type="text" class="form-control form-control-lg" placeholder="Type here..."> {% endcomment %}
-                                        <form id="searchForm">
+                                        {% comment %} <form id="searchForm">
                                             <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type here...">
                                             <div id="searchDropdown" class="dropdown-menu" aria-labelledby="searchInput">
                                                 <!-- Dropdown menu items will be appended here -->
                                             </div>
                                             <button type="submit" id="searchButton" class="btn btn-primary">Search</button>
+                                        </form> {% endcomment %}
+                                        <form id="searchForm" class="row">
+                                            <div class="col">
+                                                <div class="input-group">
+                                                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Type here...">
+                                                    <div id="searchDropdown" class="dropdown-menu" aria-labelledby="searchInput">
+                                                        <!-- Dropdown menu items will be appended here -->
+                                                    </div>
+                                                    <div class="input-group-prepend">
+                                                        <button type="submit" id="searchButton" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </form>
                                         
                                             
@@ -243,15 +274,7 @@
             {% endif %}
         </div>
     </div>
-    {% comment %} <div class="container">
-        <h2 class="text-center mb-5">Specialized Health Packages</h2>
-        <div class="test-container" id="selectedTestContainer">
-            <!-- Selected test will be displayed here -->
-        </div>
-    </div> {% endcomment %}
-    {% comment %} <div id="mapContainer" class="container-fluid col-12 d-flex justify-content-center bg-dark" style="display: none;">
-        <div class="map" id="myMap" style="width: 90%; height: 500px;"></div>
-    </div> {% endcomment %}
+    
 
     <!-- Testimonial Start -->
     <div class="container-fluid bg-primary bg-testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -297,30 +320,53 @@
                 });
             }
         
+            // Function to populate suggestions in the dropdown
+            function populateSuggestions(data) {
+                $('#searchDropdown').empty(); // Clear previous dropdown items
+                if (data.length > 0) {
+                    $.each(data, function(index, test) {
+                        $('#searchDropdown').append('<button type="button" class="dropdown-item test-item" data-test-name="' + test.test_name + '">' + test.test_name + '</button>');
+                    });
+                    $('#searchDropdown').show(); // Show the dropdown
+                } else {
+                    $('#searchDropdown').hide(); // Hide the dropdown if no results
+                }
+            }
+        
             // Function to handle search input
-            $('#searchInput').on('input', function() {
-                var query = $(this).val().trim(); // Get the current value of the input field
+            function handleSearch() {
+                var query = $('#searchInput').val().trim(); // Get the current value of the input field
                 if (query === '') {
                     showAllTests(); // Show all tests if the query is empty
-                    $('#searchDropdown').empty(); // Clear the dropdown if the query is empty
                     return;
                 }
         
                 // Make AJAX request to get matching tests
                 $.getJSON('/search-laboratory-tests/', {query: query}, function(data) {
-                    $('#searchDropdown').empty(); // Clear previous dropdown items
+                    populateSuggestions(data); // Populate suggestions in the dropdown
                     if (data.length > 0) {
+                        $('#testContainer').empty(); // Clear previous test results
                         $.each(data, function(index, test) {
-                            $('#searchDropdown').append('<button type="button" class="dropdown-item test-item" data-test-name="' + test.test_name + '">' + test.test_name + '</button>');
+                            $('#testContainer').append('<div class="test-box"><h3>' + test.test_name + '</h3><p>Price: $' + test.test_price + '</p></div>');
                         });
-                        $('#searchDropdown').show(); // Show the dropdown
                     } else {
-                        $('#searchDropdown').hide(); // Hide the dropdown if no results
+                        $('#testContainer').empty().append('<p>No results found.</p>');
                     }
                 });
         
                 // Show only the searched test
                 showSearchedTest(query);
+            }
+        
+            // Handle search form submission
+            $('#searchForm').submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+                handleSearch(); // Call handleSearch function to handle search
+            });
+        
+            // Handle search input change
+            $('#searchInput').on('input', function() {
+                handleSearch(); // Call handleSearch function when input changes
             });
         
             // Handle selecting a test from the dropdown
