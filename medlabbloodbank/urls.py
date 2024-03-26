@@ -196,6 +196,7 @@ urlpatterns = [
     path('download_lab_report/<int:appointment_id>/', views.download_lab_report, name='download_lab_report'),
     path('download_report_view', views.download_report_view, name='download_report_view'),
     path('download-report-by-phone/', views.download_report_by_phone, name='download_report_by_phone'),
-    
+    path('lab_review/', views.lab_review, name='lab_review'),
+    path('thank_you/', views.thank_you_page, name='thank_you'),
 
 ]

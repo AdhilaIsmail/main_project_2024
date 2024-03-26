@@ -406,6 +406,7 @@ class LaboratoryTest(models.Model):
     
 from django.db import models
 
+
 class Patient(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=1, related_name='patient_user')
     full_name = models.CharField(max_length=255)
@@ -419,6 +420,7 @@ class Patient(models.Model):
 
     def __str__(self):
         return self.full_name
+   
 
 class Booking(models.Model):
     STATUS_CHOICES = (
@@ -511,3 +513,25 @@ class Notification(models.Model):
     def mark_as_read(self):
         self.is_read = True
         self.save()
+
+
+
+from django.db import models
+from django.conf import settings
+
+class LabReview(models.Model):
+    RATING_CHOICES = [
+        (1, '1 star'),
+        (2, '2 stars'),
+        (3, '3 stars'),
+        (4, '4 stars'),
+        (5, '5 stars'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True, blank= True)
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    feedback = models.TextField()
+
+    def __str__(self):
+        return f"Lab Review for User: {self.user.email}, Rating: {self.rating}"
+

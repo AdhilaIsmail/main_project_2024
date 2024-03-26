@@ -133,3 +133,14 @@ class BloodTypeForm(forms.ModelForm):
 
 
 
+from django import forms
+from .models import LabReview
+
+class LabReviewForm(forms.ModelForm):
+    class Meta:
+        model = LabReview
+        fields = ['rating', 'feedback']
+        widgets = {
+            'rating': forms.NumberInput(attrs={'min': 1, 'max': 5}),  # Limit rating between 1 and 5
+            'feedback': forms.Textarea(attrs={'rows': 4})  # Adjust textarea rows as needed
+        }

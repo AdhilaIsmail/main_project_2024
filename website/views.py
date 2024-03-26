@@ -2412,3 +2412,47 @@ def download_report_by_phone(request):
             return HttpResponseNotFound("Patient not found.")
     else:
         return HttpResponseNotFound("Invalid request method.")
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import LabReview
+from .forms import LabReviewForm
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import LabReviewForm
+from .models import LabReview
+
+def lab_review(request):
+    if request.method == 'POST':
+        form = LabReviewForm(request.POST)
+        if form.is_valid():
+            # Get the logged-in user
+            user = request.user
+            if user.is_authenticated:
+                # Save the LabReview instance with the user
+                lab_review = form.save(commit=False)
+                lab_review.user = user
+                lab_review.save()
+                messages.success(request, 'Thank you for your review!')
+                return redirect('thank_you')
+            else:
+                messages.error(request, 'You must be logged in to leave a review.')
+                return redirect('login')  # Redirect to login page if user is not logged in
+    else:
+        form = LabReviewForm()
+    return render(request, 'lab_review_form.html', {'form': form})
+
+
+
+
+from django.shortcuts import render
+
+def thank_you_page(request):
+    return render(request, 'thank_you.html')
+
+
+
+

@@ -1,0 +1,26 @@
+<!-- lab_review_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Review Form</title>
+</head>
+<body>
+    <h2>Lab Review</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="rating">Rating:</label>
+        <select name="rating" id="rating">
+            <option value="1">1 star</option>
+            <option value="2">2 stars</option>
+            <option value="3">3 stars</option>
+            <option value="4">4 stars</option>
+            <option value="5">5 stars</option>
+        </select><br>
+        <label for="feedback">Feedback:</label><br>
+        <textarea name="feedback" id="feedback" rows="4" cols="50"></textarea><br>
+        <button type="submit">Submit Review</button>
+    </form>
+</body>
+</html>
