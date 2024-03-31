@@ -1,26 +1,320 @@
-<!-- lab_review_form.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Review Form</title>
-</head>
+{% extends 'baselab.html' %}
+{% block content %}
+
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Bing Maps API Script -->
+<script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
+<style>
+    .btn-container 
+    {
+        margin-right: 10px; /* Adjust the margin between buttons if needed */
+    }
+    .icon-box 
+    {
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .map-container-hidden {
+        display: none;
+    }
+    
+    .special-packages-section 
+    {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
+    .special-package-item 
+    {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 0 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+   .special-packages-carousel .carousel-inner 
+    {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .special-packages-carousel .carousel-item 
+    {
+        width: calc(100% / 3); /* Show only 3 items at a time */
+        overflow: hidden;
+    }
+
+    .test-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .test-box {
+        flex: 0 0 30%; /* Adjust the width as needed */
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .test-box h3 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .test-box p {
+        color: #777;
+    }
+
+    .know-more-btn {
+        margin-top: auto; /* Move the button to the bottom */
+        background-color: #007bff;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .know-more-btn:hover {
+        background-color: #0056b3;
+    }
+    .carousel-item 
+    {
+        display: flex;
+        justify-content: space-between;
+    }
+    .test-box 
+    {
+        width: calc(32% - 10px); /* 32% width for each box with some margin in between */
+        margin-bottom: 20px;
+    }
+    #myMap {
+        display: none;
+    }
+    #mapContainer {
+        width: 90%;
+        height: 500px;
+        margin: auto;
+        margin-top: 20px; /* Adjust margin-top as needed */
+        display: none; /* Initially hide map container */
+    }
+    .input-group {
+        position: relative;
+    }
+    
+    /* Style for the search icon */
+    .input-group-append {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 10px; /* Adjust right position as needed */
+    }
+    
+    .input-group-append button {
+        background-color: transparent;
+        border: none;
+        color: #007bff; /* Color of the search icon */
+        cursor: pointer;
+    }
+    
+    .review-container {
+        text-align: center;
+        margin-top: 50px; /* Adjust as needed for vertical positioning */
+        margin-bottom:80px;
+    }
+
+    .review-form {
+        display: inline-block;
+        text-align: left;
+        margin-top: 20px; /* Adjust as needed for spacing */
+    }
+
+    /* Adjusted styles for footer */
+    footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    /* Additional style to prevent footer from covering content */
+    body {
+        margin-bottom: 150px; /* Adjust as needed to prevent footer overlap */
+    }
+
+</style>
+
+
 <body>
-    <h2>Lab Review</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label for="rating">Rating:</label>
-        <select name="rating" id="rating">
-            <option value="1">1 star</option>
-            <option value="2">2 stars</option>
-            <option value="3">3 stars</option>
-            <option value="4">4 stars</option>
-            <option value="5">5 stars</option>
-        </select><br>
-        <label for="feedback">Feedback:</label><br>
-        <textarea name="feedback" id="feedback" rows="4" cols="50"></textarea><br>
-        <button type="submit">Submit Review</button>
-    </form>
+    <div class="review-container">
+        <h2>Review our service</h2>
+        <form method="post" class="review-form">
+            {% csrf_token %}
+            <label for="rating">Rating:</label>
+            <select name="rating" id="rating">
+                <option value="1">1 star</option>
+                <option value="2">2 stars</option>
+                <option value="3">3 stars</option>
+                <option value="4">4 stars</option>
+                <option value="5">5 stars</option>
+            </select><br>
+            <label for="feedback">Feedback:</label><br>
+            <textarea name="feedback" id="feedback" rows="4" cols="50"></textarea><br>
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+    
 </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to show all tests initially
+            function showAllTests() {
+                $('.test-box').show();
+            }
+        
+            // Function to hide all tests except the one with the specified test name
+            function showSearchedTest(testName) {
+                $('.test-box').each(function() {
+                    if ($(this).find('h3').text().trim() === testName) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+        
+            // Function to populate suggestions in the dropdown
+            function populateSuggestions(data) {
+                $('#searchDropdown').empty(); // Clear previous dropdown items
+                if (data.length > 0) {
+                    $.each(data, function(index, test) {
+                        $('#searchDropdown').append('<button type="button" class="dropdown-item test-item" data-test-name="' + test.test_name + '">' + test.test_name + '</button>');
+                    });
+                    $('#searchDropdown').show(); // Show the dropdown
+                } else {
+                    $('#searchDropdown').hide(); // Hide the dropdown if no results
+                }
+            }
+        
+            // Function to handle search input
+            function handleSearch() {
+                var query = $('#searchInput').val().trim(); // Get the current value of the input field
+                if (query === '') {
+                    showAllTests(); // Show all tests if the query is empty
+                    return;
+                }
+        
+                // Make AJAX request to get matching tests
+                $.getJSON('/search-laboratory-tests/', {query: query}, function(data) {
+                    populateSuggestions(data); // Populate suggestions in the dropdown
+                    if (data.length > 0) {
+                        $('#testContainer').empty(); // Clear previous test results
+                        $.each(data, function(index, test) {
+                            $('#testContainer').append('<div class="test-box"><h3>' + test.test_name + '</h3><p>Price: $' + test.test_price + '</p></div>');
+                        });
+                    } else {
+                        $('#testContainer').empty().append('<p>No results found.</p>');
+                    }
+                });
+        
+                // Show only the searched test
+                showSearchedTest(query);
+            }
+        
+            // Handle search form submission
+            $('#searchForm').submit(function(event) {
+                event.preventDefault(); // Prevent default form submission
+                handleSearch(); // Call handleSearch function to handle search
+            });
+        
+            // Handle search input change
+            $('#searchInput').on('input', function() {
+                handleSearch(); // Call handleSearch function when input changes
+            });
+        
+            // Handle selecting a test from the dropdown
+            $(document).on('click', '.test-item', function() {
+                var testName = $(this).data('test-name');
+                $('#searchInput').val(testName); // Set the input value to the selected test name
+                $('#searchDropdown').hide(); // Hide the dropdown
+        
+                // Fetch the price of the selected test from the backend
+                $.getJSON('/get-test-price/', {test_name: testName}, function(data) {
+                    // Display the selected test with its price in the test container
+                    if (data.price) {
+                        $('#testContainer').empty();
+                        $('#testContainer').append('<div class="test-box"><h3>' + testName + '</h3><p>Price: $' + data.price + '</p></div>');
+                    } else {
+                        $('#testContainer').empty();
+                        $('#testContainer').append('<p>No price available for ' + testName + '</p>');
+                    }
+                });
+        
+                // Show only the searched test
+                showSearchedTest(testName);
+            });
+        
+            // Initially show all tests
+            showAllTests();
+        });
+    </script>
+        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
+    <script>
+        $(document).ready(function() {
+            $('#downloadReportButton').click(function() {
+                $('#downloadReportModal').modal('show');
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Function to initialize the map
+            function initMap() {
+                var map = new Microsoft.Maps.Map(document.getElementById("mapContainer"), {
+                    credentials: "Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT",
+                    zoom: 10,
+                });
+    
+                // Add a marker for Kanjirappally
+                var kanjirappallyLocation = new Microsoft.Maps.Location(9.6113, 76.7725);
+                var marker = new Microsoft.Maps.Pushpin(kanjirappallyLocation, {
+                    title: "MedBlood bank",
+                    subTitle: "Kanjirappally, Kerala"
+                });
+                map.entities.push(marker);
+            }
+    
+            // Hide the map container initially
+            $('#mapContainer').hide();
+            var mapInitialized = false;
+    
+            // Toggle the map container visibility on button click
+            $('#findLabButton').click(function() {
+                $('#mapContainer').toggle();
+                // Initialize map if it's being shown and not initialized before
+                if ($('#mapContainer').is(':visible') && !mapInitialized) {
+                    initMap();
+                    mapInitialized = true;
+                }
+            });
+        });
+    </script>
+{% endblock %}
 </html>

@@ -2453,6 +2453,33 @@ from django.shortcuts import render
 def thank_you_page(request):
     return render(request, 'thank_you.html')
 
+from django.shortcuts import render, redirect
+from .forms import PatientForm
+from .models import Patient
+
+def submit_normal_test(request):
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('labstaffindex')  # Redirect to a success URL after submission
+    else:
+        form = PatientForm()
+    return render(request, 'labstaff/viewbookings.html', {'form': form})
+
+from django.shortcuts import render
+from .models import LaboratoryTest
+
+def your_view(request):
+    laboratory_tests = LaboratoryTest.objects.all()
+    return render(request, 'labstaff/viewbookings.html', {'laboratory_tests': laboratory_tests})
 
 
+
+from django.shortcuts import render
+from .models import LabReview
+
+def your_view(request):
+    feedbacks = LabReview.objects.all()  # Retrieve all feedbacks from the LabReview model
+    return render(request, 'your_template.html', {'feedbacks': feedbacks})
 

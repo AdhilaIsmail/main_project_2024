@@ -144,3 +144,13 @@ class LabReviewForm(forms.ModelForm):
             'rating': forms.NumberInput(attrs={'min': 1, 'max': 5}),  # Limit rating between 1 and 5
             'feedback': forms.Textarea(attrs={'rows': 4})  # Adjust textarea rows as needed
         }
+
+from django import forms
+from .models import Patient, LaboratoryTest
+
+class PatientForm(forms.ModelForm):
+    selected_test = forms.ModelChoiceField(queryset=LaboratoryTest.objects.all(), empty_label=None)
+
+    class Meta:
+        model = Patient
+        fields = ['full_name', 'email', 'phone', 'address', 'gender', 'date_of_birth', 'selected_test']

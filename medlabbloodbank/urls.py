@@ -198,5 +198,6 @@ urlpatterns = [
     path('download-report-by-phone/', views.download_report_by_phone, name='download_report_by_phone'),
     path('lab_review/', views.lab_review, name='lab_review'),
     path('thank_you/', views.thank_you_page, name='thank_you'),
+    path('submit_normal_test/', views.submit_normal_test, name='submit_normal_test'),
 
 ]
