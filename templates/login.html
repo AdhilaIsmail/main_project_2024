@@ -62,7 +62,7 @@
            
             <button type="submit" class="btn btn-primary btn-block" name="loginbtn" id="loginbtn">Login</button>
             {% comment %} <a href="{% provider_login_url 'google'%}?next=/">  {% endcomment %}
-            <a href="{% provider_login_url 'google'%}?next=/" class="btn btn-danger btn-block mt-3" onclick="signInWithGoogle()">
+            {% comment %} <a href="{% provider_login_url 'google'%}?next=/" class="btn btn-danger btn-block mt-3" onclick="signInWithGoogle()"> {% endcomment %}
               <span class="align-middle">
                 <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png?w=740&t=st=1691744655~exp=1691745255~hmac=05990f95cf17e4c6378ea22d0d190f708342a8954403cb069955a97e2c0fd10c" alt="Google Icon" width="24" height="24">
               </span>
