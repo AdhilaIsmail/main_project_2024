@@ -1031,21 +1031,32 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
+# from django.shortcuts import render
+# from django.contrib.auth.decorators import login_required
+# from .models import CustomUser, Donor
+
+# @login_required
+# def view_profile(request):
+#     user_profile = request.user
+#     donor_profile = Donor.objects.get(user=user_profile)
+#     context = {
+#         'user_profile':user_profile,
+#         'donor_profile':donor_profile
+#     }
+
+#     return render(request, 'user_profile.html', context)
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import CustomUser, Donor
+from .models import CustomUser
 
 @login_required
 def view_profile(request):
     user_profile = request.user
-    donor_profile = Donor.objects.get(user=user_profile)
     context = {
-        'user_profile':user_profile,
-        'donor_profile':donor_profile
+        'user_profile': user_profile,
     }
 
     return render(request, 'user_profile.html', context)
-
     
 from django.shortcuts import render, redirect
 from django.contrib import messages
