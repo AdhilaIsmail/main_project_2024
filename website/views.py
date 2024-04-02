@@ -1045,6 +1045,28 @@ from django.views.decorators.csrf import csrf_exempt
 #     }
 
 #     return render(request, 'user_profile.html', context)
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import CustomUser
+
+def edit_profile(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        
+        # Get the current user
+        user = request.user
+
+        # Update the user profile
+        user.update_user_profile(phone=phone, email=email)
+
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('view_profile')  # Assuming 'profile_view' is the URL name for the user profile page
+
+    return render(request, 'user_profile.html')
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import CustomUser

@@ -185,6 +185,7 @@ urlpatterns = [
     path('check-appointment-status/<int:appointment_id>/', views.check_appointment_status, name='check_appointment_status'),
     
     path('view_profile/', views.view_profile, name='view_profile'),
+    path('edit-profile/',views. edit_profile, name='edit_profile'),
 
 
 

@@ -77,6 +77,13 @@ class CustomUser(AbstractUser):
     def set_hospital_role(self):
         self.role = CustomUser.HOSPITAL
         self.save()
+        
+    def update_user_profile(self, phone=None, email=None):
+        if email:
+            self.email = email
+        if phone:
+            self.phone = phone
+        self.save()
 
 #donor model
 from django.utils import timezone

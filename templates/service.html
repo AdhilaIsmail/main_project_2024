@@ -3,15 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Medlab Blood Bank</title>
+    <title>Services-Medlab Blood Bank</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
 
-    <!-- Favicon -->
-    {% comment %} <link href="img/favicon.ico" rel="icon"> {% endcomment %}
 
-    <!-- Google Web Fonts -->
+    
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"> 
 
@@ -33,19 +31,7 @@
 </head>
 
 <body>
-    <!-- Spinner Start -->
-    {% comment %} <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-grow text-primary m-1" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark m-1" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-secondary m-1" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    </div> {% endcomment %}
-    <!-- Spinner End -->
+    
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
@@ -58,15 +44,39 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
+                {% if user.is_admin or user.DONOR %}
+                    
                 <a href="{% url 'index' %}" class="nav-item nav-link ">Home</a>
-                <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
+                
                 <a href="{% url 'service' %}" class="nav-item nav-link active">Service</a>
                 <a href="{% url 'testimonial' %}" class="nav-item nav-link">Testimonial</a>
+                <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
                 <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
-                <a href="{% url 'loginn' %}" class="nav-item nav-link">Login</a>
+                {% comment %} <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a> {% endcomment %}
+                <div class="dropdown">
+                    <a href="#" class="nav-item nav-link dropdown-toggle" id="profileDropdown" data-toggle="dropdown">
+                      {{user.email}}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                      {% comment %} <a class="dropdown-item" href="{% url 'view_profile' %}">Profile</a> {% endcomment %}
+                      
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="{% url 'loggout' %}">Log Out</a>
+                    </div>
+                </div>
+
+                {% else %}
+                    <a href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
+                   
+                    <a href="{% url 'service' %}" class="nav-item nav-link">Service</a>
+                    <a href="{% url 'testimonial' %}" class="nav-item nav-link">Testimonial</a>
+                    <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
+                    <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                    <a class="nav-item nav-link" href="{% url 'loginn' %}">Login</a>
+                {% endif %}
+                
+                
             </div>
-            <!-- <button type="button" class="btn text-dark" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa fa-search"></i></button>
-            <a href="appointment.html" class="btn btn-primary py-2 px-4 ms-3">Appointment</a> -->
         </div>
     </nav>
     <!-- Navbar End -->
@@ -138,11 +148,7 @@
                         <img class="img-fluid" src="{% static 'img/bg18.jpg' %}" alt="">
                     </div>
                 </div>
-                <!-- <div class="col-lg-5 service-item wow zoomIn" data-wow-delay="0.9s">
-                    
-                        <img class="position-absolute w-50 h-50 rounded wow zoomIn" data-wow-delay="0.9s" src="img/bg10.avif" style="object-fit:cover;">
-                    
-                </div> -->
+                
             </div>
             <div class="row g-5 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="col-lg-7">
@@ -175,21 +181,6 @@
             </div>
         </div>
     </div>
-    <!-- Service End -->
-
-    <!-- <div class="container-fluid position-relative pt-5 wow fadeInUp" data-wow-delay="0.1s" style="z-index: 1;">
-        <div class="container">
-            <div class="bg-primary p-5">
-                <form class="mx-auto" style="max-width: 600px;">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-white p-3" placeholder="Your Email">
-                        <button class="btn btn-dark px-4">Sign Up</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> -->
-    <!-- Newsletter End -->
     
 
     <!-- Footer Start -->
