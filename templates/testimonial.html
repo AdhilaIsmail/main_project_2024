@@ -48,7 +48,7 @@
     <!-- Spinner End -->
 
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-7 py-3 py-lg-0">
         <a href="{% url 'testimonial' %}" class="navbar-brand p-0">
             <h4 class="m-0 text-danger"><img height="40px" width="70px" src="{% static 'img/logo.png' %}">Medlab Blood Bank</h4>
         </a>
@@ -57,12 +57,38 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
+                {% if user.is_admin or user.DONOR %}
+                    
                 <a href="{% url 'index' %}" class="nav-item nav-link ">Home</a>
-                <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
+                
                 <a href="{% url 'service' %}" class="nav-item nav-link">Service</a>
                 <a href="{% url 'testimonial' %}" class="nav-item nav-link active">Testimonial</a>
+                <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
                 <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
-                <a href="{% url 'loginn' %}" class="nav-item nav-link">Login</a>
+                {% comment %} <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a> {% endcomment %}
+                <div class="dropdown">
+                    <a href="#" class="nav-item nav-link dropdown-toggle" id="profileDropdown" data-toggle="dropdown">
+                      {{user.email}}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                      {% comment %} <a class="dropdown-item" href="{% url 'view_profile' %}">Profile</a> {% endcomment %}
+                      
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="{% url 'loggout' %}">Log Out</a>
+                    </div>
+                </div>
+
+                {% else %}
+                    <a href="{% url 'index' %}" class="nav-item nav-link">Home</a>
+                   
+                    <a href="{% url 'service' %}" class="nav-item nav-link">Service</a>
+                    <a href="{% url 'testimonial' %}" class="nav-item nav-link active">Testimonial</a>
+                    <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
+                    <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
+                    <a class="nav-item nav-link" href="{% url 'loginn' %}">Login</a>
+                {% endif %}
+                
+                
             </div>
         </div>
     </nav>
@@ -151,21 +177,21 @@
                 <div class="col-lg-3 col-md-6">
                     <h3 class="text-white mb-4">Quick Links</h3>
                     <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                        <a class="text-light mb-2" href="{% url 'index' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                        <a class="text-light mb-2" href="{% url 'about' %}"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                        <a class="text-light mb-2" href="{% url 'service' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
                         {% comment %} <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a> {% endcomment %}
-                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                        <a class="text-light" href="{% url 'contact' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h3 class="text-white mb-4">Popular Links</h3>
                     <div class="d-flex flex-column justify-content-start">
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
-                        <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
+                        <a class="text-light mb-2" href="{% url 'index' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
+                        <a class="text-light mb-2" href="{% url 'about' %}"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
+                        <a class="text-light mb-2" href="{% url 'service' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Our Services</a>
                         {% comment %} <a class="text-light mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Latest Blog</a> {% endcomment %}
-                        <a class="text-light" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
+                        <a class="text-light" href="{% url 'contact' %}"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
