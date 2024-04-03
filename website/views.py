@@ -51,9 +51,25 @@ from .models import CustomUser,LabSelection
 from datetime import timedelta
 from .models import CustomUser, LabSelection, UploadedFile
 from django.utils import timezone
+from django.contrib import messages
+from django.conf import settings
+# from .forms import YourForm
 
 def loginn(request):
     if request.method == "POST":
+
+        # # Validate reCAPTCHA
+        # captcha_response = request.POST.get('g-recaptcha-response')
+        # if not captcha_response:
+        #     messages.error(request, 'Please complete the reCAPTCHA.')
+        #     return redirect('loginn')
+
+        # # Verify reCAPTCHA
+        # is_valid = captcha_verify(captcha_response)
+        # if not is_valid:
+        #     messages.error(request, 'reCAPTCHA verification failed. Please try again.')
+        #     return redirect('loginn')
+        
         username = request.POST['email']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
@@ -92,6 +108,21 @@ def loginn(request):
     else:
         return render(request, 'login.html')
     
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_protect
+# from captcha.models import ReCaptchaField
+
+# @csrf_protect
+# def validate_captcha(request):
+#     if request.method == 'POST':
+#         captcha = ReCaptchaField()
+#         captcha_response = request.POST.get('g-recaptcha-response')
+#         if captcha.verify(request, captcha_response):
+#             return JsonResponse({'success': True})
+#         else:
+#             return JsonResponse({'success': False, 'error': 'Captcha verification failed'}, status=400)
+#     else:
+#         return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
 

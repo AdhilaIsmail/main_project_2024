@@ -59,7 +59,8 @@
               <small id="passwordError" class="form-text text-danger"></small>
             </div>
 
-           
+            {% comment %} <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div> {% endcomment %}
+            {% comment %} {{ form.captcha }} {% endcomment %}
             <button type="submit" class="btn btn-primary btn-block" name="loginbtn" id="loginbtn">Login</button>
             {% comment %} <a href="{% provider_login_url 'google'%}?next=/">  {% endcomment %}
             {% comment %} <a href="{% provider_login_url 'google'%}?next=/" class="btn btn-danger btn-block mt-3" onclick="signInWithGoogle()"> {% endcomment %}
@@ -89,7 +90,7 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
   <!--Working login validation  -->
   <script>

@@ -154,3 +154,11 @@ class PatientForm(forms.ModelForm):
     class Meta:
         model = Patient
         fields = ['full_name', 'email', 'phone', 'address', 'gender', 'date_of_birth', 'selected_test']
+
+
+# from django import forms
+# from captcha.fields import ReCaptchaField
+
+# class YourForm(forms.Form):
+#     # Your other form fields
+#     captcha = ReCaptchaField()

@@ -47,12 +47,14 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+   
     # 'crispy_forms',
 ]
 SITE_ID=1
 SOCIALACCOUNT_LOGIN_ON_GET=True
 
-
+# RECAPTCHA_PUBLIC_KEY = '6LeYjKwpAAAAADgalIrpiM9LzoqpE9cDjnNV8nht'
+# RECAPTCHA_PRIVATE_KEY = '6LeYjKwpAAAAAM3wZJLpL4ymPSn9OKemN9p4Lqwe'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
