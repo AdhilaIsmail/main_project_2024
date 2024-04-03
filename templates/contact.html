@@ -51,7 +51,16 @@
                     
                     <a href="{% url 'service' %}" class="nav-item nav-link">Service</a>
                     <a href="{% url 'testimonial' %}" class="nav-item nav-link ">Testimonial</a>
-                    <a href="{% url 'about' %}" class="nav-item nav-link ">About</a>
+                    <div class="dropdown">
+                        <a href="#" class="nav-item nav-link dropdown-toggle" id="aboutDropdown" data-toggle="dropdown">
+                            About
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <a class="dropdown-item" href="{% url 'about' %}">About Us</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'whydonateblood' %}">Why Donate Blood?</a>
+                        </div>
+                    </div>
                     <a href="{% url 'contact' %}" class="nav-item nav-link active">Contact</a>
                     {% comment %} <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a> {% endcomment %}
                     <div class="dropdown">
@@ -71,7 +80,16 @@
                        
                         <a href="{% url 'service' %}" class="nav-item nav-link">Service</a>
                         <a href="{% url 'testimonial' %}" class="nav-item nav-link">Testimonial</a>
-                        <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
+                        <div class="dropdown">
+                            <a href="#" class="nav-item nav-link dropdown-toggle" id="aboutDropdown" data-toggle="dropdown">
+                                About
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="aboutDropdown">
+                                <a class="dropdown-item" href="{% url 'about' %}">About Us</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'whydonateblood' %}">Why Donate Blood?</a>
+                            </div>
+                        </div>
                         <a href="{% url 'contact' %}" class="nav-item nav-link active">Contact</a>
                         <a class="nav-item nav-link" href="{% url 'loginn' %}">Login</a>
                     {% endif %}

@@ -45,18 +45,12 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
                 {% if user.is_admin or user.DONOR %}
-                    {% comment %} <a href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
-                    <a href="#" class="nav-item nav-link">Hospital Registration</a>
-               
-                    <a class="nav-item nav-link" href="{% url 'loggout' %}">Logout</a>
-                    <a href="#" class="nav-item nav-link">{{user.email}}</a> {% endcomment %}
-                {% comment %} {% elif user.DONOR %} {% endcomment %}
+                  
                 <a href="{% url 'index' %}" class="nav-item nav-link active">Home</a>
                 
                 <a href="{% url 'service' %}" class="nav-item nav-link">Service</a>
                 <a href="{% url 'testimonial' %}" class="nav-item nav-link">Testimonial</a>
 
-                {% comment %} <a href="{% url 'about' %}" class="nav-item nav-link">About</a> {% endcomment %}
                 <div class="dropdown">
                     <a href="#" class="nav-item nav-link dropdown-toggle" id="aboutDropdown" data-toggle="dropdown">
                         About
@@ -64,7 +58,7 @@
                     <div class="dropdown-menu" aria-labelledby="aboutDropdown">
                         <a class="dropdown-item" href="{% url 'about' %}">About Us</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Why Donate Blood?</a>
+                        <a class="dropdown-item" href="{% url 'whydonateblood' %}">Why Donate Blood?</a>
                     </div>
                 </div>
                 <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
@@ -248,40 +242,9 @@
                         <img class="img-fluid" src="{% static 'img/bg18.jpg' %}" alt="">
                     </div>
                 </div>
-                <!-- <div class="col-lg-5 service-item wow zoomIn" data-wow-delay="0.9s">
-                    
-                        <img class="position-absolute w-50 h-50 rounded wow zoomIn" data-wow-delay="0.9s" src="img/bg10.avif" style="object-fit:cover;">
-                    
-                </div> -->
+               
             </div>
-            {% comment %} <div class="row g-5 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="col-lg-7">
-                    <div class="row g-5">
-                        <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.3s">
-                            <div class="rounded-top overflow-hidden">
-                                <img class="img-fluid" src="{% static 'img/service-3.jpg' %}" alt="">
-                            </div>
-                            <div class="position-relative bg-light rounded-bottom text-center p-4">
-                                <h5 class="m-0">Dental Bridges</h5>
-                            </div>
-                        </div>
-                        <div class="col-md-6 service-item wow zoomIn" data-wow-delay="0.6s">
-                            <div class="rounded-top overflow-hidden">
-                                <img class="img-fluid" src="{% static 'img/service-4.jpg' %}" alt="">
-                            </div>
-                            <div class="position-relative bg-light rounded-bottom text-center p-4">
-                                <h5 class="m-0">Teeth Whitening</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div> {% endcomment %}
-                {% comment %} <div class="col-lg-5 service-item wow zoomIn" data-wow-delay="0.9s">
-                    <div class="position-relative bg-primary rounded h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-                        <h3 class="text-white mb-3">Make Appointment</h3>
-                        <p class="text-white mb-3">Clita ipsum magna kasd rebum at ipsum amet dolor justo dolor est magna stet eirmod</p>
-                        <h2 class="text-white mb-0">+012 345 6789</h2>
-                    </div>
-                </div> {% endcomment %}
+           
             </div>
         </div>
     </div>
