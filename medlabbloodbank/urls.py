@@ -120,7 +120,7 @@ urlpatterns = [
     # path('add_test_details',add_test_details,name='add_test_details'),
     path('addnewgroup', addnewgroup, name='addnewgroup'),
     path('addblood/', addblood, name='addblood'),
-    path('requests', requests, name='requests'),
+    path('requestss', views.requestss, name='requestss'),
     path('blood_request_list', blood_request_list, name='blood_request_list'),
     path('staff_registration', staff_registration, name='staff_registration'),
     path('assign_staff', assign_staff, name='assign_staff'),
@@ -186,6 +186,9 @@ urlpatterns = [
     
     path('view_profile/', views.view_profile, name='view_profile'),
     path('edit-profile/',views. edit_profile, name='edit_profile'),
+   
+    path('scrape_webpage', views.scrape_webpage, name='scrape_webpage'),
+    path('whydonateblood', views.whydonateblood, name='whydonateblood'),
 
 
 

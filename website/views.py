@@ -993,24 +993,7 @@ def staff_registration(request):
         return render(request, 'mainuser/staffregistration.html')
 
 
-# from django.shortcuts import render, redirect
-# from .forms import BloodTypeForm
-# from django.db import IntegrityError  # Import IntegrityError
 
-# def addblood(request):
-#     if request.method == 'POST':
-#         form = BloodTypeForm(request.POST)
-#         if form.is_valid():
-#             try:
-#                 form.save()
-#                 return redirect('bloodinventory')
-#             except IntegrityError:
-#                 form.add_error('blood_type', 'Blood type already exists.')  # Add a form error
-#     else:
-#         form = BloodTypeForm()
-#     return render(request, 'mainuser/addnewgroup.html', {'form': form})
-
-#new
 from django.shortcuts import render, redirect
 from .forms import BloodTypeForm
 from django.db import IntegrityError
@@ -1184,7 +1167,7 @@ def send_confirmation_email(to_email, status):
 
 
 
-def requests(request):
+def requestss(request):
     return render(request, 'mainuser/viewrequests.html')
 
 
@@ -2547,3 +2530,37 @@ def your_view(request):
     feedbacks = LabReview.objects.all()  # Retrieve all feedbacks from the LabReview model
     return render(request, 'your_template.html', {'feedbacks': feedbacks})
 
+
+from django.shortcuts import render
+from bs4 import BeautifulSoup
+import requests
+
+def scrape_webpage(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for non-200 status codes
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # Find all rich-text-editor-content divs
+        content_divs = soup.find_all('div', class_='rich-text-editor-content')
+        # Initialize an empty list to store content
+        content_list = []
+        # Loop through each rich-text-editor-content div
+        for div in content_divs:
+            # Extract the heading (h2) text
+            heading = div.find('h2')
+            heading_text = heading.get_text() if heading else None
+            # Extract all paragraph (p) texts
+            paragraphs = div.find_all('p')
+            # Extract the text content of each paragraph and join them
+            paragraph_texts = [p.get_text() for p in paragraphs]
+            content_text = '\n'.join(paragraph_texts)
+            # Append the heading and content to the list
+            content_list.append({'heading': heading_text, 'content': content_text})
+        return content_list
+    except requests.RequestException as e:
+        return f"Failed to retrieve webpage: {e}"
+
+def whydonateblood(request):
+    url = "https://www.redcrossblood.org/local-homepage/news/article/blood-donation-importance.html"
+    webpage_content = scrape_webpage(url)
+    return render(request, 'whydonateblood.html', {'webpage_content': webpage_content})

@@ -1,0 +1,44 @@
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>About Page</title>
+    <style>
+        .content {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    {% if webpage_content %}
+        <div class="content">{{ webpage_content }}</div>
+    {% else %}
+        <p class="error-message">Failed to retrieve content. Please try again later.</p>
+    {% endif %}
+</body>
+</html>
+ {% endcomment %}
+
+ <!DOCTYPE html>
+ <html>
+ <head>
+     <title>About Page</title>
+ </head>
+ <body>
+     {% for section in webpage_content %}
+         <div>
+             <h2>{{ section.heading }}</h2>
+             <p>{{ section.content }}</p>
+         </div>
+     {% endfor %}
+ </body>
+ </html>
+ 
+
