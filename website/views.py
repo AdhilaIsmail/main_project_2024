@@ -2559,6 +2559,8 @@ def scrape_webpage(url):
         return content_list
     except requests.RequestException as e:
         return f"Failed to retrieve webpage: {e}"
+    
+
 
 def whydonateblood(request):
     url = "https://www.redcrossblood.org/local-homepage/news/article/blood-donation-importance.html"
