@@ -1,14 +1,216 @@
-<!-- thank_you.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You</title>
-</head>
+
+
+{% extends 'baselab.html' %}
+{% block content %}
+
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Bing Maps API Script -->
+<script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
+<style>
+    .btn-container 
+    {
+        margin-right: 10px; /* Adjust the margin between buttons if needed */
+    }
+    .icon-box 
+    {
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .map-container-hidden {
+        display: none;
+    }
+    
+    .special-packages-section 
+    {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+    }
+    .special-package-item 
+    {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 0 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+   .special-packages-carousel .carousel-inner 
+    {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .special-packages-carousel .carousel-item 
+    {
+        width: calc(100% / 3); /* Show only 3 items at a time */
+        overflow: hidden;
+    }
+
+    .test-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .test-box {
+        flex: 0 0 30%; /* Adjust the width as needed */
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .test-box h3 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .test-box p {
+        color: #777;
+    }
+
+    .know-more-btn {
+        margin-top: auto; /* Move the button to the bottom */
+        background-color: #007bff;
+        color: #fff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .know-more-btn:hover {
+        background-color: #0056b3;
+    }
+    .carousel-item 
+    {
+        display: flex;
+        justify-content: space-between;
+    }
+    .test-box 
+    {
+        width: calc(32% - 10px); /* 32% width for each box with some margin in between */
+        margin-bottom: 20px;
+    }
+    #myMap {
+        display: none;
+    }
+    #mapContainer {
+        width: 90%;
+        height: 500px;
+        margin: auto;
+        margin-top: 20px; /* Adjust margin-top as needed */
+        display: none; /* Initially hide map container */
+    }
+    .input-group {
+        position: relative;
+    }
+    
+    /* Style for the search icon */
+    .input-group-append {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 10px; /* Adjust right position as needed */
+    }
+    
+    .input-group-append button {
+        background-color: transparent;
+        border: none;
+        color: #007bff; /* Color of the search icon */
+        cursor: pointer;
+    }
+    
+    .review-container {
+        text-align: center;
+        margin-top: 50px; /* Adjust as needed for vertical positioning */
+        margin-bottom: 80px;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .review-form {
+        display: inline-block;
+        text-align: left;
+        margin-top: 20px; /* Adjust as needed for spacing */
+    }
+
+    /* Adjusted styles for footer */
+    footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    /* Additional style to prevent footer from covering content */
+    {% comment %} body {
+        margin-bottom: 150px; /* Adjust as needed to prevent footer overlap */
+    } {% endcomment %}
+    .button {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 200px; /* Set the width as desired */
+    }
+    .button:hover {
+        background-color: #45a049;
+    }
+
+</style>
+
+   
 <body>
-    <h2>Thank You!</h2>
-    <p>Your review has been submitted successfully.</p>
-    <a href="/">Return to Homepage</a> <!-- Replace "/" with the URL of your homepage -->
+    
+    <div class="review-container" style="background-color:#2e4b66;color:white">
+     
+   
+            <h2>Thank You!</h2>
+            <p>Your review has been submitted successfully.</p>
+            <a href="/">Return to Homepage</a> 
+            <a href="/" class="button">Return to Homepage</a><!-- Replace "/" with the URL of your homepage -->
+       
+    </div>
+    
 </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
+    <script>
+        $(document).ready(function() {
+            $('#feedback').on('input', function() {
+                var feedback = $(this).val();
+                var regex = /^[a-zA-Z\s.]*$/; // Regular expression to allow only alphabetic characters, spaces, and full stops
+                if (!regex.test(feedback)) {
+                    $('#feedback-error').text('Only alphabetic characters, spaces, and full stops are allowed.');
+                    $(this).val(feedback.replace(/[^a-zA-Z\s.]/g, '')); // Remove invalid characters
+                } else {
+                    $('#feedback-error').text('');
+                }
+            });
+        });
+    </script>
+ 
+{% endblock %}
 </html>

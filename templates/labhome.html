@@ -186,17 +186,17 @@
                                         <div class="d-flex justify-content-start">
 
 
-                                            <div class="btn-container">
+                                            {% comment %} <div class="btn-container">
                                                 <a href="{% url 'upload_prescription_view' %}" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
                                                     <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
                                                         <img src="{% static 'img/presciptionlogo.svg' %}" alt="Upload Icon" style="height: 20px;">
                                                     </div>
                                                     Upload Prescription
                                                 </a>
-                                            </div>
+                                            </div> {% endcomment %}
 
                                            
-                                            <div class="btn-container">
+                                            {% comment %} <div class="btn-container">
                                                 <button id="downloadReportButton" class="btn btn-primary me-2 text-center" style="background-color:#294e65; height:70px; display: flex; align-items: center; justify-content: center;">
                                                   <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
                                                     <img src="{% static 'img/labreportlogo.svg' %}" alt="Download Icon" style="height: 20px;">
@@ -215,8 +215,28 @@
                                                         Find Our Lab
                                                     </a>
                                                 </div>
+                                            </div> {% endcomment %}
+                                            <div class="btn-container">
+                                                <button id="downloadReportButton" class="btn btn-primary me-2 text-center" style="background-color:#294e65; height:70px; width: 200px; display: flex; align-items: center; justify-content: center;">
+                                                    <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                        <img src="{% static 'img/labreportlogo.svg' %}" alt="Download Icon" style="height: 20px;">
+                                                    </div>
+                                                    Download Report
+                                                </button>
                                             </div>
-                                            <button onclick="location.href='{% url 'lab_review' %}'" class="btn btn-primary">Leave a Review</button>
+                                            
+                                            <div class="container">
+                                                <div class="btn-container">
+                                                    <a id="findLabButton" href="#" class="btn btn-primary me-2 text-center" role="button" style="background-color:#294e65; height:70px; width: 200px; display: flex; align-items: center; justify-content: center;">
+                                                        <div class="icon-box" style="height: 50px; width: 50px; border-radius:5px;">
+                                                            <img src="{% static 'img/lablogo1.svg' %}" alt="Find Lab Icon" style="height: 20px;">
+                                                        </div>
+                                                        Find Our Lab
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            {% comment %} <button onclick="location.href='{% url 'lab_review' %}'" class="btn btn-primary">Leave a Review</button> {% endcomment %}
+                                            <button onclick="location.href='{% url 'lab_review' %}'" class="btn btn-primary" style="background-color: #f5e131; width: 250px;">Leave a Review</button>
                                             
                                         </div>
                                     </div>
@@ -258,7 +278,7 @@
     </div>
     
     <div class="container">
-        <h2 class="text-center mb-5">Specialized Health Packages</h2>
+        <h2 class="text-center mb-5">Lab Tests</h2>
         <div class="test-container">
             {% if lab_tests_page %}
                 {% for test in lab_tests_page %}

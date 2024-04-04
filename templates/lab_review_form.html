@@ -160,7 +160,9 @@
 
 
 <body>
-    <div class="review-container">
+    
+    <div class="review-container" style="background-color:#2e4b66;color:white">
+     
         <h2>Review our service</h2>
         <form method="post" class="review-form">
             {% csrf_token %}
@@ -172,146 +174,33 @@
                 <option value="4">4 stars</option>
                 <option value="5">5 stars</option>
             </select><br>
+            {% comment %} <label for="feedback">Feedback:</label><br>
+            <textarea name="feedback" id="feedback" rows="4" cols="50"></textarea><br>
+            <button type="submit">Submit Review</button> {% endcomment %}
+
             <label for="feedback">Feedback:</label><br>
             <textarea name="feedback" id="feedback" rows="4" cols="50"></textarea><br>
+            <span id="feedback-error" style="color: red;"></span><br>
             <button type="submit">Submit Review</button>
         </form>
     </div>
     
 </body>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Function to show all tests initially
-            function showAllTests() {
-                $('.test-box').show();
-            }
-        
-            // Function to hide all tests except the one with the specified test name
-            function showSearchedTest(testName) {
-                $('.test-box').each(function() {
-                    if ($(this).find('h3').text().trim() === testName) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            }
-        
-            // Function to populate suggestions in the dropdown
-            function populateSuggestions(data) {
-                $('#searchDropdown').empty(); // Clear previous dropdown items
-                if (data.length > 0) {
-                    $.each(data, function(index, test) {
-                        $('#searchDropdown').append('<button type="button" class="dropdown-item test-item" data-test-name="' + test.test_name + '">' + test.test_name + '</button>');
-                    });
-                    $('#searchDropdown').show(); // Show the dropdown
-                } else {
-                    $('#searchDropdown').hide(); // Hide the dropdown if no results
-                }
-            }
-        
-            // Function to handle search input
-            function handleSearch() {
-                var query = $('#searchInput').val().trim(); // Get the current value of the input field
-                if (query === '') {
-                    showAllTests(); // Show all tests if the query is empty
-                    return;
-                }
-        
-                // Make AJAX request to get matching tests
-                $.getJSON('/search-laboratory-tests/', {query: query}, function(data) {
-                    populateSuggestions(data); // Populate suggestions in the dropdown
-                    if (data.length > 0) {
-                        $('#testContainer').empty(); // Clear previous test results
-                        $.each(data, function(index, test) {
-                            $('#testContainer').append('<div class="test-box"><h3>' + test.test_name + '</h3><p>Price: $' + test.test_price + '</p></div>');
-                        });
-                    } else {
-                        $('#testContainer').empty().append('<p>No results found.</p>');
-                    }
-                });
-        
-                // Show only the searched test
-                showSearchedTest(query);
-            }
-        
-            // Handle search form submission
-            $('#searchForm').submit(function(event) {
-                event.preventDefault(); // Prevent default form submission
-                handleSearch(); // Call handleSearch function to handle search
-            });
-        
-            // Handle search input change
-            $('#searchInput').on('input', function() {
-                handleSearch(); // Call handleSearch function when input changes
-            });
-        
-            // Handle selecting a test from the dropdown
-            $(document).on('click', '.test-item', function() {
-                var testName = $(this).data('test-name');
-                $('#searchInput').val(testName); // Set the input value to the selected test name
-                $('#searchDropdown').hide(); // Hide the dropdown
-        
-                // Fetch the price of the selected test from the backend
-                $.getJSON('/get-test-price/', {test_name: testName}, function(data) {
-                    // Display the selected test with its price in the test container
-                    if (data.price) {
-                        $('#testContainer').empty();
-                        $('#testContainer').append('<div class="test-box"><h3>' + testName + '</h3><p>Price: $' + data.price + '</p></div>');
-                    } else {
-                        $('#testContainer').empty();
-                        $('#testContainer').append('<p>No price available for ' + testName + '</p>');
-                    }
-                });
-        
-                // Show only the searched test
-                showSearchedTest(testName);
-            });
-        
-            // Initially show all tests
-            showAllTests();
-        });
-    </script>
+   
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="https://www.bing.com/api/maps/mapcontrol?key=Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT"></script>
     <script>
         $(document).ready(function() {
-            $('#downloadReportButton').click(function() {
-                $('#downloadReportModal').modal('show');
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Function to initialize the map
-            function initMap() {
-                var map = new Microsoft.Maps.Map(document.getElementById("mapContainer"), {
-                    credentials: "Agyr0UQGWTFzP3Fwb3PDJ_ahP24jx9jRgpUWwBD_37B8MXu1oql6WCs6J-vgU1YT",
-                    zoom: 10,
-                });
-    
-                // Add a marker for Kanjirappally
-                var kanjirappallyLocation = new Microsoft.Maps.Location(9.6113, 76.7725);
-                var marker = new Microsoft.Maps.Pushpin(kanjirappallyLocation, {
-                    title: "MedBlood bank",
-                    subTitle: "Kanjirappally, Kerala"
-                });
-                map.entities.push(marker);
-            }
-    
-            // Hide the map container initially
-            $('#mapContainer').hide();
-            var mapInitialized = false;
-    
-            // Toggle the map container visibility on button click
-            $('#findLabButton').click(function() {
-                $('#mapContainer').toggle();
-                // Initialize map if it's being shown and not initialized before
-                if ($('#mapContainer').is(':visible') && !mapInitialized) {
-                    initMap();
-                    mapInitialized = true;
+            $('#feedback').on('input', function() {
+                var feedback = $(this).val();
+                var regex = /^[a-zA-Z\s.]*$/; // Regular expression to allow only alphabetic characters, spaces, and full stops
+                if (!regex.test(feedback)) {
+                    $('#feedback-error').text('Only alphabetic characters, spaces, and full stops are allowed.');
+                    $(this).val(feedback.replace(/[^a-zA-Z\s.]/g, '')); // Remove invalid characters
+                } else {
+                    $('#feedback-error').text('');
                 }
             });
         });

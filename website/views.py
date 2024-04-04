@@ -2244,7 +2244,14 @@ def submit_booking(request):
 
         # Create a Booking object
         Booking.objects.create(patient=patient, test_date=test_date)
-
+        # Send confirmation email
+        subject = 'Booking Confirmation'
+        html_message = render_to_string('booking_confirmation_email.html', {'full_name': full_name, 'test_date': test_date})
+        plain_message = strip_tags(html_message)  # Strip HTML tags for plain text email
+        from_email = 'your_email@example.com'  # Update with your email address
+        recipient_list = [email]
+        send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
+        
         # Return a JSON response indicating success
         return JsonResponse({'success': True})
 
