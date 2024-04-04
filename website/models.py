@@ -427,6 +427,8 @@ class Patient(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+
    
 
 class Booking(models.Model):
