@@ -271,7 +271,18 @@
                                 </tbody>
                             </table>
 
-
+							<div>
+								<h2>Available Tests:</h2>
+								<ul>
+									{% for test in laboratory_tests %}
+										<li>{{ test.test_name }}</li>
+									{% endfor %}
+								</ul>
+							</div>
+							<div>
+								<h2>Available Tests:</h2>
+								<p>{{ laboratory_tests }}</p>
+							</div>
 							<div class="patient-details-form" style="display: none;">
 								<form id="patient-details-form" method="post" action="{% url 'submit_normal_test' %}">
 									{% csrf_token %}

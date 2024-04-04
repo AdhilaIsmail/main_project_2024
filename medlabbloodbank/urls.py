@@ -189,7 +189,7 @@ urlpatterns = [
    
     path('scrape_webpage', views.scrape_webpage, name='scrape_webpage'),
     path('whydonateblood', views.whydonateblood, name='whydonateblood'),
-
+    path('fetch-laboratory-tests/', views.fetch_laboratory_tests, name='fetch_laboratory_tests'),
 
 
     #labstaff

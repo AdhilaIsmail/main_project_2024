@@ -1995,8 +1995,102 @@ def special_package_registration(request):
 def laboratory_test_package_registration(request):
     return render(request,'mainuser/labmainpage.html')
 
-def special_package_registration(request):
-    return render(request,'mainuser/labmainpage.html')
+# def special_package_registration(request):
+#     return render(request,'mainuser/labmainpage.html')
+
+
+# from django.shortcuts import render
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import json
+# from .models import LaboratoryTest
+
+# @csrf_exempt
+# def save_laboratory_test(request):
+#     if request.method == 'POST':
+#         # Retrieve form data
+        
+#         test_name = request.POST.get('labTestName')
+#         test_price = request.POST.get('labTestPrice')
+#         package_details_json = request.POST.get('packageDetails')
+
+#         try:
+#             print("Received package_details_json:", package_details_json)  # Debugging statement
+#             # Parse JSON data
+#             package_details = json.loads(package_details_json)
+
+#             # Create a LaboratoryTest object and save it to the database
+#             laboratory_test = LaboratoryTest(
+#                 test_name=test_name,
+#                 test_price=test_price,
+#                 package_details=package_details
+#             )
+#             laboratory_test.save()
+
+#             # Return a JSON response indicating success
+#             return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+#         except json.JSONDecodeError as e:
+#             # Handle JSON decoding error
+#             return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'})
+#     elif request.method == 'GET':
+#         # Handle GET requests to display laboratory test data
+#         lab_tests = LaboratoryTest.objects.all()
+#         context = {'lab_tests': lab_tests}
+#         return render(request, 'mainuser/labmainpage.html', context)
+#     else:
+#         # Handle other request methods (e.g., PUT, DELETE) if needed
+#         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+#working
+
+# from django.shortcuts import render
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# import json
+# from .models import LaboratoryTest
+
+# @csrf_exempt
+# def save_laboratory_test(request):
+#     if request.method == 'POST':
+#         # Retrieve form data
+#         test_name = request.POST.get('labTestName')
+#         test_price = request.POST.get('labTestPrice')
+        
+#         try:
+#             # Retrieve JSON data from POST request
+#             package_details_json = request.POST.get('packageDetails')
+#             print("Received package_details_json:", package_details_json)  # Debugging statement
+            
+#             # Parse JSON data
+#             package_details = json.loads(package_details_json)
+
+#             # Create a LaboratoryTest object and save it to the database
+#             laboratory_test = LaboratoryTest(
+#                 test_name=test_name,
+#                 test_price=test_price,
+#                 package_details=package_details
+#             )
+#             laboratory_test.save()
+
+#             # Return a JSON response indicating success
+#             return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+#         except json.JSONDecodeError as e:
+#             # Handle JSON decoding error
+#             return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'})
+#     else:
+#         # Handle other request methods (e.g., GET)
+#         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+
+
+
+
+
+
 
 
 from django.shortcuts import render
@@ -2004,42 +2098,66 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import LaboratoryTest
+from django.core.exceptions import ValidationError
+from decimal import Decimal
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from decimal import Decimal  # Import Decimal class from decimal module
+from .models import LaboratoryTest
 
 @csrf_exempt
 def save_laboratory_test(request):
     if request.method == 'POST':
         # Retrieve form data
-        
         test_name = request.POST.get('labTestName')
         test_price = request.POST.get('labTestPrice')
-        package_details_json = request.POST.get('packageDetails')
-
+        
         try:
+            # Retrieve JSON data from POST request
+            package_details_json = request.POST.get('packageDetails')
             print("Received package_details_json:", package_details_json)  # Debugging statement
+            
             # Parse JSON data
             package_details = json.loads(package_details_json)
 
             # Create a LaboratoryTest object and save it to the database
             laboratory_test = LaboratoryTest(
                 test_name=test_name,
-                test_price=test_price,
+                test_price=Decimal(test_price),  # Convert test_price to Decimal
                 package_details=package_details
             )
             laboratory_test.save()
 
             # Return a JSON response indicating success
             return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
-        except json.JSONDecodeError as e:
-            # Handle JSON decoding error
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'})
-    elif request.method == 'GET':
-        # Handle GET requests to display laboratory test data
-        lab_tests = LaboratoryTest.objects.all()
-        context = {'lab_tests': lab_tests}
-        return render(request, 'mainuser/labmainpage.html', context)
+        except (json.JSONDecodeError, TypeError, ValueError, Decimal.InvalidOperation) as e:
+            # Handle JSON decoding error and Decimal related errors
+            return JsonResponse({'status': 'error', 'message': 'Invalid data format'})
     else:
-        # Handle other request methods (e.g., PUT, DELETE) if needed
+        # Handle other request methods (e.g., GET)
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+from django.http import JsonResponse
+from .models import LaboratoryTest
+
+def fetch_laboratory_tests(request):
+    # Fetch all laboratory test objects from the database
+    laboratory_tests = LaboratoryTest.objects.all()
+
+    # Serialize the queryset to JSON
+    tests_data = []
+    for test in laboratory_tests:
+        tests_data.append({
+            'test_name': test.test_name,
+            'test_price': test.test_price,
+            'package_details': test.package_details,
+        })
+
+    # Return JSON response
+    return JsonResponse(tests_data, safe=False)
+
+
 
 
 
@@ -2500,19 +2618,55 @@ from django.shortcuts import render
 def thank_you_page(request):
     return render(request, 'thank_you.html')
 
-from django.shortcuts import render, redirect
+# from django.shortcuts import render, redirect
+# from .forms import PatientForm
+# from .models import Patient
+
+# def submit_normal_test(request):
+#     if request.method == 'POST':
+#         form = PatientForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('labstaffindex')  # Redirect to a success URL after submission
+#     else:
+#         form = PatientForm()
+#     return render(request, 'labstaff/viewbookings.html', {'form': form})
+
+from django.shortcuts import render
+from .models import LaboratoryTest
+
+def your_view_function(request):
+    laboratory_tests = LaboratoryTest.objects.all()
+    return render(request, 'labstaff/viewbookings.html', {'laboratory_tests': laboratory_tests})
+
+from django.shortcuts import render
+from .models import LaboratoryTest
 from .forms import PatientForm
-from .models import Patient
 
 def submit_normal_test(request):
+    laboratory_tests = LaboratoryTest.objects.all()
     if request.method == 'POST':
+        # Handle form submission
         form = PatientForm(request.POST)
         if form.is_valid():
+            # Process the form data
             form.save()
-            return redirect('labstaffindex')  # Redirect to a success URL after submission
+            # Redirect or do something else
     else:
         form = PatientForm()
-    return render(request, 'labstaff/viewbookings.html', {'form': form})
+
+    return render(request, 'labstaff/viewbookings.html', {'form': form, 'laboratory_tests': laboratory_tests})
+
+# from django.shortcuts import render
+# from .models import LaboratoryTest
+
+# def submit_normal_test(request):
+#     # Retrieve all laboratory tests
+#     laboratory_tests = LaboratoryTest.objects.all()
+
+#     # Pass the laboratory_tests to the template context
+#     return render(request, 'your_template_name.html', {'laboratory_tests': laboratory_tests})
+
 
 from django.shortcuts import render
 from .models import LaboratoryTest
