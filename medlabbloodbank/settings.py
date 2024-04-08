@@ -137,6 +137,8 @@ DATABASES = {
 #     'default': dj_database_url.parse("postgres://medlabbloodbank_user:rsa0yPxlxCr576N7Ht641vmh0pA7XRty@dpg-co5554i1hbls73c9i5m0-a.singapore-postgres.render.com/medlabbloodbank")
 # }
 
+# postgres://medlabbloodbank_8ori_user:qvVq6qapNaDSWdx2JmirL1wGLXlq08wa@dpg-coa31ngcmk4c73e92910-a.singapore-postgres.render.com/medlabbloodbank_8ori
+
 NEXMO_API_KEY = '88c26110'
 NEXMO_API_SECRET = 'D4du0zAOkuv2Ioot'
 NEXMO_PHONE_NUMBER = '+919447100633'
