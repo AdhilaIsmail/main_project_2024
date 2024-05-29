@@ -461,6 +461,7 @@ from django.contrib.auth import get_user_model
 # Define notification types
 NOTIFICATION_TYPES = [
     ('blood_request', 'Blood Request'),
+    ('expiry_date', 'Expiry Date'),
     # Add more notification types as needed
 ]
 

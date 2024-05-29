@@ -298,8 +298,82 @@ def send_sms(request):
         # Handle GET requests or other cases...
         return render(request, 'notificationfordonation.html')
 
+# import logging
+# from django.shortcuts import render,redirect
+# from django.utils import timezone
+# from datetime import timedelta, datetime
+# from .forms import UploadFileForm
+# from django.contrib import messages
+# from .models import LabSelection
+# from urllib.parse import unquote
 
-from django.shortcuts import render,redirect
+
+
+# logger = logging.getLogger(__name__)
+
+# def uploadresult2(request, lab_selection_timestamp):
+#     # Convert the lab_selection_timestamp string to a datetime object
+#     lab_selection_timestamp = unquote(lab_selection_timestamp)
+#     print(lab_selection_timestamp)
+#     # Convert the lab_selection_timestamp string to a datetime object
+#     lab_selection_timestamp = datetime.strptime(lab_selection_timestamp, '%Y-%m-%d %H:%M:%S.%f%z')
+    
+#     # Calculate the target date (3 days from the lab selection date)
+#     target_date = lab_selection_timestamp + timedelta(days=3)
+    
+#     # Calculate the remaining time
+#     current_time = timezone.now()
+#     remaining_time = target_date - current_time
+    
+#     if remaining_time.total_seconds() <= 0:
+#         messages.error(request, 'The three-day window for uploading results has expired.')
+#         return redirect('donatenow')
+
+#     # Check if the user has already submitted results
+#     user_has_submitted_results = UploadedFile.objects.filter(user=request.user).exists()
+
+#     # If the user has already submitted results, redirect or display a message
+#     if user_has_submitted_results:
+#         messages.info(request, 'You have already submitted your lab results.')
+#         return redirect('waitforemail')
+
+#     if request.method == 'POST':
+#         form = UploadFileForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             uploaded_file = form.cleaned_data['result_file']
+            
+#             # Save the uploaded file to your database
+#             new_upload = UploadedFile(file=uploaded_file, user=request.user)
+#             new_upload.save()
+
+#             # Provide feedback to the user
+#             messages.success(request, 'File uploaded successfully.')
+
+#             # Redirect to a success page or do something else
+#             return redirect('waitforemail')
+
+#         else:
+#             # Provide feedback to the user about form validation errors
+#             messages.error(request, 'Please correct the errors in the form.')
+
+#     else:
+#         form = UploadFileForm()
+
+#     # Pass the timestamp, target date, and remaining time to the template
+#     context = {
+#         'lab_selection_timestamp': lab_selection_timestamp.strftime("%Y-%m-%d %H:%M:%S.%f%z"),
+#         'target_date': target_date.strftime("%Y-%m-%d %H:%M:%S.%f%z"),
+#         'remaining_time_seconds': remaining_time.total_seconds(),
+#         'form': form,
+#     }
+    
+#     return render(request, 'uploadresult.html', context)
+
+
+
+
+import logging
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from datetime import timedelta, datetime
 from .forms import UploadFileForm
@@ -307,66 +381,72 @@ from django.contrib import messages
 from .models import LabSelection
 from urllib.parse import unquote
 
-
-
+logger = logging.getLogger(__name__)
 
 def uploadresult2(request, lab_selection_timestamp):
-    # Convert the lab_selection_timestamp string to a datetime object
-    lab_selection_timestamp = unquote(lab_selection_timestamp)
-    print(lab_selection_timestamp)
-    # Convert the lab_selection_timestamp string to a datetime object
-    lab_selection_timestamp = datetime.strptime(lab_selection_timestamp, '%Y-%m-%d %H:%M:%S.%f%z')
-    
-    # Calculate the target date (3 days from the lab selection date)
-    target_date = lab_selection_timestamp + timedelta(days=3)
-    
-    # Calculate the remaining time
-    current_time = timezone.now()
-    remaining_time = target_date - current_time
-    
-    if remaining_time.total_seconds() <= 0:
-        messages.error(request, 'The three-day window for uploading results has expired.')
-        return redirect('donatenow')
+    try:
+        # Convert the lab_selection_timestamp string to a datetime object
+        lab_selection_timestamp = unquote(lab_selection_timestamp)
+        logger.info(f"Lab selection timestamp: {lab_selection_timestamp}")
 
-    # Check if the user has already submitted results
-    user_has_submitted_results = UploadedFile.objects.filter(user=request.user).exists()
+        lab_selection_timestamp = datetime.strptime(lab_selection_timestamp, '%Y-%m-%d %H:%M:%S.%f%z')
 
-    # If the user has already submitted results, redirect or display a message
-    if user_has_submitted_results:
-        messages.info(request, 'You have already submitted your lab results.')
-        return redirect('waitforemail')
+        # Calculate the target date (3 days from the lab selection date)
+        target_date = lab_selection_timestamp + timedelta(days=3)
 
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            uploaded_file = form.cleaned_data['result_file']
-            
-            # Save the uploaded file to your database
-            new_upload = UploadedFile(file=uploaded_file, user=request.user)
-            new_upload.save()
+        # Calculate the remaining time
+        current_time = timezone.now()
+        remaining_time = target_date - current_time
 
-            # Provide feedback to the user
-            messages.success(request, 'File uploaded successfully.')
+        if remaining_time.total_seconds() <= 0:
+            messages.error(request, 'The three-day window for uploading results has expired.')
+            return redirect('donatenow')
 
-            # Redirect to a success page or do something else
+        # Check if the user has already submitted results
+        user_has_submitted_results = UploadedFile.objects.filter(user=request.user).exists()
+
+        # If the user has already submitted results, redirect or display a message
+        if user_has_submitted_results:
+            messages.info(request, 'You have already submitted your lab results.')
             return redirect('waitforemail')
 
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                uploaded_file = form.cleaned_data['result_file']
+
+                # Save the uploaded file to your database
+                new_upload = UploadedFile(file=uploaded_file, user=request.user)
+                new_upload.save()
+
+                # Provide feedback to the user
+                messages.success(request, 'File uploaded successfully.')
+
+                # Redirect to a success page or do something else
+                return redirect('waitforemail')
+
+            else:
+                # Provide feedback to the user about form validation errors
+                messages.error(request, 'Please correct the errors in the form.')
+
         else:
-            # Provide feedback to the user about form validation errors
-            messages.error(request, 'Please correct the errors in the form.')
+            form = UploadFileForm()
 
-    else:
-        form = UploadFileForm()
+        # Pass the timestamp, target date, and remaining time to the template
+        context = {
+            'lab_selection_timestamp': lab_selection_timestamp.strftime("%Y-%m-%d %H:%M:%S.%f%z"),
+            'target_date': target_date.strftime("%Y-%m-%d %H:%M:%S.%f%z"),
+            'remaining_time_seconds': remaining_time.total_seconds(),
+            'form': form,
+        }
 
-    # Pass the timestamp, target date, and remaining time to the template
-    context = {
-        'lab_selection_timestamp': lab_selection_timestamp.strftime("%Y-%m-%d %H:%M:%S.%f%z"),
-        'target_date': target_date.strftime("%Y-%m-%d %H:%M:%S.%f%z"),
-        'remaining_time_seconds': remaining_time.total_seconds(),
-        'form': form,
-    }
-    
-    return render(request, 'uploadresult.html', context)
+        return render(request, 'uploadresult.html', context)
+
+    except Exception as e:
+        logger.exception("An error occurred in the uploadresult2 view.")
+        messages.error(request, 'An unexpected error occurred. Please try again later.')
+        return redirect('donatenow')
+
 
 def waitforemail(request):
     return render(request,'waitforemail.html')
@@ -1284,28 +1364,53 @@ def campviewadmin(request):
     return render(request, 'mainuser/departments.html', context)
 
 
-
+#expiry date notification
 
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Appointment, DonorDetails, BloodInventory, BloodType
+from .models import Appointment, DonorDetails, BloodInventory, BloodType, Notification
 from django.contrib import messages
 from django.db.models import Sum
 
 from django.db import transaction
 
+def check_expired_samples():
+    # Get all donor details where the expiry date is in the past
+    expired_samples = DonorDetails.objects.filter(expiry_date__lt=timezone.now())
+
+    # Iterate over expired samples and create notifications
+    for sample in expired_samples:
+        # Create a notification for each expired sample
+        notification_message = f"The sample {sample.sample_name} has expired."
+        notification_type = 'expiry_date'
+        Notification.objects.create(recipient=sample.donor.user, message=notification_message, timestamp=timezone.now(), notification_type=notification_type)
+
+
+
+
+
+# views.py
+from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Appointment, DonorDetails, BloodInventory, BloodType
+from django.contrib import messages
+from django.db.models import Sum
+from django.db import transaction
+from datetime import timedelta
+
 def donateddetails(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
-
+    camp_date = appointment.camp.campDate  # Get the camp date from the Appointment object
+    expiry_date = camp_date + timedelta(days=56)  # Calculate expiry date as 56 days from the camp date
+    print("Camp Date:", camp_date)
+    print("Expiry Date:", expiry_date)
     if request.method == 'POST':
         # Retrieve donor details
-        date_of_donation = request.POST.get('date_of_donation')
-        expiry_date = request.POST.get('expiry_date')
         sample_name = request.POST.get('sample_name')
         quantity = request.POST.get('quantity')
 
         # Check if the provided data is valid (you can add your validation logic)
-        if date_of_donation and expiry_date and sample_name and quantity:
+        if sample_name and quantity:
             try:
                 quantity_ml = int(quantity) * 450
                 units_donated = quantity_ml // 450
@@ -1330,8 +1435,8 @@ def donateddetails(request, appointment_id):
                     donor_details = DonorDetails(
                         appointment=appointment,
                         donor=appointment.booked_by_donor,
-                        date_of_donation=date_of_donation,
-                        expiry_date=expiry_date,
+                        date_of_donation=camp_date,  # Set the date of donation as the camp date
+                        expiry_date=expiry_date,    # Set the expiry date calculated above
                         sample_name=sample_name,
                         quantity=quantity_ml,
                         # Add other fields as needed
@@ -1341,6 +1446,8 @@ def donateddetails(request, appointment_id):
             except ValueError:
                 # Handle invalid quantity (non-integer) entered by the user
                 return render(request, 'staff/filldonordetails.html', {'appointment': appointment, 'error_message': 'Invalid quantity entered'})
+            
+            check_expired_samples()
 
             return redirect('donorappointments')  # Redirect to the "Donor Appointments" page
         else:
@@ -1348,7 +1455,66 @@ def donateddetails(request, appointment_id):
             # You can customize this part to display error messages to the user
             return render(request, 'staff/filldonordetails.html', {'appointment': appointment, 'error_message': 'Please fill in all required fields'})
 
-    return render(request, 'staff/filldonordetails.html', {'appointment': appointment})
+    return render(request, 'staff/filldonordetails.html', {'appointment': appointment, 'expiry_date': expiry_date.strftime('%Y-%m-%d'), 'camp_date': camp_date.strftime('%Y-%m-%d')})
+
+
+# def donateddetails(request, appointment_id):
+#     appointment = get_object_or_404(Appointment, id=appointment_id)
+
+#     if request.method == 'POST':
+#         # Retrieve donor details
+#         date_of_donation = request.POST.get('date_of_donation')
+#         expiry_date = request.POST.get('expiry_date')
+#         sample_name = request.POST.get('sample_name')
+#         quantity = request.POST.get('quantity')
+
+#         # Check if the provided data is valid (you can add your validation logic)
+#         if date_of_donation and expiry_date and sample_name and quantity:
+#             try:
+#                 quantity_ml = int(quantity) * 450
+#                 units_donated = quantity_ml // 450
+
+#                 # Use atomic transaction to ensure consistency
+#                 with transaction.atomic():
+#                     # Update the appointment status to "Donated"
+#                     appointment.status = "DONATED"
+#                     appointment.save()
+
+#                     # Retrieve the BloodType instance based on the donor's blood group
+#                     blood_group = appointment.booked_by_donor.user.donor.blood_group
+#                     blood_type_instance = BloodType.objects.get(blood_type=blood_group)
+
+#                     # Retrieve or create the BloodInventory
+#                     blood_inventory, created = BloodInventory.objects.get_or_create(blood_type=blood_type_instance)
+#                     blood_inventory.quantity += units_donated
+#                     blood_inventory.save()
+
+#                     # Optionally, create a DonorDetails instance and save it to the database
+#                     # Only if you want to store the donor details
+#                     donor_details = DonorDetails(
+#                         appointment=appointment,
+#                         donor=appointment.booked_by_donor,
+#                         date_of_donation=date_of_donation,
+#                         expiry_date=expiry_date,
+#                         sample_name=sample_name,
+#                         quantity=quantity_ml,
+#                         # Add other fields as needed
+#                     )
+#                     donor_details.save()
+
+#             except ValueError:
+#                 # Handle invalid quantity (non-integer) entered by the user
+#                 return render(request, 'staff/filldonordetails.html', {'appointment': appointment, 'error_message': 'Invalid quantity entered'})
+            
+#             check_expired_samples()
+
+#             return redirect('donorappointments')  # Redirect to the "Donor Appointments" page
+#         else:
+#             # Handle validation errors or show an error message
+#             # You can customize this part to display error messages to the user
+#             return render(request, 'staff/filldonordetails.html', {'appointment': appointment, 'error_message': 'Please fill in all required fields'})
+
+#     return render(request, 'staff/filldonordetails.html', {'appointment': appointment})
 
 
 
@@ -1401,9 +1567,6 @@ def notdonated(request, appointment_id):
             return render(request, 'staff/notdonateddetails.html', {'appointment': appointment, 'error_message': 'Please provide a reason for not donating'})
 
     return render(request, 'staff/notdonateddetails.html', {'appointment': appointment})
-
-
-
 
 
 def viewlabresults(request):
@@ -1590,10 +1753,6 @@ from .models import Payment, BloodRequest, Notification
 @csrf_exempt
 def paymenthandler(request, blood_request_id):
     user=request.user
-    # print(blood_request_id)
-    # unit=BloodRequest.objects.filter(user=user.id)
-    # quantity=unit.quantity
-    
     if request.method == "POST":
         try:
             # Get the payment details from the POST request
@@ -1607,7 +1766,6 @@ def paymenthandler(request, blood_request_id):
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': payment_id,
                 'razorpay_signature': signature,
-
             }
             result = razorpay_client.utility.verify_payment_signature(params_dict)
             payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
